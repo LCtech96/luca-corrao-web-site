@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Brain, Code, TrendingUp, Bot, Building } from "lucide-react"
+import { Brain, Code, Bot } from "lucide-react"
 import { useState } from "react"
 import { ConsultationForm } from "./consultation-form"
 import { AIAgentDemos } from "./ai-agent-demos"
@@ -20,26 +20,6 @@ const features = [
     url: "https://www.bedda.tech",
   },
   {
-    id: "entrepreneurial",
-    icon: TrendingUp,
-    title: "L'Impronta Imprenditoriale",
-    subtitle: "Dal Mondo Dentale all'Integrazione AI",
-    description:
-      "Un percorso tra salute, innovazione e gestione clienti che ha forgiato una visione unica del business.",
-    color: "text-purple-600",
-    bgColor: "bg-purple-50",
-  },
-  {
-    id: "strategic-consulting",
-    icon: Code,
-    title: "Consulenza Strategica",
-    subtitle: "Guida al Successo nel Digitale",
-    description: "Assistenza tecnica, gestione avanzata e integrazione AI per trasformare digitalmente la tua azienda.",
-    color: "text-green-600",
-    bgColor: "bg-green-50",
-    hasForm: true,
-  },
-  {
     id: "ai-agents",
     icon: Bot,
     title: "AI Agent Development",
@@ -51,14 +31,14 @@ const features = [
     hasDemos: true,
   },
   {
-    id: "hospitality",
-    icon: Building,
-    title: "L'Eccellenza nell'Ospitalità",
-    subtitle: "Lucas Suites & More",
-    description:
-      "Il Tuo Soggiorno da Sogno in Sicilia. Scopri le nostre esclusive proprietà per un'esperienza indimenticabile.",
-    color: "text-amber-600",
-    bgColor: "bg-amber-50",
+    id: "strategic-consulting",
+    icon: Code,
+    title: "Consulenza Strategica AI",
+    subtitle: "Trasformazione Digitale Avanzata",
+    description: "Assistenza tecnica specializzata e integrazione AI per rivoluzionare digitalmente la tua azienda.",
+    color: "text-green-600",
+    bgColor: "bg-green-50",
+    hasForm: true,
   },
 ]
 
@@ -81,9 +61,9 @@ export function FeaturesSection() {
     <section id="features" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Esplora le Nostre Competenze</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Soluzioni AI Avanzate</h2>
           <p className="text-xl text-gray-600">
-            Clicca su ogni sezione per approfondire e scoprire come possiamo trasformare le tue idee in realtà
+            Clicca su ogni sezione per approfondire e scoprire come l'AI può trasformare il tuo business
           </p>
         </div>
 

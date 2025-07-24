@@ -9,9 +9,9 @@ export async function POST(request: NextRequest) {
     // Fallback con risposte predefinite potenziate - SEMPRE ATTIVO
     const fallbackResponses = {
       "chi è luca":
-        "🌟 Luca Corrao è un visionario che sta ridefinendo il futuro dell'ospitalità e dell'AI. Mentre sviluppa segretamente un software rivoluzionario, le sue strutture Lucas Suite (€95/notte) e Lucas Rooftop (€120/notte) offrono esperienze uniche a Terrasini. La sua missione? Arricchire l'umanità attraverso innovazione e accoglienza autentica. 🚀 Vuoi scoprire come la sua visione può trasformare anche il tuo business?",
+        "🌟 Luca Corrao è un innovatore che sta ridefinendo il futuro dell'ospitalità e dell'AI. Le sue strutture Lucas Suite (€95/notte) e Lucas Rooftop (€120/notte) offrono esperienze uniche a Terrasini, mentre sviluppa soluzioni AI rivoluzionarie per trasformare i business. 🚀 Vuoi scoprire come la sua innovazione può aiutare anche te?",
 
-      ciao: "🌟 Benvenuto nel mondo di Luca Corrao! Sono qui per guidarti attraverso le sue creazioni: dalle esclusive strutture ricettive siciliane (Lucas Suite €95/notte, Lucas Rooftop €120/notte) agli AI Agent rivoluzionari che stanno trasformando il business. Cosa ti incuriosisce di più? L'ospitalità di lusso o l'innovazione tecnologica?",
+      ciao: "🌟 Benvenuto! Sono qui per guidarti attraverso le creazioni di Luca Corrao: dalle esclusive strutture ricettive siciliane (Lucas Suite €95/notte, Lucas Rooftop €120/notte) agli AI Agent rivoluzionari che stanno trasformando il business. Cosa ti incuriosisce di più?",
 
       strutture:
         "🏛️ Le strutture di Luca non sono semplici alloggi, sono esperienze trasformative! Lucas Suite (€95/notte) con affreschi storici unici e Lucas Rooftop (€120/notte) con terrazza panoramica mozzafiato. Entrambe a passi dal mare turchese di Terrasini. 🏖️ Pronto a vivere la Sicilia autentica?",
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
         "🚀 Luca ha una visione chiara: ogni business può essere trasformato dall'AI. Che tu abbia un e-commerce, un ristorante o un'azienda di servizi, c'è un AI Agent perfetto per te. Raccontami del tuo business e ti mostro come dominare il mercato!",
 
       collaborazione:
-        "💼 Luca è sempre alla ricerca di visionari come lui. Se hai un progetto ambizioso o vuoi scalare il tuo business con l'AI, questa è la tua occasione. Le migliori collaborazioni nascono da conversazioni coraggiose. Pronto a cambiare il gioco?",
+        "💼 Luca è sempre alla ricerca di innovatori come lui. Se hai un progetto ambizioso o vuoi scalare il tuo business con l'AI, questa è la tua occasione. Le migliori collaborazioni nascono da conversazioni coraggiose. Pronto a cambiare il gioco?",
     }
 
     const lowerMessage = message.toLowerCase()
@@ -63,9 +63,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         response:
-          "🌟 Il visionario Luca Corrao ti aspetta per trasformare le tue idee in realtà! Contattalo direttamente: WhatsApp +39 351 420 6353 🚀",
+          "🌟 Luca Corrao ti aspetta per trasformare le tue idee in realtà! Contattalo direttamente: WhatsApp +39 351 420 6353 🚀",
       },
-      { status: 200 }, // Cambiato da 500 a 200 per evitare errori nel frontend
+      { status: 200 },
     )
   }
 }

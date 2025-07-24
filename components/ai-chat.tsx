@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MessageCircle, Send, Bot, User, Calendar, Sparkles, Volume2, VolumeX } from "lucide-react"
+import { VoiceBookingAssistant } from "./voice-booking-assistant"
 
 interface Message {
   id: number
@@ -19,7 +20,7 @@ export function AIChat() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      text: "🌟 Benvenuto nel mondo di Luca Corrao! Sono la sua AI avanzata e posso guidarti attraverso le sue creazioni rivoluzionarie. Vuoi scoprire le strutture ricettive esclusive, gli AI Agent che trasformano i business, o conoscere i segreti del visionario che sta ridefinendo il futuro? Dimmi, cosa accende la tua curiosità?",
+      text: "🌟 Benvenuto! Sono l'AI di Luca Corrao e posso guidarti attraverso le sue creazioni. Vuoi scoprire le strutture ricettive esclusive, gli AI Agent che trasformano i business, o hai domande specifiche? Dimmi, cosa ti incuriosisce di più?",
       isUser: false,
       timestamp: new Date(),
     },
@@ -29,6 +30,7 @@ export function AIChat() {
   const [isLoading, setIsLoading] = useState(false)
   const [isSpeaking, setIsSpeaking] = useState(false)
   const [autoPlayEnabled, setAutoPlayEnabled] = useState(true)
+  const [showVoiceBooking, setShowVoiceBooking] = useState(false)
   const speechSynthesisRef = useRef<SpeechSynthesis | null>(null)
 
   useEffect(() => {
@@ -93,8 +95,36 @@ export function AIChat() {
     }
 
     setMessages((prev) => [...prev, userMessage])
+    const currentInput = inputValue
     setInputValue("")
     setIsLoading(true)
+
+    // Check if user wants to book
+    const bookingKeywords = ["prenotare", "prenota", "prenotazione", "camera", "struttura", "soggiorno", "booking"]
+    const isBookingRequest = bookingKeywords.some((keyword) => currentInput.toLowerCase().includes(keyword))
+
+    if (isBookingRequest) {
+      const aiResponse: Message = {
+        id: messages.length + 2,
+        text: "🏨 Perfetto! Ti apro subito l'assistente vocale per prenotazioni. Ti guiderò passo dopo passo per trovare la struttura perfetta e completare la prenotazione con comandi vocali. È molto più semplice e veloce!",
+        isUser: false,
+        timestamp: new Date(),
+      }
+
+      setMessages((prev) => [...prev, aiResponse])
+      setIsLoading(false)
+
+      if (autoPlayEnabled) {
+        setTimeout(() => speakText(aiResponse.text), 500)
+      }
+
+      // Open voice booking assistant after a short delay
+      setTimeout(() => {
+        setShowVoiceBooking(true)
+      }, 2000)
+
+      return
+    }
 
     try {
       const response = await fetch("/api/chat", {
@@ -103,7 +133,7 @@ export function AIChat() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          message: inputValue,
+          message: currentInput,
         }),
       })
 
@@ -130,7 +160,7 @@ export function AIChat() {
       console.error("Error calling chat API:", error)
       const fallbackResponse: Message = {
         id: messages.length + 2,
-        text: "Il visionario Luca Corrao ti aspetta per trasformare le tue idee in realtà! Contattalo direttamente su WhatsApp per opportunità esclusive. 🚀",
+        text: "Luca Corrao ti aspetta per trasformare le tue idee in realtà! Contattalo direttamente su WhatsApp per opportunità esclusive. 🚀",
         isUser: false,
         timestamp: new Date(),
       }
@@ -168,11 +198,11 @@ export function AIChat() {
         <div className="max-w-4xl mx-auto text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Sparkles className="w-8 h-8 text-blue-600" />
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">AI Visionaria di Luca</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">AI Assistant di Luca</h2>
             <Sparkles className="w-8 h-8 text-blue-600" />
           </div>
           <p className="text-xl text-gray-600">
-            La mia intelligenza artificiale avanzata può guidarti, prenotare per te e svelare i segreti del successo
+            La mia intelligenza artificiale può guidarti, prenotare per te e rispondere alle tue domande
           </p>
         </div>
 
@@ -183,7 +213,7 @@ export function AIChat() {
                 <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
                   <Bot className="w-10 h-10 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">Inizia la Conversazione del Futuro</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">Inizia la Conversazione</h3>
                 <p className="text-gray-600 mb-6">
                   Clicca per accedere all'AI che può prenotare, informare e trasformare le tue idee in opportunità
                   concrete
@@ -206,9 +236,9 @@ export function AIChat() {
                     <Bot className="w-5 h-5 text-white" />
                   </div>
                   <div className="flex-1">
-                    <div className="text-lg font-bold">AI Visionaria di Luca</div>
+                    <div className="text-lg font-bold">AI Assistant di Luca</div>
                     <div className="text-sm text-blue-100">
-                      Controllo completo • Prenotazioni • Informazioni strategiche • Audio attivo
+                      Controllo completo • Prenotazioni vocali • Informazioni • Audio attivo
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -303,7 +333,7 @@ export function AIChat() {
                               style={{ animationDelay: "0.2s" }}
                             ></div>
                           </div>
-                          <span className="text-sm text-gray-500">Elaborando la strategia perfetta...</span>
+                          <span className="text-sm text-gray-500">Elaborando la risposta perfetta...</span>
                         </div>
                       </div>
                     </div>
@@ -342,7 +372,7 @@ export function AIChat() {
                       className="text-xs bg-amber-50 hover:bg-amber-100 border-amber-200 text-amber-700 flex items-center gap-1"
                     >
                       <Calendar className="w-3 h-3" />
-                      Prenota Ora
+                      Prenota con Voce
                     </Button>
                     <Button
                       variant="outline"
@@ -361,7 +391,7 @@ export function AIChat() {
                       disabled={isLoading}
                       className="text-xs bg-purple-50 hover:bg-purple-100 border-purple-200 text-purple-700"
                     >
-                      Il Visionario
+                      Chi è Luca
                     </Button>
                     <Button
                       variant="outline"
@@ -376,7 +406,7 @@ export function AIChat() {
 
                   <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 rounded-xl">
                     <p className="text-sm text-blue-800 mb-3 text-center font-medium">
-                      🚀 Pronto per il prossimo livello? Connettiti direttamente con il visionario!
+                      🚀 Pronto per il prossimo livello? Connettiti direttamente!
                     </p>
                     <Button
                       variant="outline"
@@ -394,6 +424,9 @@ export function AIChat() {
           )}
         </div>
       </div>
+
+      {/* Voice Booking Assistant Modal */}
+      {showVoiceBooking && <VoiceBookingAssistant onClose={() => setShowVoiceBooking(false)} />}
     </section>
   )
 }
