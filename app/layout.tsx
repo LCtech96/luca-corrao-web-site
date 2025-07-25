@@ -56,6 +56,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+
   return (
     <html lang="it" className={inter.variable}>
       <head>
@@ -98,11 +100,17 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} antialiased`}>
-        <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!}>
+        {clerkPublishableKey && clerkPublishableKey !== 'pk_test_your-clerk-publishable-key' ? (
+          <ClerkProvider publishableKey={clerkPublishableKey}>
+            <AuthProvider>
+              {children}
+            </AuthProvider>
+          </ClerkProvider>
+        ) : (
           <AuthProvider>
             {children}
           </AuthProvider>
-        </ClerkProvider>
+        )}
       </body>
     </html>
   )
