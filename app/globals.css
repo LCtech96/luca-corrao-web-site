@@ -55,6 +55,7 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   }
 }
 
@@ -64,21 +65,34 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #fef3c7;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #f59e0b;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #d97706;
 }
 
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
+}
+
+/* Professional warm color palette */
+.bg-warm-gradient {
+  background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 50%, #fdba74 100%);
+}
+
+.bg-elegant-warm {
+  background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+}
+
+.text-warm-gray {
+  color: #374151;
 }
 
 /* Animation utilities */
@@ -93,8 +107,23 @@ html {
   }
 }
 
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.05);
+  }
+}
+
 .animate-fade-in-up {
   animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
 }
 
 /* Custom gradient backgrounds */
@@ -106,6 +135,14 @@ html {
   background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
 }
 
+.gradient-warm {
+  background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
+}
+
+.gradient-elegant {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+}
+
 /* Hover effects */
 .hover-lift {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -114,4 +151,110 @@ html {
 .hover-lift:hover {
   transform: translateY(-5px);
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Professional button styles */
+.btn-professional {
+  @apply px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-300;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-professional:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+}
+
+/* Elegant text styles */
+.text-elegant {
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+
+.heading-elegant {
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 1.1;
+}
+
+/* Minimalist text styles */
+.text-minimalist {
+  font-weight: 300;
+  letter-spacing: 0.025em;
+  line-height: 1.4;
+}
+
+.heading-minimalist {
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+}
+
+/* Social media button styles */
+.social-btn {
+  @apply transition-all duration-200 rounded-full p-3;
+}
+
+.social-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Professional card styles */
+.card-professional {
+  @apply bg-white/80 backdrop-blur-sm rounded-2xl border border-white/20;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+}
+
+/* Warm background patterns */
+.bg-pattern-warm {
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(251, 191, 36, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(245, 158, 11, 0.1) 0%, transparent 50%);
+}
+
+/* Profile banner styles */
+.profile-banner {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+}
+
+.profile-banner-image {
+  transition: transform 0.3s ease;
+}
+
+.profile-banner:hover .profile-banner-image {
+  transform: scale(1.05);
+}
+
+.profile-image-overlap {
+  position: absolute;
+  bottom: -2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+/* Banner overlay effects */
+.banner-overlay {
+  background: linear-gradient(
+    135deg,
+    rgba(251, 191, 36, 0.2) 0%,
+    rgba(245, 158, 11, 0.2) 50%,
+    rgba(251, 191, 36, 0.2) 100%
+  );
+}
+
+/* Decorative banner elements */
+.banner-decoration {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Minimalist separator */
+.separator-minimalist {
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(245, 158, 11, 0.5), transparent);
+  border-radius: 1px;
 }

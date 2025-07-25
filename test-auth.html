@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API Auth</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test API Autenticazione</h1>
+    
+    <div class="container">
+        <h2>Registrazione</h2>
+        <div class="form-group">
+            <label for="regEmail">Email:</label>
+            <input type="email" id="regEmail" value="test@example.com">
+        </div>
+        <div class="form-group">
+            <label for="regPassword">Password:</label>
+            <input type="password" id="regPassword" value="password123">
+        </div>
+        <div class="form-group">
+            <label for="regMotherName">Cognome madre da nubile:</label>
+            <input type="text" id="regMotherName" value="Rossi">
+        </div>
+        <button onclick="testRegister()">Test Registrazione</button>
+        <div id="registerResult" class="result"></div>
+    </div>
+
+    <div class="container">
+        <h2>Verifica Email</h2>
+        <div class="form-group">
+            <label for="verifyEmail">Email:</label>
+            <input type="email" id="verifyEmail" value="test@example.com">
+        </div>
+        <div class="form-group">
+            <label for="verifyCode">Codice di verifica:</label>
+            <input type="text" id="verifyCode" placeholder="Inserisci il codice">
+        </div>
+        <button onclick="testVerify()">Test Verifica</button>
+        <div id="verifyResult" class="result"></div>
+    </div>
+
+    <div class="container">
+        <h2>Login</h2>
+        <div class="form-group">
+            <label for="loginEmail">Email:</label>
+            <input type="email" id="loginEmail" value="test@example.com">
+        </div>
+        <div class="form-group">
+            <label for="loginPassword">Password:</label>
+            <input type="password" id="loginPassword" value="password123">
+        </div>
+        <button onclick="testLogin()">Test Login</button>
+        <div id="loginResult" class="result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3003/api/auth';
+
+        async function makeRequest(action, data) {
+            try {
+                const response = await fetch(API_BASE, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: action,
+                        ...data
+                    })
+                });
+
+                const result = await response.json();
+                return {
+                    status: response.status,
+                    data: result
+                };
+            } catch (error) {
+                return {
+                    status: 0,
+                    data: { error: error.message }
+                };
+            }
+        }
+
+        function showResult(elementId, result) {
+            const element = document.getElementById(elementId);
+            const status = result.status;
+            const data = result.data;
+
+            let className = 'info';
+            if (status >= 200 && status < 300) {
+                className = 'success';
+            } else if (status >= 400) {
+                className = 'error';
+            }
+
+            element.className = `result ${className}`;
+            element.textContent = `Status: ${status}\n\nRisposta:\n${JSON.stringify(data, null, 2)}`;
+        }
+
+        async function testRegister() {
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const motherName = document.getElementById('regMotherName').value;
+
+            const result = await makeRequest('register', {
+                email: email,
+                password: password,
+                motherMaidenName: motherName
+            });
+
+            showResult('registerResult', result);
+        }
+
+        async function testVerify() {
+            const email = document.getElementById('verifyEmail').value;
+            const code = document.getElementById('verifyCode').value;
+
+            const result = await makeRequest('verify', {
+                email: email,
+                code: code
+            });
+
+            showResult('verifyResult', result);
+        }
+
+        async function testLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const result = await makeRequest('login', {
+                email: email,
+                password: password
+            });
+
+            showResult('loginResult', result);
+        }
+
+        // Test automatico al caricamento
+        window.onload = function() {
+            console.log('Pagina di test caricata. Il server dovrebbe essere in esecuzione su http://localhost:3003');
+        };
+    </script>
+</body>
+</html> 
