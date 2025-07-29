@@ -2,8 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { ClerkProvider } from '@clerk/nextjs'
-import { AuthProvider } from "@/lib/auth-context"
+import { ClerkProviderWrapper } from '@/components/clerk-provider-wrapper'
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -56,8 +55,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-
   return (
     <html lang="it" className={inter.variable}>
       <head>
@@ -100,17 +97,9 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} antialiased`}>
-        {clerkPublishableKey && clerkPublishableKey !== 'pk_test_your-clerk-publishable-key' ? (
-          <ClerkProvider publishableKey={clerkPublishableKey}>
-            <AuthProvider>
-              {children}
-            </AuthProvider>
-          </ClerkProvider>
-        ) : (
-          <AuthProvider>
-            {children}
-          </AuthProvider>
-        )}
+        <ClerkProviderWrapper>
+          {children}
+        </ClerkProviderWrapper>
       </body>
     </html>
   )

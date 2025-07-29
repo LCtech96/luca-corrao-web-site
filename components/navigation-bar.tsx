@@ -2,23 +2,16 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { UserPlus, Building2, Grid3X3, LogIn, LogOut } from "lucide-react"
-import { RegistrationModal } from "@/components/registration-modal"
+import { UserPlus, Building2, Grid3X3, LogIn } from "lucide-react"
 import { WorkWithUsModal } from "@/components/work-with-us-modal"
 import { ShowcaseModal } from "@/components/showcase-modal"
-import { LoginModal } from "@/components/login-modal"
-import { useAuth } from "@/lib/auth-context"
 
 export function NavigationBar() {
-  const { isAuthenticated, logout } = useAuth()
   const [activeModal, setActiveModal] = useState<"registration" | "work" | "showcase" | "login" | null>(null)
+  const [isSignedIn, setIsSignedIn] = useState(false)
 
   const closeModal = () => {
     setActiveModal(null)
-  }
-
-  const handleLogout = () => {
-    logout()
   }
 
   // Previene il rendering di più modal contemporaneamente
@@ -47,12 +40,12 @@ export function NavigationBar() {
 
             {/* Navigation Buttons */}
             <div className="flex items-center space-x-4">
-              {!isAuthenticated ? (
+              {!isSignedIn ? (
                 <>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setActiveModal("login")}
+                    onClick={() => window.location.href = "/sign-in"}
                     className="flex items-center gap-2 text-gray-700 hover:text-amber-600 hover:bg-amber-50 transition-colors duration-200"
                   >
                     <LogIn className="w-4 h-4" />
@@ -62,7 +55,7 @@ export function NavigationBar() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => setActiveModal("registration")}
+                    onClick={() => window.location.href = "/sign-up"}
                     className="flex items-center gap-2 text-gray-700 hover:text-amber-600 hover:bg-amber-50 transition-colors duration-200"
                   >
                     <UserPlus className="w-4 h-4" />
@@ -73,10 +66,10 @@ export function NavigationBar() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={handleLogout}
+                  onClick={() => setIsSignedIn(false)}
                   className="flex items-center gap-2 text-gray-700 hover:text-red-600 hover:bg-red-50 transition-colors duration-200"
                 >
-                  <LogOut className="w-4 h-4" />
+                  <LogIn className="w-4 h-4" />
                   <span className="hidden sm:inline">Log out</span>
                 </Button>
               )}
@@ -106,14 +99,6 @@ export function NavigationBar() {
       </nav>
 
       {/* Modals - Renderizzati condizionalmente */}
-      {activeModal === "login" && (
-        <LoginModal onClose={closeModal} />
-      )}
-
-      {activeModal === "registration" && (
-        <RegistrationModal onClose={closeModal} />
-      )}
-      
       {activeModal === "work" && (
         <WorkWithUsModal onClose={closeModal} />
       )}

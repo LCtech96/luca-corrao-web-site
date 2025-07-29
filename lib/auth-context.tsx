@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, useContext, ReactNode } from 'react'
+import { useUser, useClerk } from '@clerk/nextjs'
 
 interface AuthContextType {
   user: any
@@ -12,18 +13,35 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // Fallback authentication state when Clerk is not configured
-  const user = null
-  const isSignedIn = false
+  // Fallback values when Clerk is not available
+  let user = null
+  let isSignedIn = false
+  let signOut = () => Promise.resolve()
 
-  const login = () => {
-    // Fallback login logic
-    console.log('Login not configured - please set up Clerk authentication')
+  try {
+    // Try to use Clerk hooks, but handle the case when Clerk is not available
+    const clerkUser = useUser()
+    const clerk = useClerk()
+    
+    user = clerkUser.user
+    isSignedIn = clerkUser.isSignedIn || false
+    signOut = clerk.signOut
+  } catch (error) {
+    // Clerk is not available, use fallback values
+    console.log('Clerk not available, using fallback authentication')
   }
 
-  const logout = () => {
-    // Fallback logout logic
-    console.log('Logout not configured - please set up Clerk authentication')
+  const login = () => {
+    // Clerk handles login through its own UI components
+    console.log('Use Clerk SignIn component for login')
+  }
+
+  const logout = async () => {
+    try {
+      await signOut()
+    } catch (error) {
+      console.error('Error during logout:', error)
+    }
   }
 
   return (
