@@ -1,131 +1,114 @@
-import { auth } from "@clerk/nextjs/server"
+import { auth, currentUser } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { UserButton } from "@clerk/nextjs"
+import { Building2, Bot, User, Settings } from "lucide-react"
 
 export default async function DashboardPage() {
   const { userId } = await auth()
+  const user = await currentUser()
   
   if (!userId) {
     redirect("/sign-in")
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <h1 className="text-2xl font-bold text-gray-900">
-              Dashboard
-            </h1>
-            <UserButton 
-              appearance={{
-                elements: {
-                  userButtonAvatarBox: "w-10 h-10"
-                }
-              }}
-            />
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 pt-20">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            Dashboard
+          </h1>
+          <p className="text-gray-600">
+            Benvenuto, {user?.firstName || user?.emailAddresses[0]?.emailAddress || 'Utente'}!
+          </p>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Strutture Card */}
-          <Card className="hover:shadow-lg transition-shadow">
+        {/* Stats Cards */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card className="bg-white/80 backdrop-blur-sm border-amber-200">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Strutture</CardTitle>
+              <Building2 className="h-4 w-4 text-amber-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-amber-600">3</div>
+              <p className="text-xs text-gray-600">Attive</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/80 backdrop-blur-sm border-amber-200">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">AI Agents</CardTitle>
+              <Bot className="h-4 w-4 text-amber-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-amber-600">5</div>
+              <p className="text-xs text-gray-600">Attivi</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/80 backdrop-blur-sm border-amber-200">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Ospiti</CardTitle>
+              <User className="h-4 w-4 text-amber-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-amber-600">127</div>
+              <p className="text-xs text-gray-600">Questo mese</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/80 backdrop-blur-sm border-amber-200">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Configurazioni</CardTitle>
+              <Settings className="h-4 w-4 text-amber-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-amber-600">12</div>
+              <p className="text-xs text-gray-600">Attive</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <Card className="bg-white/80 backdrop-blur-sm border-amber-200">
             <CardHeader>
-              <CardTitle>Le Mie Strutture</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Building2 className="h-5 w-5 text-amber-600" />
+                Gestione Strutture
+              </CardTitle>
               <CardDescription>
-                Gestisci le tue strutture ricettive
+                Gestisci le tue strutture ricettive e le prenotazioni
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-600 mb-4">
-                Visualizza e gestisci le prenotazioni, le recensioni e le informazioni delle tue strutture.
-              </p>
               <Button className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700">
-                Gestisci Strutture
+                Vai alle Strutture
               </Button>
             </CardContent>
           </Card>
 
-          {/* AI Solutions Card */}
-          <Card className="hover:shadow-lg transition-shadow">
+          <Card className="bg-white/80 backdrop-blur-sm border-amber-200">
             <CardHeader>
-              <CardTitle>Soluzioni AI</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <Bot className="h-5 w-5 text-amber-600" />
+                Soluzioni AI
+              </CardTitle>
               <CardDescription>
-                Scopri le soluzioni di intelligenza artificiale
+                Configura e monitora i tuoi AI agents
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-600 mb-4">
-                Esplora le nostre soluzioni AI per l'automazione e l'ottimizzazione dei processi.
-              </p>
-              <Button variant="outline" className="w-full">
-                Scopri Soluzioni AI
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Chat AI Card */}
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <CardTitle>Chat AI</CardTitle>
-              <CardDescription>
-                Interagisci con l'assistente AI
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-600 mb-4">
-                Chatta con il nostro assistente AI per ricevere supporto e informazioni.
-              </p>
-              <Button variant="outline" className="w-full">
-                Inizia Chat
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Settings Card */}
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <CardTitle>Impostazioni</CardTitle>
-              <CardDescription>
-                Gestisci le tue preferenze
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-600 mb-4">
-                Modifica le tue informazioni personali e le impostazioni dell'account.
-              </p>
-              <Button variant="outline" className="w-full">
-                Modifica Impostazioni
+              <Button className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700">
+                Gestisci AI
               </Button>
             </CardContent>
           </Card>
         </div>
-
-        {/* Welcome Section */}
-        <div className="mt-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Benvenuto nel tuo Dashboard</CardTitle>
-              <CardDescription>
-                Gestisci le tue strutture ricettive e scopri le soluzioni AI
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600">
-                Questo è il tuo spazio personale dove puoi gestire tutto ciò che riguarda le tue strutture ricettive 
-                e accedere alle nostre soluzioni di intelligenza artificiale. Utilizza i menu sopra per navigare 
-                tra le diverse sezioni.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
+      </div>
     </div>
   )
 } 

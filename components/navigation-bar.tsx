@@ -2,13 +2,15 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { UserPlus, Building2, Grid3X3, LogIn } from "lucide-react"
+import { UserPlus, Building2, Grid3X3, LogIn, LogOut, User } from "lucide-react"
 import { WorkWithUsModal } from "@/components/work-with-us-modal"
 import { ShowcaseModal } from "@/components/showcase-modal"
+import { useAuth } from "@/lib/auth-context"
+import { UserButton } from "@clerk/nextjs"
 
 export function NavigationBar() {
-  const [activeModal, setActiveModal] = useState<"registration" | "work" | "showcase" | "login" | null>(null)
-  const [isSignedIn, setIsSignedIn] = useState(false)
+  const { isAuthenticated, login } = useAuth()
+  const [activeModal, setActiveModal] = useState<"work" | "showcase" | null>(null)
 
   const closeModal = () => {
     setActiveModal(null)
@@ -40,12 +42,12 @@ export function NavigationBar() {
 
             {/* Navigation Buttons */}
             <div className="flex items-center space-x-4">
-              {!isSignedIn ? (
+              {!isAuthenticated ? (
                 <>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => window.location.href = "/sign-in"}
+                    onClick={login}
                     className="flex items-center gap-2 text-gray-700 hover:text-amber-600 hover:bg-amber-50 transition-colors duration-200"
                   >
                     <LogIn className="w-4 h-4" />
@@ -55,7 +57,7 @@ export function NavigationBar() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => window.location.href = "/sign-up"}
+                    onClick={() => window.location.href = '/sign-up'}
                     className="flex items-center gap-2 text-gray-700 hover:text-amber-600 hover:bg-amber-50 transition-colors duration-200"
                   >
                     <UserPlus className="w-4 h-4" />
@@ -63,15 +65,14 @@ export function NavigationBar() {
                   </Button>
                 </>
               ) : (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsSignedIn(false)}
-                  className="flex items-center gap-2 text-gray-700 hover:text-red-600 hover:bg-red-50 transition-colors duration-200"
-                >
-                  <LogIn className="w-4 h-4" />
-                  <span className="hidden sm:inline">Log out</span>
-                </Button>
+                <UserButton 
+                  appearance={{
+                    elements: {
+                      userButtonAvatarBox: "w-8 h-8",
+                      userButtonTrigger: "focus:shadow-none",
+                    }
+                  }}
+                />
               )}
 
               <Button

@@ -13,34 +13,20 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // Fallback values when Clerk is not available
-  let user = null
-  let isSignedIn = false
-  let signOut = () => Promise.resolve()
-
-  try {
-    // Try to use Clerk hooks, but handle the case when Clerk is not available
-    const clerkUser = useUser()
-    const clerk = useClerk()
-    
-    user = clerkUser.user
-    isSignedIn = clerkUser.isSignedIn || false
-    signOut = clerk.signOut
-  } catch (error) {
-    // Clerk is not available, use fallback values
-    console.log('Clerk not available, using fallback authentication')
-  }
+  const { user, isSignedIn } = useUser()
+  const { signOut } = useClerk()
 
   const login = () => {
-    // Clerk handles login through its own UI components
-    console.log('Use Clerk SignIn component for login')
+    // Redirect to sign-in page
+    window.location.href = '/sign-in'
   }
 
   const logout = async () => {
     try {
       await signOut()
+      window.location.href = '/'
     } catch (error) {
-      console.error('Error during logout:', error)
+      console.error('Errore durante il logout:', error)
     }
   }
 

@@ -11,7 +11,7 @@ export function ClerkProviderWrapper({ children }: ClerkProviderWrapperProps) {
   const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 
   // Se non c'è una chiave valida, mostra solo l'applicazione senza autenticazione
-  if (!clerkPublishableKey || clerkPublishableKey === 'pk_test_your-clerk-publishable-key' || clerkPublishableKey === 'pk_test_your-actual-key' || clerkPublishableKey === 'pk_test_dummy' || clerkPublishableKey === 'pk_test_your-clerk-publishable-key') {
+  if (!clerkPublishableKey || clerkPublishableKey === 'pk_test_your-clerk-publishable-key' || clerkPublishableKey === 'pk_test_your-actual-key' || clerkPublishableKey === 'pk_test_dummy') {
     return (
       <div className="min-h-screen">
         <div className="bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 min-h-screen">
