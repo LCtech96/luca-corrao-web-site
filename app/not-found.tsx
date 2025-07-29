@@ -1,3 +1,5 @@
+// app/not-found.tsx
+
 'use client'
 
 import Link from 'next/link'
@@ -14,23 +16,16 @@ export default function NotFound() {
         <p className="text-gray-600 mb-6">
           La pagina che stai cercando non esiste o è stata spostata.
         </p>
-        <div className="space-x-4">
-          <Button
-            asChild
-            className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700"
-          >
-            <Link href="/">
-              Torna alla Homepage
-            </Link>
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => window.history.back()}
-          >
-            Torna Indietro
-          </Button>
-        </div>
+        {/* Adesso c'è solo il bottone sicuro */}
+        <Button
+          asChild
+          className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700"
+        >
+          <Link href="/">
+            Torna alla Homepage
+          </Link>
+        </Button>
       </div>
     </div>
   )
-} 
+}
