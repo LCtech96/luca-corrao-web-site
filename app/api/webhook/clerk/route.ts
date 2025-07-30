@@ -2,11 +2,7 @@ import { Webhook } from 'svix'
 import { headers } from 'next/headers'
 import { WebhookEvent } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
-import { ConvexHttpClient } from 'convex/browser'
-import { api } from '@/convex/_generated/api'
-
-// Inizializza il client Convex
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
+import { UserService } from '@/lib/user-service'
 
 // Webhook endpoint per gestire gli eventi di Clerk
 export async function POST(req: Request) {
@@ -65,17 +61,21 @@ export async function POST(req: Request) {
       console.log('Nuovo utente registrato:', evt.data)
       try {
         const userData = evt.data as any
-        await convex.mutation(api.users.createUser, {
-          clerkId: userData.id,
+        await UserService.createUser({
+          id: userData.id,
           email: userData.email_addresses?.[0]?.email_address || '',
           firstName: userData.first_name,
           lastName: userData.last_name,
-          phone: userData.phone_numbers?.[0]?.phone_number,
-          role: 'user'
+          emailVerified: userData.email_addresses?.[0]?.verification?.status === 'verified',
+          phoneNumber: userData.phone_numbers?.[0]?.phone_number,
+          imageUrl: userData.image_url,
+          publicMetadata: userData.public_metadata,
+          privateMetadata: userData.private_metadata,
+          unsafeMetadata: userData.unsafe_metadata
         })
-        console.log('✅ Utente salvato con successo in Convex')
+        console.log('✅ Utente salvato con successo nel database locale')
       } catch (error) {
-        console.error('❌ Errore nel salvare l\'utente in Convex:', error)
+        console.error('❌ Errore nel salvare l\'utente:', error)
       }
       break
       
@@ -83,16 +83,20 @@ export async function POST(req: Request) {
       console.log('Utente aggiornato:', evt.data)
       try {
         const userData = evt.data as any
-        await convex.mutation(api.users.updateUser, {
-          clerkId: userData.id,
+        await UserService.updateUser(userData.id, {
+          email: userData.email_addresses?.[0]?.email_address || '',
           firstName: userData.first_name,
           lastName: userData.last_name,
-          phone: userData.phone_numbers?.[0]?.phone_number,
-          role: 'user'
+          emailVerified: userData.email_addresses?.[0]?.verification?.status === 'verified',
+          phoneNumber: userData.phone_numbers?.[0]?.phone_number,
+          imageUrl: userData.image_url,
+          publicMetadata: userData.public_metadata,
+          privateMetadata: userData.private_metadata,
+          unsafeMetadata: userData.unsafe_metadata
         })
-        console.log('✅ Utente aggiornato con successo in Convex')
+        console.log('✅ Utente aggiornato con successo nel database locale')
       } catch (error) {
-        console.error('❌ Errore nell\'aggiornare l\'utente in Convex:', error)
+        console.error('❌ Errore nell\'aggiornare l\'utente:', error)
       }
       break
       
@@ -100,12 +104,10 @@ export async function POST(req: Request) {
       console.log('Utente eliminato:', evt.data)
       try {
         const userData = evt.data as any
-        await convex.mutation(api.users.deleteUser, {
-          clerkId: userData.id
-        })
-        console.log('✅ Utente eliminato con successo da Convex')
+        await UserService.deleteUser(userData.id)
+        console.log('✅ Utente eliminato con successo dal database locale')
       } catch (error) {
-        console.error('❌ Errore nell\'eliminare l\'utente da Convex:', error)
+        console.error('❌ Errore nell\'eliminare l\'utente:', error)
       }
       break
       

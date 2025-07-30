@@ -6,8 +6,7 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start",
-    "clean": "if exist .next rmdir /s /q .next && if exist node_modules\\.cache rmdir /s /q node_modules\\.cache && npm run build"
+    "start": "next start"
   },
   "dependencies": {
     "@clerk/localizations": "^3.20.5",

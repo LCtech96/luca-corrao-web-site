@@ -1,7 +1,6 @@
 "use client"
 
 import { createContext, useContext, ReactNode } from 'react'
-import { useUser, useClerk } from '@clerk/nextjs'
 
 interface AuthContextType {
   user: any
@@ -13,21 +12,18 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const { user, isSignedIn } = useUser()
-  const { signOut } = useClerk()
+  // Fallback authentication state when Clerk is not configured
+  const user = null
+  const isSignedIn = false
 
   const login = () => {
-    // Redirect to sign-in page
-    window.location.href = '/sign-in'
+    // Fallback login logic
+    console.log('Login not configured - please set up Clerk authentication')
   }
 
-  const logout = async () => {
-    try {
-      await signOut()
-      window.location.href = '/'
-    } catch (error) {
-      console.error('Errore durante il logout:', error)
-    }
+  const logout = () => {
+    // Fallback logout logic
+    console.log('Logout not configured - please set up Clerk authentication')
   }
 
   return (
