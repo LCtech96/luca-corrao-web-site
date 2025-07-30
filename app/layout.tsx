@@ -14,6 +14,8 @@ const inter = Inter({
   display: "swap",
 })
 
+const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
 // Il tuo oggetto metadata va benissimo, lo lasciamo com'è
 export const metadata: Metadata = {
   title: "Luca Corrao - Intelligenza Artificiale & Ospitalità Siciliana | AI Development & Strutture Ricettive Terrasini",
@@ -29,7 +31,7 @@ export default function RootLayout({
 }) {
   return (
     // 1. Sposta ClerkProvider qui in alto per avvolgere tutto
-    <ClerkProvider localization={itIT}>
+    <ClerkProvider localization={itIT} publishableKey={clerkPublishableKey}>
       <html lang="it" className={inter.variable}>
         {/* 2. Rimuovi il tag <head> manuale. Next.js lo gestisce tramite l'oggetto metadata */}
         <body className={`${inter.className} antialiased`}>
