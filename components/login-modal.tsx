@@ -1,9 +1,10 @@
 "use client"
 
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 import { useState } from "react"
 
 interface LoginModalProps {
@@ -51,6 +52,12 @@ export function LoginModal({ onClose }: LoginModalProps) {
   return (
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
+        <DialogHeader>
+          <VisuallyHidden>
+            <DialogTitle>Accedi</DialogTitle>
+          </VisuallyHidden>
+        </DialogHeader>
+        
         <div className="space-y-4">
           <div className="text-center">
             <h2 className="text-2xl font-bold">Accedi</h2>

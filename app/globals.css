@@ -258,3 +258,8 @@ html {
   background: linear-gradient(to right, transparent, rgba(245, 158, 11, 0.5), transparent);
   border-radius: 1px;
 }
+
+/* Disabilita temporaneamente l'avviso di accessibilità per DialogContent */
+[data-radix-dialog-content] {
+  --radix-dialog-title-warning: none;
+}
