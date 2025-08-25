@@ -90,6 +90,45 @@ const accommodations = [
       "Bagno moderno",
     ],
   },
+  {
+    id: "lucas-cottage",
+    name: "Lucas Cottage",
+    subtitle: "Tranquillità e Natura a Trappeto",
+    description:
+      "Delizioso cottage immerso nella natura siciliana, a soli 25 minuti dall'aeroporto e 5 minuti dal mare. Ideale per chi cerca relax e autenticità, con facile accesso alle meraviglie della Sicilia occidentale. A pochi minuti da Castellammare del Golfo, Scopello e la bellissima Riserva Naturale dello Zingaro.",
+    features: [
+      "Aria condizionata",
+      "WiFi gratuito",
+      "Self check-in",
+      "Parcheggio gratuito in loco",
+      "Cucina attrezzata",
+      "Vista panoramica",
+      "Giardino privato",
+      "1 camera da letto",
+      "2 letti matrimoniali",
+      "1 bagno",
+    ],
+    capacity: "4 persone",
+    distance: "25 min dall'aeroporto, 5 min dal mare",
+    images: [
+      "/images/lucas-cottage-pool-fronthead.jpg.jpg",
+      "/images/lucas-cottage-pool-1.jpg.jpg",
+      "/images/lucas-cottage-pool-2.jpg.jpg",
+      "/images/lucas-cottage-interior-1.jpg.jpg",
+      "/images/lucas-cottage-interior-2.jpg.jpg",
+      "/images/lucas-cottage-exterior-1.jpg.jpg",
+      "/images/lucas-cottage-exterior-2.jpg.jpg",
+    ],
+    imageDescriptions: [
+      "Vista principale della piscina del Lucas Cottage",
+      "Piscina panoramica con vista mare",
+      "Area relax con lettini e ombrelloni",
+      "Interno moderno con zona living",
+      "Camera da letto con due letti matrimoniali",
+      "Vista esterna del cottage",
+      "Giardino e area barbecue",
+    ],
+  },
 ]
 
 export function AccommodationsSection() {

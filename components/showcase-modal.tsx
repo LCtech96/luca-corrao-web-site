@@ -68,6 +68,25 @@ export function ShowcaseModal({ onClose }: ShowcaseModalProps) {
       ],
       owner: "Luca Corrao",
       isOwner: true
+    },
+    {
+      id: "3",
+      name: "Lucas Cottage",
+      description: "Delizioso cottage immerso nella natura siciliana, a soli 25 minuti dall'aeroporto e 5 minuti dal mare. Ideale per chi cerca relax e autenticità, con facile accesso a Castellammare del Golfo, Scopello e la Riserva Naturale dello Zingaro.",
+      address: "Trappeto, Sicilia",
+      rating: 4.7,
+      mainImage: "/images/lucas-cottage-pool-fronthead.jpg.jpg",
+      images: [
+        "/images/lucas-cottage-pool-fronthead.jpg.jpg",
+        "/images/lucas-cottage-pool-1.jpg.jpg",
+        "/images/lucas-cottage-pool-2.jpg.jpg",
+        "/images/lucas-cottage-interior-1.jpg.jpg",
+        "/images/lucas-cottage-interior-2.jpg.jpg",
+        "/images/lucas-cottage-exterior-1.jpg.jpg",
+        "/images/lucas-cottage-exterior-2.jpg.jpg"
+      ],
+      owner: "Luca Corrao",
+      isOwner: true
     }
   ]
 
