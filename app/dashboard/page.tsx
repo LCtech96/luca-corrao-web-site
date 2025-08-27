@@ -1,5 +1,6 @@
 // app/dashboard/page.tsx
-import { UserButton, auth } from "@clerk/nextjs";
+import { UserButton } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 
 export default async function DashboardPage() {
   // Get the userId from auth() -- no need to check if it's there

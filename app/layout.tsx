@@ -5,7 +5,8 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { ClerkProvider } from '@clerk/nextjs'
-import { itIT } from "@clerk/localizations"; // Opzionale per la lingua
+// Temporarily removed Italian localization to fix build
+// import { itIT } from "@clerk/localizations"; // Opzionale per la lingua
 import { AuthProvider } from "@/lib/auth-context"
 
 const inter = Inter({ 
@@ -31,7 +32,7 @@ export default function RootLayout({
 }) {
   return (
     // 1. Sposta ClerkProvider qui in alto per avvolgere tutto
-    <ClerkProvider localization={itIT} publishableKey={clerkPublishableKey}>
+    <ClerkProvider publishableKey={clerkPublishableKey}>
       <html lang="it" className={inter.variable}>
         {/* 2. Rimuovi il tag <head> manuale. Next.js lo gestisce tramite l'oggetto metadata */}
         <body className={`${inter.className} antialiased`}>

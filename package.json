@@ -10,6 +10,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@clerk/localizations": "^6.31.4",
     "@clerk/nextjs": "^6.31.4",
     "@hookform/resolvers": "^3.9.1",
     "@radix-ui/react-accordion": "1.2.2",
