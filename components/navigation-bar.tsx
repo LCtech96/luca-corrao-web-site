@@ -7,10 +7,12 @@ import { RegistrationModal } from "@/components/registration-modal"
 import { WorkWithUsModal } from "@/components/work-with-us-modal"
 import { ShowcaseModal } from "@/components/showcase-modal"
 import { LoginModal } from "@/components/login-modal"
-import { useAuth } from "@/lib/auth-context"
+// import { useAuth } from "@/lib/auth-context"
 
 export function NavigationBar() {
-  const { isAuthenticated, logout } = useAuth()
+  // const { isAuthenticated, logout } = useAuth()
+  const isAuthenticated = false
+  const logout = () => {}
   const [activeModal, setActiveModal] = useState<"registration" | "work" | "showcase" | "login" | null>(null)
 
   const closeModal = () => {

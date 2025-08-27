@@ -60,6 +60,16 @@ const properties = [
     features: ["Terrazza panoramica", "Pet-friendly", "50m da Piazza Duomo", "300m dal mare"],
     description: "Tramonti mozzafiato dalla terrazza panoramica privata",
   },
+  {
+    id: "lucas-cottage",
+    name: "Lucas Cottage",
+    subtitle: "Tranquillità e Natura a Trappeto",
+    capacity: 4,
+    price: "€140/notte",
+    image: "/images/lucas-cottage-pool-front.jpg.jpg",
+    features: ["Piscina privata", "Self check-in", "25 min dall'aeroporto", "5 min dal mare"],
+    description: "Rifugio di pace con piscina privata e vista sulla campagna siciliana",
+  },
 ]
 
 export function VoiceBookingAssistant({ onClose }: VoiceBookingAssistantProps) {
@@ -206,9 +216,11 @@ export function VoiceBookingAssistant({ onClose }: VoiceBookingAssistantProps) {
         selectProperty("lucas-suite")
       } else if (transcript.includes("rooftop") || transcript.includes("terrazza") || transcript.includes("famiglia")) {
         selectProperty("lucas-rooftop")
+      } else if (transcript.includes("cottage") || transcript.includes("trappeto") || transcript.includes("piscina")) {
+        selectProperty("lucas-cottage")
       } else {
         speakText(
-          "Non ho capito. Puoi dire 'Lucas Suite' per la camera romantica o 'Lucas Rooftop' per quella con terrazza?",
+          "Non ho capito. Puoi dire 'Lucas Suite' per la camera romantica, 'Lucas Rooftop' per quella con terrazza, o 'Lucas Cottage' per il cottage con piscina?",
         )
       }
     } else if (currentStep === "dates") {
@@ -536,7 +548,7 @@ ${selectedProperty?.price} × ${nights} notti
                 {speechSupported && (
                   <div className="bg-purple-50 p-3 rounded-lg mt-4">
                     <p className="text-sm text-purple-800">
-                      🎤 <strong>Comandi vocali:</strong> "Lucas Suite" o "Lucas Rooftop"
+                      🎤 <strong>Comandi vocali:</strong> "Lucas Suite", "Lucas Rooftop" o "Lucas Cottage"
                     </p>
                   </div>
                 )}

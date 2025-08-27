@@ -72,6 +72,20 @@ const properties = [
     petSupplement: 20,
     description: "Tramonti indimenticabili dalla terrazza panoramica privata",
   },
+  {
+    id: "lucas-cottage",
+    name: "Lucas Cottage",
+    subtitle: "Tranquillità e Natura a Trappeto",
+    capacity: "4 persone",
+    highlight: "Piscina privata e vista panoramica",
+    distance: "25 min dall'aeroporto • 5 min dal mare",
+    image: "/images/lucas-cottage-pool-front.jpg.jpg",
+    features: ["Piscina privata", "Self check-in", "Aria condizionata", "WiFi gratuito", "Parcheggio gratuito"],
+    price: "€140/notte",
+    cleaningFee: 30,
+    petsAllowed: false,
+    description: "Rifugio di pace con piscina privata e vista sulla campagna siciliana",
+  },
 ]
 
 export function GuidedBookingWorkflow({ onClose }: GuidedBookingWorkflowProps) {

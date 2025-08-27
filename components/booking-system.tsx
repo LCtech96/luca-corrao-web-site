@@ -111,6 +111,37 @@ const getDefaultBookings = (): BookingData[] => [
     status: "confirmed",
     createdAt: new Date("2024-01-01"),
   },
+  // Lucas Cottage bookings
+  {
+    id: "default-6",
+    propertyId: "lucas-cottage",
+    propertyName: "Lucas Cottage",
+    guestName: "Prenotazione",
+    guestSurname: "Esistente",
+    guestPhone: "+39 000 000 0000",
+    guestEmail: "existing@booking.com",
+    numberOfGuests: 4,
+    checkIn: "2025-07-15",
+    checkOut: "2025-07-20",
+    specialRequests: "",
+    status: "confirmed",
+    createdAt: new Date("2024-01-01"),
+  },
+  {
+    id: "default-7",
+    propertyId: "lucas-cottage",
+    propertyName: "Lucas Cottage",
+    guestName: "Prenotazione",
+    guestSurname: "Esistente",
+    guestPhone: "+39 000 000 0000",
+    guestEmail: "existing@booking.com",
+    numberOfGuests: 4,
+    checkIn: "2025-08-10",
+    checkOut: "2025-08-15",
+    specialRequests: "",
+    status: "confirmed",
+    createdAt: new Date("2024-01-01"),
+  },
 ]
 
 // Simulated database - in a real app this would be a proper database
