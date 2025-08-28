@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -34,63 +36,23 @@ export function ShowcaseModal({ onClose }: ShowcaseModalProps) {
 
   const structuresPerPage = 12
 
-  // Strutture di esempio (solo le tue)
-  const sampleStructures: Structure[] = [
-    {
-      id: "1",
-      name: "Lucas Rooftop",
-      description: "Esclusivo rooftop con vista panoramica su Terrasini. Ideale per soggiorni romantici e momenti indimenticabili.",
-      address: "Via Panoramica, Terrasini, PA",
-      rating: 4.8,
-      mainImage: "/images/lucas-rooftop-terrace.jpg",
-      images: [
-        "/images/lucas-rooftop-terrace.jpg",
-        "/images/lucas-rooftop-bedroom-1.jpg",
-        "/images/lucas-rooftop-bedroom-2.jpg",
-        "/images/lucas-rooftop-kitchen.jpg",
-        "/images/lucas-rooftop-bathroom.jpg"
-      ],
-      owner: "Luca Corrao",
-      isOwner: true
-    },
-    {
-      id: "2",
-      name: "Lucas Suite",
-      description: "Suite di lusso con design moderno e comfort esclusivo. Perfetta per chi cerca eleganza e relax.",
-      address: "Via del Mare, Terrasini, PA",
-      rating: 4.9,
-      mainImage: "/images/bedroom-historic-1.jpg",
-      images: [
-        "/images/bedroom-historic-1.jpg",
-        "/images/bedroom-historic-2.jpg",
-        "/images/bathroom-modern.jpg",
-        "/images/ceiling-fresco-1.jpg"
-      ],
-      owner: "Luca Corrao",
-      isOwner: true
-    },
-    {
-      id: "3",
-      name: "Lucas Cottage",
-      description: "Cottage immerso nella natura siciliana a Trappeto. Perfetto per chi cerca tranquillità e relax, a pochi minuti dalla Riserva Naturale dello Zingaro.",
-      address: "Trappeto, Sicilia",
-      rating: 4.7,
-      mainImage: "/images/terrasini-sunset.jpg",
-      images: [
-        "/images/terrasini-sunset.jpg",
-        "/images/terrasini-beach.jpg",
-        "/images/lucas-rooftop-terrace.jpg",
-        "/images/bedroom-historic-1.jpg",
-        "/images/bathroom-modern.jpg",
-        "/images/ceiling-fresco-1.jpg"
-      ],
-      owner: "Luca Corrao",
-      isOwner: true
-    }
-  ]
+  // Note: Structures are now loaded from Convex database
 
-  // Carica strutture dal database (simulato)
-  const [allStructures, setAllStructures] = useState<Structure[]>(sampleStructures)
+  // Fetch structures from Convex
+  const convexStructures = useQuery(api.accommodations.getAll) || []
+  
+  // Transform Convex data to match expected Structure interface
+  const allStructures: Structure[] = convexStructures.map(acc => ({
+    id: acc._id,
+    name: acc.name,
+    description: acc.description,
+    address: acc.address || "",
+    rating: acc.rating || 0,
+    mainImage: acc.mainImage,
+    images: acc.images,
+    owner: acc.owner,
+    isOwner: acc.isOwner || false
+  }))
 
   useEffect(() => {
     return () => {

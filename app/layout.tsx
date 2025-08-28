@@ -8,6 +8,7 @@ import { ClerkProvider } from '@clerk/nextjs'
 // Temporarily removed Italian localization to fix build
 // import { itIT } from "@clerk/localizations"; // Opzionale per la lingua
 import { AuthProvider } from "@/lib/auth-context"
+import { ConvexClientProvider } from "@/components/convex-provider"
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -36,9 +37,11 @@ export default function RootLayout({
       <html lang="it" className={inter.variable}>
         {/* 2. Rimuovi il tag <head> manuale. Next.js lo gestisce tramite l'oggetto metadata */}
         <body className={`${inter.className} antialiased`}>
-          <AuthProvider>
-            {children}
-          </AuthProvider>
+          <ConvexClientProvider>
+            <AuthProvider>
+              {children}
+            </AuthProvider>
+          </ConvexClientProvider>
         </body>
       </html>
     </ClerkProvider>

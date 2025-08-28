@@ -3,6 +3,8 @@
 import type React from "react"
 
 import { useState } from "react"
+import { useQuery } from "convex/react"
+import { api } from "@/convex/_generated/api"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -25,113 +27,12 @@ import {
 import Image from "next/image"
 import { BookingSystem } from "./booking-system"
 
-const accommodations = [
-  {
-    id: "lucas-rooftop",
-    name: "Lucas Rooftop",
-    subtitle: "Intimità con Vista a Terrasini",
-    description:
-      "A 50 metri da Piazza Duomo e 300 metri dal mare. Perfetta per 4+1 persone. Caratterizzata da una splendida terrazza panoramica e interni moderni dai toni caldi.",
-    features: [
-      "Climatizzatore",
-      "Acqua calda",
-      "Macchinetta del caffè",
-      "Terrazza panoramica",
-      "Interni moderni",
-      "Lavatrice",
-      "WiFi gratuito",
-    ],
-    capacity: "4+1 persone",
-    distance: "50m da Piazza Duomo, 300m dal mare",
-    images: [
-      "/images/lucas-rooftop-terrace.jpg",
-      "/images/lucas-rooftop-bedroom-1.jpg",
-      "/images/lucas-rooftop-bedroom-2.jpg",
-      "/images/lucas-rooftop-kitchen.jpg",
-      "/images/lucas-rooftop-bathroom.jpg",
-      "/images/lucas-rooftop-terrace-raw.jpg",
-    ],
-    imageDescriptions: [
-      "Terrazza panoramica Lucas Rooftop",
-      "Camera da letto principale",
-      "Seconda camera da letto",
-      "Cucina moderna attrezzata",
-      "Bagno moderno",
-      "Vista dalla terrazza",
-    ],
-  },
-  {
-    id: "lucas-suite",
-    name: "Lucas Suite",
-    subtitle: "Modernità e Comfort nel Cuore di Terrasini",
-    description:
-      "A 30 metri da Piazza Duomo e 350 metri dal mare. Ideale per 2 persone. Caratterizzata da splendidi affreschi storici sui soffitti che si fondono con comfort moderni.",
-    features: [
-      "Climatizzatore",
-      "Acqua calda garantita",
-      "Macchina del caffè",
-      "Spazio ampio",
-      "Affreschi storici",
-      "Design moderno",
-      "WiFi gratuito",
-    ],
-    capacity: "2 persone",
-    distance: "30m da Piazza Duomo, 350m dal mare",
-    images: [
-      "/images/bedroom-historic-1.jpg",
-      "/images/bedroom-historic-2.jpg",
-      "/images/ceiling-fresco-1.jpg",
-      "/images/bathroom-modern.jpg",
-    ],
-    imageDescriptions: [
-      "Camera da letto con affreschi storici",
-      "Vista alternativa della camera",
-      "Dettaglio degli affreschi sul soffitto",
-      "Bagno moderno",
-    ],
-  },
-  {
-    id: "lucas-cottage",
-    name: "Lucas Cottage",
-    subtitle: "Tranquillità e Natura a Trappeto",
-    description:
-      "A 25 minuti dall'aeroporto e 5 minuti dal mare. Perfetto per 4 persone. Caratterizzato da un ambiente rustico-chic con piscina privata e vista panoramica sulla campagna siciliana. A pochi minuti da Castellammare del Golfo, Scopello e la bellissima riserva naturale dello Zingaro. Ideale per chi cerca tranquillità e natura senza rinunciare al comfort moderno.",
-    features: [
-      "Aria condizionata",
-      "WiFi gratuito",
-      "Self check-in",
-      "Piscina privata",
-      "Parcheggio gratuito in loco",
-      "1 camera da letto con 2 letti matrimoniali",
-      "1 bagno",
-      "Vista panoramica",
-      "4 posti letto",
-      "Cucina attrezzata",
-    ],
-    capacity: "4 persone",
-    distance: "25 min dall'aeroporto, 5 min dal mare",
-    images: [
-      "/images/lucas-cottage-pool-front.jpg.jpg",
-      "/images/lucas-cottage-exterior-1.jpg",
-      "/images/lucas-cottage-interior-1.jpg.jpg",
-      "/images/lucas-cottage-interior-2.jpg.jpg",
-      "/images/lucas-cottage-pool-1.jpg.jpg",
-      "/images/lucas-cottage-pool-2.jpg.jpg",
-      "/images/lucas-cottage-exterior-2.jpg.jpg",
-    ],
-    imageDescriptions: [
-      "Piscina privata del Lucas Cottage - Vista frontale",
-      "Vista esterna del cottage con piscina",
-      "Interno del cottage - zona living",
-      "Camera da letto con due letti matrimoniali",
-      "Piscina privata con vista panoramica",
-      "Area relax della piscina",
-      "Vista esterna del cottage",
-    ],
-  },
-]
+// Note: Accommodations are now loaded from Convex database
 
 export function AccommodationsSection() {
+  // Fetch accommodations from Convex
+  const accommodationsData = useQuery(api.accommodations.getAll) || []
+  
   const [selectedAccommodation, setSelectedAccommodation] = useState<string | null>(null)
   const [selectedGallery, setSelectedGallery] = useState<{
     accommodationId: string
@@ -175,7 +76,7 @@ export function AccommodationsSection() {
 
   const nextImage = () => {
     if (!selectedGallery) return
-    const accommodation = accommodations.find((acc) => acc.id === selectedGallery.accommodationId)
+    const accommodation = accommodationsData.find((acc) => acc._id === selectedGallery.accommodationId)
     if (!accommodation) return
     const nextIndex = (selectedGallery.currentImageIndex + 1) % accommodation.images.length
     setSelectedGallery({ ...selectedGallery, currentImageIndex: nextIndex })
@@ -183,7 +84,7 @@ export function AccommodationsSection() {
 
   const prevImage = () => {
     if (!selectedGallery) return
-    const accommodation = accommodations.find((acc) => acc.id === selectedGallery.accommodationId)
+    const accommodation = accommodationsData.find((acc) => acc._id === selectedGallery.accommodationId)
     if (!accommodation) return
     const prevIndex =
       selectedGallery.currentImageIndex === 0 ? accommodation.images.length - 1 : selectedGallery.currentImageIndex - 1
@@ -191,7 +92,7 @@ export function AccommodationsSection() {
   }
 
   const currentGalleryAccommodation = selectedGallery
-    ? accommodations.find((acc) => acc.id === selectedGallery.accommodationId)
+    ? accommodationsData.find((acc) => acc._id === selectedGallery.accommodationId)
     : null
 
   return (
@@ -213,9 +114,9 @@ export function AccommodationsSection() {
 
           {/* Accommodations Grid */}
           <div className="grid lg:grid-cols-2 gap-8 mb-16">
-            {accommodations.map((accommodation) => (
-              <Card key={accommodation.id} className="overflow-hidden hover:shadow-xl transition-shadow">
-                <div className="relative h-64 cursor-pointer" onClick={() => openGallery(accommodation.id, 0)}>
+            {accommodationsData.map((accommodation) => (
+              <Card key={accommodation._id} className="overflow-hidden hover:shadow-xl transition-shadow">
+                <div className="relative h-64 cursor-pointer" onClick={() => openGallery(accommodation._id, 0)}>
                   <Image
                     src={accommodation.images[0] || "/placeholder.svg"}
                     alt={`${accommodation.name} - Struttura ricettiva Terrasini`}
