@@ -2,6 +2,34 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+  // File management table for uploaded images
+  files: defineTable({
+    // File information
+    storageId: v.id("_storage"), // Convex storage ID
+    name: v.string(), // Original filename
+    type: v.string(), // MIME type
+    size: v.number(), // File size in bytes
+    
+    // Organization
+    category: v.optional(v.string()), // e.g., "accommodation", "profile", "general"
+    tags: v.optional(v.array(v.string())), // For categorization
+    
+    // Metadata
+    description: v.optional(v.string()),
+    altText: v.optional(v.string()),
+    uploadedBy: v.optional(v.string()), // User ID who uploaded
+    
+    // Timestamps
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+    
+    // Status
+    isActive: v.optional(v.boolean()),
+  })
+    .index("by_category", ["category"])
+    .index("by_uploaded_by", ["uploadedBy"])
+    .index("by_created_at", ["createdAt"]),
+
   accommodations: defineTable({
     // Basic Information
     name: v.string(),

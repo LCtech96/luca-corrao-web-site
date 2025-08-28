@@ -227,6 +227,7 @@ export function AccommodationsSection() {
                     }
                     fill
                     className="object-contain"
+                    unoptimized={currentGalleryAccommodation.images[selectedGallery.currentImageIndex]?.startsWith('http')}
                   />
                 </div>
 

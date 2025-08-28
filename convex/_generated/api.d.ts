@@ -14,6 +14,7 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as accommodations from "../accommodations.js";
+import type * as files from "../files.js";
 import type * as seed from "../seed.js";
 
 /**
@@ -26,6 +27,7 @@ import type * as seed from "../seed.js";
  */
 declare const fullApi: ApiFromModules<{
   accommodations: typeof accommodations;
+  files: typeof files;
   seed: typeof seed;
 }>;
 export declare const api: FilterApi<
