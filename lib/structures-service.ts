@@ -13,6 +13,8 @@ export interface Structure {
   rating: number
   mainImage: string
   images: string[]
+  mainImageFileId?: string
+  imageFileIds?: string[]
   owner: string
   ownerEmail: string
   createdAt: string
@@ -45,9 +47,11 @@ export async function getAllStructures(accessToken: string): Promise<Structure[]
       rating: parseFloat(row[5]) || 0,
       mainImage: row[6] || '',
       images: row[7] ? row[7].split(',').map((img: string) => img.trim()) : [],
-      owner: row[8] || '',
-      ownerEmail: row[9] || '',
-      createdAt: row[10] || '',
+      mainImageFileId: row[8] || undefined,
+      imageFileIds: row[9] ? row[9].split(',').map((id: string) => id.trim()).filter(Boolean) : undefined,
+      owner: row[10] || '',
+      ownerEmail: row[11] || '',
+      createdAt: row[12] || '',
       isOwner: false // Sarà impostato dal frontend
     }))
 
@@ -82,6 +86,8 @@ export async function addStructure(
       newStructure.rating.toString(),
       newStructure.mainImage,
       newStructure.images.join(','),
+      newStructure.mainImageFileId || '',
+      newStructure.imageFileIds?.join(',') || '',
       newStructure.owner,
       newStructure.ownerEmail,
       newStructure.createdAt

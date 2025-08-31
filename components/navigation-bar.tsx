@@ -2,23 +2,26 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { UserPlus, Building2, Grid3X3, LogIn, Settings } from "lucide-react"
+import { UserPlus, Building2, Grid3X3, LogIn, LogOut, Settings } from "lucide-react"
 import { RegistrationModal } from "@/components/registration-modal"
 import { WorkWithUsModal } from "@/components/work-with-us-modal"
 import { ShowcaseModal } from "@/components/showcase-modal"
 import { LoginModal } from "@/components/login-modal"
-import { useAuth, UserButton } from "@clerk/nextjs"
-import Link from "next/link"
+// import { useAuth } from "@/lib/auth-context"
 
 export function NavigationBar() {
-  const { isSignedIn } = useAuth()
+  // const { isAuthenticated, logout } = useAuth()
+  const isAuthenticated = false
+  const logout = () => {}
   const [activeModal, setActiveModal] = useState<"registration" | "work" | "showcase" | "login" | null>(null)
 
   const closeModal = () => {
     setActiveModal(null)
   }
 
-
+  const handleLogout = () => {
+    logout()
+  }
 
   // Previene il rendering di più modal contemporaneamente
   useEffect(() => {
@@ -46,7 +49,7 @@ export function NavigationBar() {
 
             {/* Navigation Buttons */}
             <div className="flex items-center space-x-4">
-              {!isSignedIn ? (
+              {!isAuthenticated ? (
                 <>
                   <Button
                     variant="ghost"
@@ -69,25 +72,26 @@ export function NavigationBar() {
                   </Button>
                 </>
               ) : (
-                <div className="flex items-center gap-4">
-                  <Link href="/admin">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="flex items-center gap-2 text-gray-700 hover:text-amber-600 hover:bg-amber-50 transition-colors duration-200"
-                    >
-                      <Settings className="w-4 h-4" />
-                      <span className="hidden sm:inline">Admin</span>
-                    </Button>
-                  </Link>
-                  <UserButton 
-                    appearance={{
-                      elements: {
-                        avatarBox: "w-8 h-8"
-                      }
-                    }}
-                  />
-                </div>
+                <>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => window.open("/admin/structures", "_blank")}
+                    className="flex items-center gap-2 text-gray-700 hover:text-amber-600 hover:bg-amber-50 transition-colors duration-200"
+                  >
+                    <Settings className="w-4 h-4" />
+                    <span className="hidden sm:inline">Admin</span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 text-gray-700 hover:text-red-600 hover:bg-red-50 transition-colors duration-200"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span className="hidden sm:inline">Log out</span>
+                </Button>
+                </>
               )}
 
               <Button

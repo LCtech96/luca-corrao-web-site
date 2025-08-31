@@ -1,23 +1,15 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
-import { useQuery } from "convex/react"
-import { api } from "@/convex/_generated/api"
 import { useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import {
   MapPin,
   Users,
-  Wifi,
-  Car,
   Calendar,
   Star,
   X,
@@ -25,17 +17,136 @@ import {
   ChevronRight,
   Plane,
   ParkingCircle,
+  Wifi,
+  Car,
 } from "lucide-react"
 import Image from "next/image"
 import { BookingSystem } from "./booking-system"
 
-// Note: Accommodations are now loaded from Convex database
+// Fallback data for when Convex is loading or unavailable
+const fallbackAccommodations = [
+  {
+    _id: "lucas-rooftop" as any,
+    name: "Lucas Rooftop",
+    subtitle: "Intimità con Vista a Terrasini",
+    description:
+      "A 50 metri da Piazza Duomo e 300 metri dal mare. Perfetta per 4+1 persone. Caratterizzata da una splendida terrazza panoramica e interni moderni dai toni caldi.",
+    features: [
+      "Climatizzatore",
+      "Acqua calda",
+      "Macchinetta del caffè",
+      "Terrazza panoramica",
+      "Interni moderni",
+      "Lavatrice",
+      "WiFi gratuito",
+    ],
+    capacity: "4+1 persone",
+    distance: "50m da Piazza Duomo, 300m dal mare",
+    mainImage: "/images/lucas-rooftop-terrace.jpg",
+    images: [
+      "/images/lucas-rooftop-terrace.jpg",
+      "/images/lucas-rooftop-bedroom-1.jpg",
+      "/images/lucas-rooftop-bedroom-2.jpg",
+      "/images/lucas-rooftop-kitchen.jpg",
+      "/images/lucas-rooftop-bathroom.jpg",
+      "/images/lucas-rooftop-terrace-raw.jpg",
+    ],
+    imageDescriptions: [
+      "Terrazza panoramica Lucas Rooftop",
+      "Camera da letto principale",
+      "Seconda camera da letto",
+      "Cucina moderna attrezzata",
+      "Bagno moderno",
+      "Vista dalla terrazza",
+    ],
+    owner: "Luca Corrao",
+    price: "€80/notte",
+    isActive: true,
+  },
+  {
+    _id: "lucas-suite" as any,
+    name: "Lucas Suite",
+    subtitle: "Modernità e Comfort nel Cuore di Terrasini",
+    description:
+      "A 30 metri da Piazza Duomo e 350 metri dal mare. Ideale per 2 persone. Caratterizzata da splendidi affreschi storici sui soffitti che si fondono con comfort moderni.",
+    features: [
+      "Climatizzatore",
+      "Acqua calda garantita",
+      "Macchina del caffè",
+      "Spazio ampio",
+      "Affreschi storici",
+      "Design moderno",
+      "WiFi gratuito",
+    ],
+    capacity: "2 persone",
+    distance: "30m da Piazza Duomo, 350m dal mare",
+    mainImage: "/images/bedroom-historic-1.jpg",
+    images: [
+      "/images/bedroom-historic-1.jpg",
+      "/images/bedroom-historic-2.jpg",
+      "/images/ceiling-fresco-1.jpg",
+      "/images/bathroom-modern.jpg",
+    ],
+    imageDescriptions: [
+      "Camera da letto con affreschi storici",
+      "Vista alternativa della camera",
+      "Dettaglio degli affreschi sul soffitto",
+      "Bagno moderno",
+    ],
+    owner: "Luca Corrao",
+    price: "€60/notte",
+    isActive: true,
+  },
+  {
+    _id: "lucas-cottage" as any,
+    name: "Lucas Cottage",
+    subtitle: "Tranquillità e Natura a Trappeto",
+    description:
+      "A 25 minuti dall'aeroporto e 5 minuti dal mare. Perfetto per 4 persone. Caratterizzato da un ambiente rustico-chic con piscina privata e vista panoramica sulla campagna siciliana. A pochi minuti da Castellammare del Golfo, Scopello e la bellissima riserva naturale dello Zingaro.",
+    features: [
+      "Aria condizionata",
+      "WiFi gratuito",
+      "Self check-in",
+      "Piscina privata",
+      "Parcheggio gratuito in loco",
+      "1 camera da letto con 2 letti matrimoniali",
+      "1 bagno",
+      "Vista panoramica",
+    ],
+    capacity: "4 persone",
+    distance: "25 min dall'aeroporto, 5 min dal mare",
+    mainImage: "/images/lucas-cottage-exterior-1.jpg",
+    images: [
+      "/images/lucas-cottage-exterior-1.jpg",
+      "/images/lucas-cottage-interior-1.jpg.jpg",
+      "/images/lucas-cottage-interior-2.jpg.jpg",
+      "/images/lucas-cottage-pool-1.jpg.jpg",
+      "/images/lucas-cottage-pool-2.jpg.jpg",
+      "/images/lucas-cottage-exterior-2.jpg.jpg",
+      "/images/lucas-cottage-pool-fronthead.jpg.jpg",
+    ],
+    imageDescriptions: [
+      "Vista esterna del cottage con piscina",
+      "Interno del cottage - zona living",
+      "Camera da letto con due letti matrimoniali",
+      "Piscina privata con vista panoramica",
+      "Area relax della piscina",
+      "Vista esterna del cottage",
+      "Vista frontale della piscina",
+    ],
+    owner: "Luca Corrao",
+    price: "€100/notte",
+    isActive: true,
+  },
+]
 
-export function AccommodationsSection() {
+export function AccommodationsSectionConvex() {
   // Fetch accommodations from Convex
-  const accommodationsData = useQuery(api.accommodations.getAll) || []
+  const convexAccommodations = useQuery(api.accommodations.getAll)
   
-  const [selectedAccommodation, setSelectedAccommodation] = useState<string | null>(null)
+  // Use Convex data if available, otherwise use fallback data
+  const accommodations = convexAccommodations || fallbackAccommodations
+  
   const [selectedGallery, setSelectedGallery] = useState<{
     accommodationId: string
     currentImageIndex: number
@@ -44,21 +155,6 @@ export function AccommodationsSection() {
     propertyId: string
     propertyName: string
   } | null>(null)
-  const [bookingForm, setBookingForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    checkIn: "",
-    checkOut: "",
-    guests: "",
-    accommodation: "",
-    message: "",
-  })
-
-  const handleBookingSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    alert("Richiesta di prenotazione inviata! Ti contatteremo presto via WhatsApp per la conferma.")
-  }
 
   const openGallery = (accommodationId: string, imageIndex = 0) => {
     setSelectedGallery({ accommodationId, currentImageIndex: imageIndex })
@@ -78,7 +174,7 @@ export function AccommodationsSection() {
 
   const nextImage = () => {
     if (!selectedGallery) return
-    const accommodation = accommodationsData.find((acc) => acc._id === selectedGallery.accommodationId)
+    const accommodation = accommodations.find((acc) => acc._id === selectedGallery.accommodationId)
     if (!accommodation) return
     const nextIndex = (selectedGallery.currentImageIndex + 1) % accommodation.images.length
     setSelectedGallery({ ...selectedGallery, currentImageIndex: nextIndex })
@@ -86,7 +182,7 @@ export function AccommodationsSection() {
 
   const prevImage = () => {
     if (!selectedGallery) return
-    const accommodation = accommodationsData.find((acc) => acc._id === selectedGallery.accommodationId)
+    const accommodation = accommodations.find((acc) => acc._id === selectedGallery.accommodationId)
     if (!accommodation) return
     const prevIndex =
       selectedGallery.currentImageIndex === 0 ? accommodation.images.length - 1 : selectedGallery.currentImageIndex - 1
@@ -94,7 +190,7 @@ export function AccommodationsSection() {
   }
 
   const currentGalleryAccommodation = selectedGallery
-    ? accommodationsData.find((acc) => acc._id === selectedGallery.accommodationId)
+    ? accommodations.find((acc) => acc._id === selectedGallery.accommodationId)
     : null
 
   return (
@@ -114,13 +210,21 @@ export function AccommodationsSection() {
             </div>
           </div>
 
+          {/* Loading state */}
+          {!accommodations && (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Caricamento strutture...</p>
+            </div>
+          )}
+
           {/* Accommodations Grid */}
           <div className="grid lg:grid-cols-2 gap-8 mb-16">
-            {accommodationsData.map((accommodation) => (
+            {accommodations?.map((accommodation) => (
               <Card key={accommodation._id} className="overflow-hidden hover:shadow-xl transition-shadow">
                 <div className="relative h-64 cursor-pointer" onClick={() => openGallery(accommodation._id, 0)}>
                   <Image
-                    src={accommodation.images[0] || "/placeholder.svg"}
+                    src={accommodation.mainImage || accommodation.images?.[0] || "/placeholder.svg"}
                     alt={`${accommodation.name} - Struttura ricettiva Terrasini`}
                     fill
                     className="object-cover hover:scale-105 transition-transform duration-300"
@@ -155,10 +259,16 @@ export function AccommodationsSection() {
                       <Users className="w-4 h-4 text-amber-600" />
                       {accommodation.capacity}
                     </div>
+                    {accommodation.price && (
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Star className="w-4 h-4 text-amber-600" />
+                        {accommodation.price}
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex flex-wrap gap-2 mb-6">
-                    {accommodation.features.map((feature, index) => (
+                    {accommodation.features?.map((feature, index) => (
                       <Badge key={index} variant="outline" className="text-xs">
                         {feature}
                       </Badge>
@@ -169,13 +279,13 @@ export function AccommodationsSection() {
                     <Button
                       variant="outline"
                       className="flex-1 bg-transparent"
-                      onClick={() => openGallery(accommodation.id, 0)}
+                      onClick={() => openGallery(accommodation._id, 0)}
                     >
-                      Vedi Galleria ({accommodation.images.length} foto)
+                      Vedi Galleria ({accommodation.images?.length || 0} foto)
                     </Button>
                     <Button
                       className="flex-1 bg-amber-600 hover:bg-amber-700"
-                      onClick={() => openBookingSystem(accommodation.id, accommodation.name)}
+                      onClick={() => openBookingSystem(accommodation._id, accommodation.name)}
                     >
                       <Calendar className="w-4 h-4 mr-2" />
                       Prenota Ora
@@ -222,7 +332,7 @@ export function AccommodationsSection() {
                 {/* Main Image */}
                 <div className="relative h-[70vh] w-full">
                   <Image
-                    src={currentGalleryAccommodation.images[selectedGallery.currentImageIndex] || "/placeholder.svg"}
+                    src={currentGalleryAccommodation.images?.[selectedGallery.currentImageIndex] || "/placeholder.svg"}
                     alt={
                       currentGalleryAccommodation.imageDescriptions?.[selectedGallery.currentImageIndex] ||
                       `${currentGalleryAccommodation.name} - Foto ${selectedGallery.currentImageIndex + 1}`
@@ -240,13 +350,13 @@ export function AccommodationsSection() {
                       `Foto ${selectedGallery.currentImageIndex + 1}`}
                   </p>
                   <p className="text-sm text-gray-400">
-                    {selectedGallery.currentImageIndex + 1} di {currentGalleryAccommodation.images.length}
+                    {selectedGallery.currentImageIndex + 1} di {currentGalleryAccommodation.images?.length || 0}
                   </p>
                 </div>
 
                 {/* Thumbnail Navigation */}
                 <div className="flex justify-center mt-4 gap-2 overflow-x-auto pb-2">
-                  {currentGalleryAccommodation.images.map((image, index) => (
+                  {currentGalleryAccommodation.images?.map((image, index) => (
                     <div
                       key={index}
                       className={`relative w-16 h-16 cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
@@ -350,112 +460,6 @@ export function AccommodationsSection() {
               </div>
             </div>
           </div>
-
-          {/* Old Booking Form - kept for compatibility */}
-          {selectedAccommodation && (
-            <Card className="max-w-2xl mx-auto">
-              <CardHeader>
-                <CardTitle className="text-2xl text-center">Richiesta Prenotazione</CardTitle>
-                <p className="text-center text-gray-600">Compila il form per richiedere la disponibilità</p>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleBookingSubmit} className="space-y-4">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="name">Nome Completo *</Label>
-                      <Input
-                        id="name"
-                        required
-                        value={bookingForm.name}
-                        onChange={(e) => setBookingForm((prev) => ({ ...prev, name: e.target.value }))}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="email">Email *</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        required
-                        value={bookingForm.email}
-                        onChange={(e) => setBookingForm((prev) => ({ ...prev, email: e.target.value }))}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="phone">Telefono *</Label>
-                    <Input
-                      id="phone"
-                      required
-                      value={bookingForm.phone}
-                      onChange={(e) => setBookingForm((prev) => ({ ...prev, phone: e.target.value }))}
-                    />
-                  </div>
-
-                  <div className="grid md:grid-cols-3 gap-4">
-                    <div>
-                      <Label htmlFor="checkIn">Check-in *</Label>
-                      <Input
-                        id="checkIn"
-                        type="date"
-                        required
-                        value={bookingForm.checkIn}
-                        onChange={(e) => setBookingForm((prev) => ({ ...prev, checkIn: e.target.value }))}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="checkOut">Check-out *</Label>
-                      <Input
-                        id="checkOut"
-                        type="date"
-                        required
-                        value={bookingForm.checkOut}
-                        onChange={(e) => setBookingForm((prev) => ({ ...prev, checkOut: e.target.value }))}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="guests">Ospiti *</Label>
-                      <Input
-                        id="guests"
-                        type="number"
-                        min="1"
-                        required
-                        value={bookingForm.guests}
-                        onChange={(e) => setBookingForm((prev) => ({ ...prev, guests: e.target.value }))}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="message">Richieste Speciali</Label>
-                    <Textarea
-                      id="message"
-                      rows={3}
-                      value={bookingForm.message}
-                      onChange={(e) => setBookingForm((prev) => ({ ...prev, message: e.target.value }))}
-                      placeholder="Eventuali richieste particolari o informazioni aggiuntive..."
-                    />
-                  </div>
-
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <p className="text-sm text-blue-800">
-                      <strong>Nota:</strong> Questa è una richiesta di prenotazione. Ti contatteremo entro 24 ore via
-                      WhatsApp per confermare la disponibilità e finalizzare la prenotazione.
-                    </p>
-                  </div>
-
-                  <div className="flex gap-4">
-                    <Button type="submit" className="flex-1 bg-amber-600 hover:bg-amber-700">
-                      Invia Richiesta
-                    </Button>
-                    <Button type="button" variant="outline" onClick={() => setSelectedAccommodation(null)}>
-                      Annulla
-                    </Button>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
-          )}
         </div>
       </div>
     </section>

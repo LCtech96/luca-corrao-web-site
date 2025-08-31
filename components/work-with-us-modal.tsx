@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { ImageUpload } from "@/components/ui/image-upload"
 import { Building2, Upload, MapPin, Image, FileText, CheckCircle, AlertCircle } from "lucide-react"
 
 interface WorkWithUsModalProps {
@@ -20,8 +21,8 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
     description: "",
     address: "",
     gpsCoordinates: "",
-    coverImage: null as File | null,
-    structureImages: [] as File[],
+    coverImage: [] as Array<{fileId: string, fileName: string, fileType: string, fileSize: number, url: string, uploadProgress: number}>,
+    structureImages: [] as Array<{fileId: string, fileName: string, fileType: string, fileSize: number, url: string, uploadProgress: number}>,
     documents: [] as File[]
   })
   const [errors, setErrors] = useState<string[]>([])
@@ -37,7 +38,7 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
         description: "",
         address: "",
         gpsCoordinates: "",
-        coverImage: null,
+        coverImage: [],
         structureImages: [],
         documents: []
       })
@@ -61,12 +62,8 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
   const handleFileChange = (field: string, files: FileList | null) => {
     if (!files) return
 
-    if (field === 'coverImage') {
-      setFormData(prev => ({ ...prev, coverImage: files[0] }))
-    } else if (field === 'structureImages') {
-      const imageFiles = Array.from(files)
-      setFormData(prev => ({ ...prev, structureImages: imageFiles }))
-    } else if (field === 'documents') {
+    // Keep only for documents (non-images)
+    if (field === 'documents') {
       const docFiles = Array.from(files)
       setFormData(prev => ({ ...prev, documents: docFiles }))
     }
@@ -87,7 +84,7 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
       newErrors.push("Indirizzo è obbligatorio")
     }
     
-    if (!formData.coverImage) {
+    if (formData.coverImage.length === 0) {
       newErrors.push("Immagine di copertina è obbligatoria")
     }
     
@@ -110,9 +107,13 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
         return
       }
 
-      // Simula upload delle immagini (in produzione andrebbero su un servizio come Cloudinary)
-      const mainImageUrl = formData.coverImage ? URL.createObjectURL(formData.coverImage) : ""
-      const imageUrls = formData.structureImages.map(file => URL.createObjectURL(file))
+      // Extract file IDs from uploaded images
+      const mainImageFileId = formData.coverImage.length > 0 ? formData.coverImage[0].fileId : ""
+      const imageFileIds = formData.structureImages.map(file => file.fileId)
+      
+      // For backward compatibility, also send URLs
+      const mainImageUrl = formData.coverImage.length > 0 ? formData.coverImage[0].url : ""
+      const imageUrls = formData.structureImages.map(file => file.url)
 
       // Salva la struttura nel database
       const response = await fetch('/api/structures', {
@@ -125,6 +126,8 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
           gpsCoordinates: formData.gpsCoordinates,
           mainImage: mainImageUrl,
           images: imageUrls,
+          mainImageFileId: mainImageFileId,
+          imageFileIds: imageFileIds,
           owner: userEmail.split('@')[0], // Usa la parte prima della @ come nome
           ownerEmail: userEmail,
           accessToken
@@ -214,60 +217,35 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="coverImage">Immagine di Copertina *</Label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
-                  <Image className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500 mb-2">
-                    Clicca per caricare l'immagine principale
-                  </p>
-                  <input
-                    id="coverImage"
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleFileChange("coverImage", e.target.files)}
-                    className="hidden"
-                  />
-                  <Button
-                    variant="outline"
-                    onClick={() => document.getElementById('coverImage')?.click()}
-                  >
-                    Scegli Immagine
-                  </Button>
-                  {formData.coverImage && (
-                    <p className="text-sm text-green-600 mt-2">
-                      ✓ {formData.coverImage.name}
-                    </p>
-                  )}
-                </div>
+                <Label>Immagine di Copertina *</Label>
+                <ImageUpload
+                  maxFiles={1}
+                  category="structure"
+                  ownerId={localStorage.getItem('userEmail') || undefined}
+                  value={formData.coverImage}
+                  onChange={(files) => {
+                    setFormData(prev => ({ ...prev, coverImage: files }))
+                    setErrors([])
+                  }}
+                  placeholder="Clicca per caricare l'immagine principale della struttura"
+                  onError={(error) => setErrors([error])}
+                />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="structureImages">Immagini della Struttura</Label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
-                  <Image className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500 mb-2">
-                    Carica altre immagini della struttura
-                  </p>
-                  <input
-                    id="structureImages"
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={(e) => handleFileChange("structureImages", e.target.files)}
-                    className="hidden"
-                  />
-                  <Button
-                    variant="outline"
-                    onClick={() => document.getElementById('structureImages')?.click()}
-                  >
-                    Scegli Immagini
-                  </Button>
-                  {formData.structureImages.length > 0 && (
-                    <p className="text-sm text-green-600 mt-2">
-                      ✓ {formData.structureImages.length} immagini selezionate
-                    </p>
-                  )}
-                </div>
+                <Label>Immagini della Struttura</Label>
+                <ImageUpload
+                  maxFiles={10}
+                  category="structure"
+                  ownerId={localStorage.getItem('userEmail') || undefined}
+                  value={formData.structureImages}
+                  onChange={(files) => {
+                    setFormData(prev => ({ ...prev, structureImages: files }))
+                    setErrors([])
+                  }}
+                  placeholder="Carica altre immagini della struttura (max 10)"
+                  onError={(error) => setErrors([error])}
+                />
               </div>
 
               <div className="space-y-2">

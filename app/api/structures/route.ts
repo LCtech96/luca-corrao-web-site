@@ -40,6 +40,8 @@ export async function POST(request: NextRequest) {
       gpsCoordinates, 
       mainImage, 
       images, 
+      mainImageFileId,
+      imageFileIds,
       owner, 
       ownerEmail,
       accessToken 
@@ -67,6 +69,8 @@ export async function POST(request: NextRequest) {
       rating: 0,
       mainImage,
       images: images || [],
+      mainImageFileId: mainImageFileId || undefined,
+      imageFileIds: imageFileIds || undefined,
       owner,
       ownerEmail
     })
