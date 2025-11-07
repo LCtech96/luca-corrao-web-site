@@ -16,7 +16,6 @@ import {
   signInWithTrust,
   signUpWithEmail 
 } from "@/lib/supabase/auth-service"
-import { sendWhatsAppOTP, verifyWhatsAppOTP } from "@/lib/whatsapp-auth-service"
 import { useToast } from "@/hooks/use-toast"
 import {
   DropdownMenu,
@@ -24,7 +23,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { ChevronDown, Check } from "lucide-react"
+import { ChevronDown } from "lucide-react"
 
 interface RegistrationModalProps {
   onClose: () => void
@@ -34,9 +33,6 @@ export function RegistrationModal({ onClose }: RegistrationModalProps) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [whatsappPhone, setWhatsappPhone] = useState("")
-  const [whatsappOTP, setWhatsappOTP] = useState("")
-  const [whatsappStep, setWhatsappStep] = useState<'phone' | 'otp' | null>(null)
   const { toast } = useToast()
 
   const handleGoogleSignIn = async () => {
@@ -71,81 +67,6 @@ export function RegistrationModal({ onClose }: RegistrationModalProps) {
     }
   }
 
-  const handleWhatsAppStart = () => {
-    setWhatsappStep('phone')
-  }
-
-  const handleWhatsAppSendOTP = async () => {
-    if (!whatsappPhone) {
-      toast({
-        title: "Errore",
-        description: "Inserisci un numero di telefono valido",
-        variant: "destructive",
-      })
-      return
-    }
-
-    setIsLoading(true)
-    try {
-      await sendWhatsAppOTP(whatsappPhone)
-      setWhatsappStep('otp')
-      toast({
-        title: "Codice inviato! 📱",
-        description: "Controlla il tuo WhatsApp per il codice di verifica.",
-      })
-    } catch (error: any) {
-      console.error('Errore invio OTP WhatsApp:', error)
-      toast({
-        title: "Errore",
-        description: error.message || "Impossibile inviare il codice. Verifica il numero.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleWhatsAppVerify = async () => {
-    if (!whatsappOTP) {
-      toast({
-        title: "Errore",
-        description: "Inserisci il codice di verifica",
-        variant: "destructive",
-      })
-      return
-    }
-
-    setIsLoading(true)
-    try {
-      const result = await verifyWhatsAppOTP(whatsappPhone, whatsappOTP)
-      
-      if (result.success) {
-        toast({
-          title: "Successo! ✅",
-          description: "Accesso effettuato con WhatsApp.",
-        })
-        setTimeout(() => {
-          onClose()
-          window.location.reload()
-        }, 1000)
-      } else {
-        toast({
-          title: "Codice non valido",
-          description: result.error || "Verifica e riprova.",
-          variant: "destructive",
-        })
-      }
-    } catch (error: any) {
-      console.error('Errore verifica OTP:', error)
-      toast({
-        title: "Errore",
-        description: error.message || "Impossibile verificare il codice.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
 
   const handleWalletSignIn = async (walletType: 'metamask' | 'phantom' | 'walletconnect' | 'coinbase' | 'trust') => {
     setIsLoading(true)
@@ -269,19 +190,6 @@ export function RegistrationModal({ onClose }: RegistrationModalProps) {
               {isLoading ? 'Connessione...' : 'Continua con Facebook'}
             </Button>
 
-            {/* WhatsApp Sign In Button */}
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white hover:bg-[#25D366]/90 border-[#25D366]"
-              onClick={handleWhatsAppStart}
-              disabled={isLoading}
-            >
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="white">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-              </svg>
-              {isLoading ? 'Connessione...' : 'Continua con WhatsApp'}
-            </Button>
 
             {/* Web3 Wallet Dropdown Menu */}
             <DropdownMenu>
@@ -383,91 +291,16 @@ export function RegistrationModal({ onClose }: RegistrationModalProps) {
             </DropdownMenu>
           </div>
 
-          {/* WhatsApp Authentication Flow */}
-          {whatsappStep && (
-            <div className="border-2 border-green-500 rounded-lg p-4 space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-green-700">Accedi con WhatsApp</h3>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setWhatsappStep(null)}
-                >
-                  ✕
-                </Button>
-              </div>
-
-              {whatsappStep === 'phone' && (
-                <div className="space-y-3">
-                  <Label htmlFor="whatsapp-phone">Numero di Telefono</Label>
-                  <Input
-                    id="whatsapp-phone"
-                    type="tel"
-                    value={whatsappPhone}
-                    onChange={(e) => setWhatsappPhone(e.target.value)}
-                    placeholder="+39 123 456 7890"
-                    required
-                  />
-                  <Button
-                    type="button"
-                    onClick={handleWhatsAppSendOTP}
-                    disabled={isLoading}
-                    className="w-full bg-green-600 hover:bg-green-700"
-                  >
-                    {isLoading ? 'Invio...' : 'Invia Codice WhatsApp'}
-                  </Button>
-                  <p className="text-xs text-gray-600">
-                    Riceverai un codice di verifica via SMS/WhatsApp
-                  </p>
-                </div>
-              )}
-
-              {whatsappStep === 'otp' && (
-                <div className="space-y-3">
-                  <Label htmlFor="whatsapp-otp">Codice di Verifica</Label>
-                  <Input
-                    id="whatsapp-otp"
-                    type="text"
-                    value={whatsappOTP}
-                    onChange={(e) => setWhatsappOTP(e.target.value)}
-                    placeholder="123456"
-                    maxLength={6}
-                    required
-                  />
-                  <Button
-                    type="button"
-                    onClick={handleWhatsAppVerify}
-                    disabled={isLoading}
-                    className="w-full bg-green-600 hover:bg-green-700"
-                  >
-                    {isLoading ? 'Verifica...' : 'Verifica Codice'}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => setWhatsappStep('phone')}
-                    className="w-full"
-                  >
-                    Cambia numero
-                  </Button>
-                </div>
-              )}
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
             </div>
-          )}
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-muted-foreground">Oppure</span>
+            </div>
+          </div>
 
-          {!whatsappStep && (
-            <>
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-white px-2 text-muted-foreground">Oppure</span>
-                </div>
-              </div>
-
-              <form onSubmit={handleRegister} className="space-y-4">
+          <form onSubmit={handleRegister} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -501,8 +334,6 @@ export function RegistrationModal({ onClose }: RegistrationModalProps) {
                 {isLoading ? 'Registrazione in corso...' : 'Registrati'}
               </Button>
             </form>
-            </>
-          )}
           
           <div className="text-center">
             <p className="text-sm text-gray-600">
