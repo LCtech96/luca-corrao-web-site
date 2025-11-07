@@ -62,7 +62,7 @@ export function BookingModalAdvanced({
   })
   const [chatMessages, setChatMessages] = useState<ChatMessageType[]>([])
   const [chatInput, setChatInput] = useState("")
-  const [paymentMethod, setPaymentMethod] = useState<"revolut" | "applepay" | null>(null)
+  const [paymentMethod, setPaymentMethod] = useState<"revolut" | "iban" | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Load existing chat messages if booking exists
@@ -150,12 +150,15 @@ export function BookingModalAdvanced({
 
       // Verifica autenticazione utente
       if (!user) {
-        toast({
-          title: "Registrazione richiesta",
-          description: "Devi effettuare il login per completare la prenotazione. Clicca su 'Registrati' in alto.",
-          variant: "destructive",
-          duration: 5000,
-        })
+        // Chiudi il modal di prenotazione
+        onClose()
+        
+        // Mostra alert prominente
+        alert("⚠️ REGISTRAZIONE RICHIESTA\n\nPer completare la prenotazione devi prima registrarti o effettuare il login.\n\nClicca su 'Registrati' o 'Log in' nella barra in alto e scegli:\n✅ Google\n✅ Facebook\n✅ Email/Password\n\nDopo il login potrai completare la prenotazione!")
+        
+        // Scroll to top per mostrare i pulsanti di registrazione
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        
         return
       }
 
@@ -585,39 +588,67 @@ export function BookingModalAdvanced({
                 )}
               </div>
 
-              {/* Apple Pay */}
+              {/* Bonifico IBAN */}
               <div 
                 className={`border-2 rounded-xl p-6 cursor-pointer transition-all ${
-                  paymentMethod === "applepay" 
+                  paymentMethod === "iban" 
                     ? "border-amber-500 bg-amber-50" 
                     : "border-gray-200 hover:border-amber-300"
                 }`}
-                onClick={() => setPaymentMethod("applepay")}
+                onClick={() => setPaymentMethod("iban")}
               >
-                <div className="flex items-center gap-4">
-                  <div className="text-4xl">
-                    
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-700 rounded-full flex items-center justify-center text-white font-bold text-xl">
+                    🏦
                   </div>
                   <div className="flex-1">
-                    <h5 className="font-semibold text-lg">Apple Pay</h5>
-                    <p className="text-sm text-gray-600">Paga con Apple Pay → Revolut</p>
+                    <h5 className="font-semibold text-lg">Bonifico Bancario</h5>
+                    <p className="text-sm text-gray-600">Bonifico SEPA - 24-48h</p>
                   </div>
-                  {paymentMethod === "applepay" && <CheckCircle className="w-6 h-6 text-amber-500" />}
+                  {paymentMethod === "iban" && <CheckCircle className="w-6 h-6 text-amber-500" />}
                 </div>
 
-                {paymentMethod === "applepay" && (
-                  <div className="pt-4 border-t mt-4">
+                {paymentMethod === "iban" && (
+                  <div className="space-y-3 pt-4 border-t">
+                    <div className="bg-white p-3 rounded border">
+                      <Label className="text-xs text-gray-600">Beneficiario</Label>
+                      <p className="font-mono font-semibold">Luca Corrao</p>
+                    </div>
+                    <div className="bg-white p-3 rounded border">
+                      <Label className="text-xs text-gray-600">IBAN</Label>
+                      <p className="font-mono text-sm">IT34G0366901600493004003933</p>
+                    </div>
+                    <div className="bg-white p-3 rounded border">
+                      <Label className="text-xs text-gray-600">BIC / SWIFT</Label>
+                      <p className="font-mono">REVOITM2</p>
+                    </div>
+                    <div className="bg-white p-3 rounded border">
+                      <Label className="text-xs text-gray-600">Banca</Label>
+                      <p className="font-mono text-sm">Revolut Bank UAB</p>
+                      <p className="font-mono text-xs text-gray-500">Via Dante 7, 20123, Milano (MI), Italy</p>
+                    </div>
+                    <div className="bg-white p-3 rounded border">
+                      <Label className="text-xs text-gray-600">Correspondent BIC</Label>
+                      <p className="font-mono">CHASDEFX</p>
+                    </div>
+                    <div className="bg-white p-3 rounded border">
+                      <Label className="text-xs text-gray-600">Causale</Label>
+                      <p className="font-mono text-sm">{propertyName} - {bookingData.name}</p>
+                    </div>
+                    <div className="bg-amber-50 p-3 rounded border border-amber-200">
+                      <Label className="text-xs text-amber-800">Importo</Label>
+                      <p className="font-mono text-2xl font-bold text-amber-600">€{total}</p>
+                    </div>
                     <Button
                       size="lg"
-                      className="w-full bg-black hover:bg-gray-900 text-white"
-                      onClick={handleApplePay}
+                      className="w-full bg-green-600 hover:bg-green-700"
+                      onClick={() => {
+                        navigator.clipboard.writeText('IT34G0366901600493004003933')
+                        alert('IBAN copiato negli appunti!')
+                      }}
                     >
-                      <span className="text-xl mr-2"></span>
-                      Paga con Apple Pay
+                      Copia IBAN
                     </Button>
-                    <p className="text-xs text-center text-gray-500 mt-2">
-                      Dopo il pagamento verrai reindirizzato a Revolut per completare
-                    </p>
                   </div>
                 )}
               </div>

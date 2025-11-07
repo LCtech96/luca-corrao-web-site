@@ -41,8 +41,12 @@ export function PaymentForm({ plan, onClose }: PaymentFormProps) {
   const [paymentMethod, setPaymentMethod] = useState<"revolut" | "iban" | "crypto">("revolut")
   const [copied, setCopied] = useState(false)
 
-  const IBAN = "IT91Y0200843300000107305969"
+  const IBAN = "IT34G0366901600493004003933"
   const BENEFICIARY = "Luca Corrao"
+  const BIC_SWIFT = "REVOITM2"
+  const BANK_NAME = "Revolut Bank UAB"
+  const BANK_ADDRESS = "Via Dante 7, 20123, Milano (MI), Italy"
+  const CORRESPONDENT_BIC = "CHASDEFX"
   const REVOLUT_LINK = "https://revolut.me/lctech96"
 
   const handleInputChange = (field: string, value: string) => {
@@ -479,6 +483,34 @@ ${formData.notes ? `📝 Note aggiuntive: ${formData.notes}` : ""}
                   <span className="font-mono">
                     AI Agent Vocale - {plan.name} - {formData.firstName} {formData.lastName}
                   </span>
+                </div>
+              </div>
+
+              <div>
+                <Label className="text-green-800 font-medium">BIC / SWIFT Code</Label>
+                <div className="bg-white p-3 rounded border">
+                  <span className="font-mono">{BIC_SWIFT}</span>
+                </div>
+              </div>
+
+              <div>
+                <Label className="text-green-800 font-medium">Nome Banca</Label>
+                <div className="bg-white p-3 rounded border">
+                  <span className="font-mono text-sm">{BANK_NAME}</span>
+                </div>
+              </div>
+
+              <div>
+                <Label className="text-green-800 font-medium">Indirizzo Banca</Label>
+                <div className="bg-white p-3 rounded border">
+                  <span className="font-mono text-sm">{BANK_ADDRESS}</span>
+                </div>
+              </div>
+
+              <div>
+                <Label className="text-green-800 font-medium">Correspondent BIC</Label>
+                <div className="bg-white p-3 rounded border">
+                  <span className="font-mono">{CORRESPONDENT_BIC}</span>
                 </div>
               </div>
 
