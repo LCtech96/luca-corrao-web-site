@@ -8,7 +8,6 @@ import { StructuresSection } from "./structures-section"
 import { AISolutionsSection } from "./ai-solutions-section"
 import { AIChat } from "./ai-chat"
 import { SocialMediaLinks } from "./social-media-links"
-import { ProfileBanner } from "./profile-banner"
 import { NavigationBar } from "./navigation-bar"
 import { Snowfall3D } from "./snowfall-3d"
 
@@ -34,27 +33,40 @@ export function MinimalHero() {
       
       {/* Main Hero Section */}
       <section className="flex-1 flex items-center justify-center px-4 relative overflow-hidden pt-20">
-        {/* Snowboarding HD Background */}
+        {/* 4K Video Background - Action Sports Style */}
         <div className="absolute inset-0 z-0">
-          <Image
-            src="/images/snowboarding-slope-hd.jpg"
-            alt="Snowboarding Slope"
-            fill
-            className="object-cover"
-            priority
-            quality={100}
-          />
-          {/* Dark overlay for better text readability */}
-          <div className="absolute inset-0 bg-black/30"></div>
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          >
+            <source src="/videos/snowboard-action-4k.mp4" type="video/mp4" />
+          </video>
+          {/* Dark overlay for better text readability + Red Bull vibe */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70"></div>
         </div>
         
         {/* 3D Snowfall Effect - Slow Motion */}
         <Snowfall3D />
         
         <div className="max-w-6xl mx-auto text-center relative z-30">
-          {/* Profile Banner with Image */}
-          <div className="mb-20">
-            <ProfileBanner />
+          {/* Profile Image - Centered (NO BANNER) */}
+          <div className="mb-12">
+            <div className="relative inline-block">
+              {/* Red Bull Style Glow */}
+              <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-blue-500 rounded-full blur-3xl opacity-40 animate-pulse-glow"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-full blur-2xl opacity-30 animate-pulse-glow" style={{ animationDelay: '0.5s' }}></div>
+              <Image
+                src="/images/luca-corrao-profile.jpg"
+                alt="Luca Corrao - Innovazione AI & Action Sports"
+                width={280}
+                height={280}
+                className="relative rounded-full shadow-2xl object-cover border-4 border-red-500/80 backdrop-blur-sm hover:scale-105 hover:border-cyan-400 transition-all duration-500"
+                priority
+              />
+            </div>
           </div>
 
           {/* Name and Title */}
@@ -62,39 +74,39 @@ export function MinimalHero() {
             <h1 className="text-5xl md:text-7xl font-light text-white mb-6 tracking-wide drop-shadow-2xl">
               Luca Corrao
             </h1>
-            <div className="w-24 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-400 mx-auto mb-10 rounded-full shadow-lg shadow-cyan-500/50"></div>
-            <p className="text-xl md:text-2xl text-white mb-6 max-w-4xl mx-auto leading-relaxed font-light drop-shadow-lg">
+            <div className="w-24 h-0.5 bg-gradient-to-r from-red-500 to-cyan-400 mx-auto mb-10 rounded-full shadow-lg shadow-red-500/50"></div>
+            <p className="text-xl md:text-2xl text-white mb-6 max-w-4xl mx-auto leading-relaxed font-bold drop-shadow-lg uppercase tracking-wider">
               Innovazione AI & Eccellenza nell'Ospitalità Siciliana
             </p>
-            <p className="text-base md:text-lg text-gray-100 max-w-3xl mx-auto leading-relaxed font-light drop-shadow-lg">
+            <p className="text-base md:text-lg text-gray-200 max-w-3xl mx-auto leading-relaxed font-light drop-shadow-lg">
               Trasformo l'ospitalità tradizionale con soluzioni AI all'avanguardia, 
-              creando esperienze uniche e memorabili per i nostri ospiti
+              creando esperienze uniche e memorabili
             </p>
           </div>
 
-          {/* Main Action Buttons */}
+          {/* Main Action Buttons - Red Bull Style */}
           <div className="grid md:grid-cols-2 gap-10 max-w-4xl mx-auto mb-20">
             <Button
               size="lg"
               onClick={() => setActiveSection("structures")}
-              className="h-28 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white text-2xl font-bold shadow-2xl shadow-cyan-500/50 hover:shadow-3xl hover:shadow-cyan-600/60 transform hover:scale-105 transition-all duration-300 border-0 rounded-3xl btn-professional backdrop-blur-sm"
+              className="h-32 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:via-orange-600 hover:to-amber-700 text-white text-2xl font-black shadow-2xl shadow-amber-500/60 hover:shadow-[0_0_40px_rgba(251,146,60,0.8)] transform hover:scale-110 transition-all duration-300 border-2 border-amber-300/30 rounded-2xl uppercase tracking-wide"
             >
-              <Building2 className="w-12 h-12 mr-6" />
+              <Building2 className="w-14 h-14 mr-6" />
               <div className="text-left">
-                <div className="text-2xl font-bold">Esplora le Strutture</div>
-                <div className="text-sm opacity-90 font-normal">Ospitalità di Eccellenza</div>
+                <div className="text-2xl font-black">Esplora le Strutture</div>
+                <div className="text-sm opacity-95 font-semibold">Ospitalità di Eccellenza</div>
               </div>
             </Button>
 
             <Button
               size="lg"
               onClick={() => setActiveSection("ai")}
-              className="h-28 bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white text-2xl font-bold shadow-2xl shadow-indigo-500/50 hover:shadow-3xl hover:shadow-indigo-600/60 transform hover:scale-105 transition-all duration-300 border-0 rounded-3xl btn-professional backdrop-blur-sm"
+              className="h-32 bg-gradient-to-r from-cyan-500 via-blue-600 to-cyan-500 hover:from-cyan-600 hover:via-blue-700 hover:to-cyan-600 text-white text-2xl font-black shadow-2xl shadow-cyan-500/60 hover:shadow-[0_0_40px_rgba(6,182,212,0.8)] transform hover:scale-110 transition-all duration-300 border-2 border-cyan-300/30 rounded-2xl uppercase tracking-wide"
             >
-              <Bot className="w-12 h-12 mr-6" />
+              <Bot className="w-14 h-14 mr-6" />
               <div className="text-left">
-                <div className="text-2xl font-bold">Scopri le Soluzioni AI</div>
-                <div className="text-sm opacity-90 font-normal">Intelligenza Artificiale</div>
+                <div className="text-2xl font-black">Scopri le Soluzioni AI</div>
+                <div className="text-sm opacity-95 font-semibold">Intelligenza Artificiale</div>
               </div>
             </Button>
           </div>
