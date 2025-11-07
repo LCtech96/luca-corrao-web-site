@@ -165,8 +165,11 @@ export function BookingModalAdvanced({
       // Crea la prenotazione in Supabase
       setIsSubmitting(true)
       try {
+        // Genera un property_id se manca
+        const finalPropertyId = propertyId || `property-${propertySlug}`
+        
         const booking = await createBooking({
-          property_id: propertyId,
+          property_id: finalPropertyId,
           property_name: propertyName,
           property_slug: propertySlug,
           guest_email: bookingData.email,
@@ -205,12 +208,22 @@ export function BookingModalAdvanced({
         } else {
           throw new Error('Failed to create booking')
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error creating booking:', error)
+        
+        // Log dettagliato per debug
+        console.log('Booking data:', {
+          property_id: propertyId,
+          property_name: propertyName,
+          guest_email: bookingData.email,
+          user: user?.email
+        })
+        
         toast({
-          title: "Errore",
-          description: "Impossibile creare la prenotazione. Riprova.",
+          title: "Errore nella creazione prenotazione",
+          description: error.message || "Impossibile creare la prenotazione. Verifica di essere loggato e riprova.",
           variant: "destructive",
+          duration: 6000,
         })
       } finally {
         setIsSubmitting(false)
