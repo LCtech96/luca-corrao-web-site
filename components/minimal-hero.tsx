@@ -7,9 +7,10 @@ import Image from "next/image"
 import { StructuresSection } from "./structures-section"
 import { AISolutionsSection } from "./ai-solutions-section"
 import { AIChat } from "./ai-chat"
-import { SocialMediaLinks } from "./social-media-links"
 import { NavigationBar } from "./navigation-bar"
 import { Snowfall3D } from "./snowfall-3d"
+import { SocialLinksCompact } from "./social-links-compact"
+import { AISearchBar } from "./ai-search-bar"
 
 export function MinimalHero() {
   const [activeSection, setActiveSection] = useState<"structures" | "ai" | null>(null)
@@ -52,37 +53,33 @@ export function MinimalHero() {
         <Snowfall3D />
         
         <div className="max-w-6xl mx-auto text-center relative z-30">
-          {/* Profile Image - Centered (NO BANNER) */}
-          <div className="mb-12">
+          {/* Profile Image + Nome + Social - COMPATTO */}
+          <div className="mb-8">
             <div className="relative inline-block">
               {/* Red Bull Style Glow */}
               <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-blue-500 rounded-full blur-3xl opacity-40 animate-pulse-glow"></div>
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-full blur-2xl opacity-30 animate-pulse-glow" style={{ animationDelay: '0.5s' }}></div>
               <Image
                 src="/images/luca-corrao-profile.jpg"
-                alt="Luca Corrao - Innovazione AI & Action Sports"
-                width={280}
-                height={280}
+                alt="Luca Corrao"
+                width={200}
+                height={200}
                 className="relative rounded-full shadow-2xl object-cover border-4 border-red-500/80 backdrop-blur-sm hover:scale-105 hover:border-cyan-400 transition-all duration-500"
                 priority
               />
             </div>
-          </div>
-
-          {/* Name and Title */}
-          <div className="mb-20 mt-16">
-            <h1 className="text-5xl md:text-7xl font-light text-white mb-6 tracking-wide drop-shadow-2xl">
+            
+            {/* Nome vicino alla foto */}
+            <h1 className="text-4xl md:text-5xl font-bold text-white mt-4 tracking-wide drop-shadow-2xl">
               Luca Corrao
             </h1>
-            <div className="w-24 h-0.5 bg-gradient-to-r from-red-500 to-cyan-400 mx-auto mb-10 rounded-full shadow-lg shadow-red-500/50"></div>
-            <p className="text-xl md:text-2xl text-white mb-6 max-w-4xl mx-auto leading-relaxed font-bold drop-shadow-lg uppercase tracking-wider">
-              Innovazione AI & Eccellenza nell'Ospitalità Siciliana
-            </p>
-            <p className="text-base md:text-lg text-gray-200 max-w-3xl mx-auto leading-relaxed font-light drop-shadow-lg">
-              Trasformo l'ospitalità tradizionale con soluzioni AI all'avanguardia, 
-              creando esperienze uniche e memorabili
-            </p>
+            
+            {/* Social Links Compatti */}
+            <SocialLinksCompact />
           </div>
+
+          {/* AI Search Bar */}
+          <AISearchBar />
 
           {/* Main Action Buttons - Red Bull Style */}
           <div className="grid md:grid-cols-2 gap-10 max-w-4xl mx-auto mb-20">
@@ -110,9 +107,6 @@ export function MinimalHero() {
               </div>
             </Button>
           </div>
-
-          {/* Social Media Links */}
-          <SocialMediaLinks />
         </div>
       </section>
 
