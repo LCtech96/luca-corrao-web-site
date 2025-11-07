@@ -6,7 +6,6 @@ import { Building2, Bot, MessageCircle, Phone } from "lucide-react"
 import Image from "next/image"
 import { StructuresSection } from "./structures-section"
 import { AISolutionsSection } from "./ai-solutions-section"
-import { AIChat } from "./ai-chat"
 import { NavigationBar } from "./navigation-bar"
 import { Snowfall3D } from "./snowfall-3d"
 import { SocialLinksCompact } from "./social-links-compact"
@@ -33,7 +32,7 @@ export function MinimalHero() {
       <NavigationBar />
       
       {/* Main Hero Section */}
-      <section className="flex-1 flex items-center justify-center px-4 relative overflow-hidden pt-20">
+      <section className="flex-1 flex items-center justify-center px-4 relative overflow-hidden pt-16">
         {/* 4K Video Background - Extreme Skiing Action Sports Style */}
         <div className="absolute inset-0 z-0">
           <video
@@ -109,9 +108,6 @@ export function MinimalHero() {
           </div>
         </div>
       </section>
-
-      {/* AI Chat Section */}
-      <AIChat />
     </div>
   )
 }

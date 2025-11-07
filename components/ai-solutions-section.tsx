@@ -12,21 +12,26 @@ interface AISolutionsSectionProps {
 
 export function AISolutionsSection({ onClose }: AISolutionsSectionProps) {
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header with Back Button */}
-      <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
-        <div className="container mx-auto px-4 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-950 to-purple-950">
+      {/* Header with Back Button - Tema Scuro */}
+      <div className="sticky top-0 z-50 bg-black/90 backdrop-blur-md border-b border-cyan-500/30 shadow-lg">
+        <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
               onClick={onClose}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+              className="flex items-center gap-2 text-gray-300 hover:text-cyan-400 hover:bg-cyan-500/10"
             >
               <ArrowLeft className="w-5 h-5" />
               Torna alla Home
             </Button>
-            <h1 className="text-2xl font-bold text-gray-900">Soluzioni AI</h1>
-            <Button variant="ghost" size="icon" onClick={onClose}>
+            <h1 className="text-2xl font-bold text-white bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Soluzioni AI</h1>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={onClose}
+              className="text-gray-300 hover:text-red-400 hover:bg-red-500/10"
+            >
               <X className="w-5 h-5" />
             </Button>
           </div>
@@ -39,8 +44,8 @@ export function AISolutionsSection({ onClose }: AISolutionsSectionProps) {
         <FeaturesSection />
         <VoiceAISection />
 
-        {/* Contact Section - Only AI Related */}
-        <section className="py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 text-white">
+        {/* Contact Section - Tema Scuro Moderno */}
+        <section className="py-20 bg-gradient-to-br from-cyan-600/20 via-blue-600/20 to-purple-600/20 backdrop-blur-sm text-white border-t border-cyan-500/20">
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto text-center">
               <h2 className="text-3xl md:text-4xl font-bold mb-6">Trasforma il Tuo Business con l'AI</h2>
