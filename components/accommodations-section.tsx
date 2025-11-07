@@ -3,10 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import { useQuery } from "convex/react"
-import { api } from "@/convex/_generated/api"
-import { useQuery } from "convex/react"
-import { api } from "@/convex/_generated/api"
+import { useAccommodations } from "@/hooks/use-accommodations"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -29,11 +26,12 @@ import {
 import Image from "next/image"
 import { BookingSystem } from "./booking-system"
 
-// Note: Accommodations are now loaded from Convex database
+// Note: Accommodations are now loaded from Supabase database
 
 export function AccommodationsSection() {
-  // Fetch accommodations from Convex
-  const accommodationsData = useQuery(api.accommodations.getAll) || []
+  // Fetch accommodations from Supabase
+  const { accommodations: accommodationsData } = useAccommodations()
+  const accommodations = accommodationsData || []
   
   const [selectedAccommodation, setSelectedAccommodation] = useState<string | null>(null)
   const [selectedGallery, setSelectedGallery] = useState<{
@@ -78,7 +76,7 @@ export function AccommodationsSection() {
 
   const nextImage = () => {
     if (!selectedGallery) return
-    const accommodation = accommodationsData.find((acc) => acc._id === selectedGallery.accommodationId)
+    const accommodation = accommodations.find((acc) => acc.id === selectedGallery.accommodationId)
     if (!accommodation) return
     const nextIndex = (selectedGallery.currentImageIndex + 1) % accommodation.images.length
     setSelectedGallery({ ...selectedGallery, currentImageIndex: nextIndex })
@@ -86,7 +84,7 @@ export function AccommodationsSection() {
 
   const prevImage = () => {
     if (!selectedGallery) return
-    const accommodation = accommodationsData.find((acc) => acc._id === selectedGallery.accommodationId)
+    const accommodation = accommodations.find((acc) => acc.id === selectedGallery.accommodationId)
     if (!accommodation) return
     const prevIndex =
       selectedGallery.currentImageIndex === 0 ? accommodation.images.length - 1 : selectedGallery.currentImageIndex - 1
@@ -94,7 +92,7 @@ export function AccommodationsSection() {
   }
 
   const currentGalleryAccommodation = selectedGallery
-    ? accommodationsData.find((acc) => acc._id === selectedGallery.accommodationId)
+    ? accommodations.find((acc) => acc.id === selectedGallery.accommodationId)
     : null
 
   return (
@@ -116,9 +114,9 @@ export function AccommodationsSection() {
 
           {/* Accommodations Grid */}
           <div className="grid lg:grid-cols-2 gap-8 mb-16">
-            {accommodationsData.map((accommodation) => (
-              <Card key={accommodation._id} className="overflow-hidden hover:shadow-xl transition-shadow">
-                <div className="relative h-64 cursor-pointer" onClick={() => openGallery(accommodation._id, 0)}>
+            {accommodations.map((accommodation) => (
+              <Card key={accommodation.id} className="overflow-hidden hover:shadow-xl transition-shadow">
+                <div className="relative h-64 cursor-pointer" onClick={() => openGallery(accommodation.id, 0)}>
                   <Image
                     src={accommodation.images[0] || "/placeholder.svg"}
                     alt={`${accommodation.name} - Struttura ricettiva Terrasini`}
@@ -224,7 +222,7 @@ export function AccommodationsSection() {
                   <Image
                     src={currentGalleryAccommodation.images[selectedGallery.currentImageIndex] || "/placeholder.svg"}
                     alt={
-                      currentGalleryAccommodation.imageDescriptions?.[selectedGallery.currentImageIndex] ||
+                      currentGalleryAccommodation.image_descriptions?.[selectedGallery.currentImageIndex] ||
                       `${currentGalleryAccommodation.name} - Foto ${selectedGallery.currentImageIndex + 1}`
                     }
                     fill
@@ -236,7 +234,7 @@ export function AccommodationsSection() {
                 <div className="text-center mt-4 text-white">
                   <h3 className="text-xl font-bold mb-2">{currentGalleryAccommodation.name}</h3>
                   <p className="text-gray-300 mb-2">
-                    {currentGalleryAccommodation.imageDescriptions?.[selectedGallery.currentImageIndex] ||
+                    {currentGalleryAccommodation.image_descriptions?.[selectedGallery.currentImageIndex] ||
                       `Foto ${selectedGallery.currentImageIndex + 1}`}
                   </p>
                   <p className="text-sm text-gray-400">

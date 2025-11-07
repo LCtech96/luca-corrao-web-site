@@ -4,19 +4,13 @@ import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { ClerkProvider } from '@clerk/nextjs'
-// Temporarily removed Italian localization to fix build
-// import { itIT } from "@clerk/localizations"; // Opzionale per la lingua
-import { AuthProvider } from "@/lib/auth-context"
-import { ConvexClientProvider } from "@/components/convex-provider"
+import { SupabaseProvider } from "@/components/supabase-provider"
 
 const inter = Inter({ 
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
 })
-
-const clerkPublishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 // Il tuo oggetto metadata va benissimo, lo lasciamo com'è
 export const metadata: Metadata = {
@@ -44,14 +38,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    // 1. Sposta ClerkProvider qui in alto per avvolgere tutto
-    <ClerkProvider publishableKey={clerkPublishableKey}>
       <html lang="it" className={inter.variable}>
         <head>
           {/* Performance optimizations */}
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-          <link rel="dns-prefetch" href="https://tidy-ibex-172.convex.cloud" />
+        <link rel="dns-prefetch" href="https://txszcieimfzqthkdzceb.supabase.co" />
           
           {/* Suppress development warnings */}
           {process.env.NODE_ENV === 'development' && (
@@ -81,13 +73,10 @@ export default function RootLayout({
           )}
         </head>
         <body className={`${inter.className} antialiased`}>
-          <ConvexClientProvider>
-            <AuthProvider>
+        <SupabaseProvider>
               {children}
-            </AuthProvider>
-          </ConvexClientProvider>
+        </SupabaseProvider>
         </body>
       </html>
-    </ClerkProvider>
   )
 }

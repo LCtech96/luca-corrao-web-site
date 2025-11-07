@@ -222,13 +222,11 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
                   maxFiles={1}
                   category="structure"
                   ownerId={localStorage.getItem('userEmail') || undefined}
-                  value={formData.coverImage}
-                  onChange={(files) => {
-                    setFormData(prev => ({ ...prev, coverImage: files }))
+                  onImageUploaded={(url) => {
+                    setFormData(prev => ({ ...prev, coverImage: [{ url }] as any }))
                     setErrors([])
                   }}
-                  placeholder="Clicca per caricare l'immagine principale della struttura"
-                  onError={(error) => setErrors([error])}
+                  className="min-h-[120px]"
                 />
               </div>
 
@@ -238,13 +236,14 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
                   maxFiles={10}
                   category="structure"
                   ownerId={localStorage.getItem('userEmail') || undefined}
-                  value={formData.structureImages}
-                  onChange={(files) => {
-                    setFormData(prev => ({ ...prev, structureImages: files }))
+                  onImageUploaded={(url) => {
+                    setFormData(prev => ({ 
+                      ...prev, 
+                      structureImages: [...prev.structureImages, { url }] as any 
+                    }))
                     setErrors([])
                   }}
-                  placeholder="Carica altre immagini della struttura (max 10)"
-                  onError={(error) => setErrors([error])}
+                  className="min-h-[120px]"
                 />
               </div>
 

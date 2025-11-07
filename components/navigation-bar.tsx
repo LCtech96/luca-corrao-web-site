@@ -2,25 +2,43 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { UserPlus, Building2, Grid3X3, LogIn, LogOut, Settings } from "lucide-react"
+import { UserPlus, Building2, Grid3X3, LogIn, LogOut, User } from "lucide-react"
 import { RegistrationModal } from "@/components/registration-modal"
 import { WorkWithUsModal } from "@/components/work-with-us-modal"
 import { ShowcaseModal } from "@/components/showcase-modal"
 import { LoginModal } from "@/components/login-modal"
-// import { useAuth } from "@/lib/auth-context"
+import { useAuth } from "@/hooks/use-auth"
+import { useIsAdmin } from "@/hooks/use-is-admin"
+import { signOut } from "@/lib/supabase/auth-service"
+import { useToast } from "@/hooks/use-toast"
+import Link from "next/link"
+import { Shield } from "lucide-react"
 
 export function NavigationBar() {
-  // const { isAuthenticated, logout } = useAuth()
-  const isAuthenticated = false
-  const logout = () => {}
+  const { user, loading } = useAuth()
+  const { isAdmin } = useIsAdmin()
+  const { toast } = useToast()
   const [activeModal, setActiveModal] = useState<"registration" | "work" | "showcase" | "login" | null>(null)
 
   const closeModal = () => {
     setActiveModal(null)
   }
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    try {
+      await signOut()
+      toast({
+        title: "Logout effettuato",
+        description: "Sei stato disconnesso con successo.",
+      })
+    } catch (error) {
+      console.error('Errore logout:', error)
+      toast({
+        title: "Errore",
+        description: "Impossibile disconnettersi. Riprova.",
+        variant: "destructive",
+      })
+    }
   }
 
   // Previene il rendering di più modal contemporaneamente
@@ -49,7 +67,7 @@ export function NavigationBar() {
 
             {/* Navigation Buttons */}
             <div className="flex items-center space-x-4">
-              {!isAuthenticated ? (
+              {!user ? (
                 <>
                   <Button
                     variant="ghost"
@@ -73,24 +91,39 @@ export function NavigationBar() {
                 </>
               ) : (
                 <>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => window.open("/admin/structures", "_blank")}
-                    className="flex items-center gap-2 text-gray-700 hover:text-amber-600 hover:bg-amber-50 transition-colors duration-200"
-                  >
-                    <Settings className="w-4 h-4" />
-                    <span className="hidden sm:inline">Admin</span>
-                  </Button>
+                  {/* Admin Dashboard Button (solo per Luca) */}
+                  {isAdmin && (
+                    <Link href="/admin">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="flex items-center gap-2 text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-colors duration-200"
+                      >
+                        <Shield className="w-4 h-4" />
+                        <span className="hidden sm:inline">Admin</span>
+                      </Button>
+                    </Link>
+                  )}
+                  
+                  <Link href="/profile">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="flex items-center gap-2 text-gray-700 hover:text-amber-600 hover:bg-amber-50 transition-colors duration-200"
+                    >
+                      <User className="w-4 h-4" />
+                      <span className="hidden sm:inline">Profilo</span>
+                    </Button>
+                  </Link>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={handleLogout}
                     className="flex items-center gap-2 text-gray-700 hover:text-red-600 hover:bg-red-50 transition-colors duration-200"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span className="hidden sm:inline">Log out</span>
-                </Button>
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span className="hidden sm:inline">Logout</span>
+                  </Button>
                 </>
               )}
 
@@ -136,4 +169,4 @@ export function NavigationBar() {
       )}
     </>
   )
-} 
+}

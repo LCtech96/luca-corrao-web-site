@@ -1,13 +1,16 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useQuery } from "convex/react"
-import { api } from "@/convex/_generated/api"
+import { useAccommodations } from "@/hooks/use-accommodations"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Building2, MapPin, Star, Eye, X, Plus, Upload, User } from "lucide-react"
 import Image from "next/image"
+import { createAccommodation } from "@/lib/supabase/accommodations-service"
+import { uploadFile } from "@/lib/supabase/files-service"
+import { useAuth } from "@/hooks/use-auth"
+import { useToast } from "@/hooks/use-toast"
 
 interface ShowcaseModalProps {
   onClose: () => void
@@ -30,28 +33,31 @@ export function ShowcaseModal({ onClose }: ShowcaseModalProps) {
   const [isOpen, setIsOpen] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
   const [showUploadModal, setShowUploadModal] = useState(false)
-  const [isUserRegistered, setIsUserRegistered] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
-
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [isUserRegistered, setIsUserRegistered] = useState(false)
+  
+  const { user } = useAuth()
+  const { toast } = useToast()
   const structuresPerPage = 12
 
-  // Note: Structures are now loaded from Convex database
+  // Note: Structures are now loaded from Supabase database
 
-  // Fetch structures from Convex
-  const convexStructures = useQuery(api.accommodations.getAll) || []
+  // Fetch structures from Supabase
+  const { accommodations: supabaseStructures } = useAccommodations()
   
-  // Transform Convex data to match expected Structure interface
-  const allStructures: Structure[] = convexStructures.map(acc => ({
-    id: acc._id,
+  // Transform Supabase data to match expected Structure interface
+  const allStructures: Structure[] = (supabaseStructures || []).map(acc => ({
+    id: acc.id,
     name: acc.name,
     description: acc.description,
     address: acc.address || "",
     rating: acc.rating || 0,
-    mainImage: acc.mainImage,
+    mainImage: (acc as any).mainImage || (acc as any).main_image || acc.images?.[0] || "",
     images: acc.images,
     owner: acc.owner,
-    isOwner: acc.isOwner || false
+    isOwner: (acc as any).isOwner || (acc as any).is_owner || false
   }))
 
   useEffect(() => {
@@ -74,14 +80,13 @@ export function ShowcaseModal({ onClose }: ShowcaseModalProps) {
   // Verifica se l'utente è registrato
   useEffect(() => {
     const checkUserRegistration = () => {
-      // Simula verifica utente registrato (in produzione controllerebbe il database)
-      const userEmail = localStorage.getItem('userEmail')
-      const isRegistered = userEmail && userEmail.includes('@')
+      // Usa il sistema di autenticazione Supabase
+      const isRegistered = !!user
       setIsUserRegistered(isRegistered)
     }
 
     checkUserRegistration()
-  }, [])
+  }, [user])
 
   // Calcola le strutture per la pagina corrente
   const startIndex = (currentPage - 1) * structuresPerPage
@@ -102,9 +107,9 @@ export function ShowcaseModal({ onClose }: ShowcaseModalProps) {
     owner: "",
     isOwner: false,
     isEmpty: true
-  }))
+  })) as (Structure & { isEmpty?: boolean })[]
 
-  const displayStructures = [...currentStructures, ...emptyStructures]
+  const displayStructures = [...currentStructures, ...emptyStructures] as (Structure & { isEmpty?: boolean })[]
 
   const handleUploadClick = () => {
     if (!isUserRegistered) {
@@ -115,15 +120,26 @@ export function ShowcaseModal({ onClose }: ShowcaseModalProps) {
     setUploadError(null)
   }
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setSelectedFile(file)
+    }
+  }
+
   const handleUploadStructure = async (formData: FormData) => {
     setIsUploading(true)
     setUploadError(null)
 
     try {
-      // Simula upload al server
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Nota: L'upload delle immagini tramite vetrina è disabilitato temporaneamente
+      // Per aggiungere nuove strutture, usa il pannello admin o inserisci direttamente nel database
       
-      // Aggiungi la nuova struttura
+      setUploadError("L'upload tramite vetrina è temporaneamente disabilitato. Usa il database Supabase per aggiungere strutture.")
+      setIsUploading(false)
+      return
+      
+      // Aggiungi la nuova struttura (codice disabilitato)
       const newStructure: Structure = {
         id: Date.now().toString(),
         name: formData.get('name') as string,
@@ -136,7 +152,6 @@ export function ShowcaseModal({ onClose }: ShowcaseModalProps) {
         isOwner: true
       }
 
-      setAllStructures(prev => [...prev, newStructure])
       setShowUploadModal(false)
     } catch (error) {
       setUploadError("Errore durante il caricamento. Riprova.")
@@ -289,17 +304,31 @@ export function ShowcaseModal({ onClose }: ShowcaseModalProps) {
 
                 <div>
                   <label className="block text-sm font-medium mb-1">Immagine Principale</label>
-                  <div className="border-2 border-dashed border-gray-300 rounded-md p-4 text-center">
+                  <label className="border-2 border-dashed border-gray-300 rounded-md p-4 text-center block cursor-pointer hover:border-amber-400 hover:bg-amber-50 transition-colors">
                     <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                    <p className="text-sm text-gray-500">Clicca per caricare l'immagine</p>
+                    {selectedFile ? (
+                      <div className="space-y-2">
+                        <p className="text-sm text-green-600 font-medium">✓ {selectedFile.name}</p>
+                        <p className="text-xs text-gray-500">
+                          {(selectedFile.size / 1024).toFixed(1)} KB
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-500">Clicca per caricare l'immagine</p>
+                    )}
                     <input
-                      name="mainImage"
                       type="file"
                       accept="image/*"
                       required
+                      onChange={handleFileChange}
                       className="hidden"
                     />
-                  </div>
+                  </label>
+                  {selectedFile && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Immagine selezionata. Compila il form e clicca "Carica Struttura".
+                    </p>
+                  )}
                 </div>
 
                 <div className="flex gap-2">
@@ -313,7 +342,12 @@ export function ShowcaseModal({ onClose }: ShowcaseModalProps) {
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => setShowUploadModal(false)}
+                    onClick={() => {
+                      setShowUploadModal(false)
+                      setSelectedFile(null)
+                      setUploadError(null)
+                    }}
+                    disabled={isUploading}
                   >
                     Annulla
                   </Button>

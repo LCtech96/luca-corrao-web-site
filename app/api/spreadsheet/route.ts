@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ 
       success: true, 
       message: 'Dati salvati con successo',
-      updatedRange: response?.data?.updates?.updatedRange 
+      updatedRange: (response?.data as any)?.updates?.updatedRange 
     })
   } catch (error) {
     console.error('Errore nel salvataggio dati:', error)

@@ -52,7 +52,7 @@ export function SocialMediaLinks() {
         variant="ghost"
         size="sm"
         className="social-btn text-gray-600 hover:text-blue-700 hover:bg-blue-50 flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300"
-        onClick={() => window.open("https://linkedin.com/in/lucacorrao", "_blank")}
+        onClick={() => window.open("https://www.linkedin.com/in/luca-corrao", "_blank")}
       >
         <Linkedin className="w-6 h-6" />
         <span className="hidden sm:inline font-medium">LinkedIn</span>
@@ -63,7 +63,7 @@ export function SocialMediaLinks() {
         variant="ghost"
         size="sm"
         className="social-btn text-gray-600 hover:text-pink-600 hover:bg-pink-50 flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300"
-        onClick={() => window.open("https://instagram.com/lucacorrao", "_blank")}
+        onClick={() => window.open("https://www.instagram.com/luca.corrao.s?igsh=MXhuN3hiamh4bTNpaQ%3D%3D&utm_source=qr", "_blank")}
       >
         <Instagram className="w-6 h-6" />
         <span className="hidden sm:inline font-medium">Instagram</span>
@@ -74,7 +74,7 @@ export function SocialMediaLinks() {
         variant="ghost"
         size="sm"
         className="social-btn text-gray-600 hover:text-blue-600 hover:bg-blue-50 flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300"
-        onClick={() => window.open("https://facebook.com/lucacorrao", "_blank")}
+        onClick={() => window.open("https://www.facebook.com/people/Luca-Corrao/pfbid021tDysnufGorRVgbBAkKyZkr94y3pRt2km9GuYixDE4b3SWS5P4faqUbbf5LQptsQl/", "_blank")}
       >
         <Facebook className="w-6 h-6" />
         <span className="hidden sm:inline font-medium">Facebook</span>

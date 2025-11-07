@@ -2,11 +2,8 @@
 
 import type React from "react"
 import { useState } from "react"
-import { useQuery } from "convex/react"
-import { api } from "@/convex/_generated/api"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useAccommodations } from "@/hooks/use-accommodations"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import {
   MapPin,
   Users,
@@ -19,14 +16,25 @@ import {
   ParkingCircle,
   Wifi,
   Car,
+  Eye,
 } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 import { BookingSystem } from "./booking-system"
 
-// Fallback data for when Convex is loading or unavailable
+// Helper function to generate slug from name
+function generateSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w-]+/g, '')
+}
+
+// Fallback data for when Supabase is loading or unavailable
 const fallbackAccommodations = [
   {
-    _id: "lucas-rooftop" as any,
+    id: "lucas-rooftop",
+    slug: "lucas-rooftop",
     name: "Lucas Rooftop",
     subtitle: "Intimità con Vista a Terrasini",
     description:
@@ -64,7 +72,8 @@ const fallbackAccommodations = [
     isActive: true,
   },
   {
-    _id: "lucas-suite" as any,
+    id: "lucas-suite",
+    slug: "lucas-suite",
     name: "Lucas Suite",
     subtitle: "Modernità e Comfort nel Cuore di Terrasini",
     description:
@@ -98,7 +107,8 @@ const fallbackAccommodations = [
     isActive: true,
   },
   {
-    _id: "lucas-cottage" as any,
+    id: "lucas-cottage",
+    slug: "lucas-cottage",
     name: "Lucas Cottage",
     subtitle: "Tranquillità e Natura a Trappeto",
     description:
@@ -118,12 +128,12 @@ const fallbackAccommodations = [
     mainImage: "/images/lucas-cottage-exterior-1.jpg",
     images: [
       "/images/lucas-cottage-exterior-1.jpg",
-      "/images/lucas-cottage-interior-1.jpg.jpg",
-      "/images/lucas-cottage-interior-2.jpg.jpg",
-      "/images/lucas-cottage-pool-1.jpg.jpg",
-      "/images/lucas-cottage-pool-2.jpg.jpg",
-      "/images/lucas-cottage-exterior-2.jpg.jpg",
-      "/images/lucas-cottage-pool-fronthead.jpg.jpg",
+      "/images/lucas-cottage-interior-1.jpg",
+      "/images/lucas-cottage-interior-2.jpg",
+      "/images/lucas-cottage-pool-1.jpg",
+      "/images/lucas-cottage-pool-2.jpg",
+      "/images/lucas-cottage-exterior-2.jpg",
+      "/images/lucas-cottage-pool-front.jpg",
     ],
     imageDescriptions: [
       "Vista esterna del cottage con piscina",
@@ -141,11 +151,11 @@ const fallbackAccommodations = [
 ]
 
 export function AccommodationsSectionConvex() {
-  // Fetch accommodations from Convex
-  const convexAccommodations = useQuery(api.accommodations.getAll)
+  // Fetch accommodations from Supabase
+  const { accommodations: supabaseAccommodations } = useAccommodations()
   
-  // Use Convex data if available, otherwise use fallback data
-  const accommodations = convexAccommodations || fallbackAccommodations
+  // Use Supabase data if available, otherwise use fallback data
+  const accommodations = supabaseAccommodations || fallbackAccommodations
   
   const [selectedGallery, setSelectedGallery] = useState<{
     accommodationId: string
@@ -174,7 +184,7 @@ export function AccommodationsSectionConvex() {
 
   const nextImage = () => {
     if (!selectedGallery) return
-    const accommodation = accommodations.find((acc) => acc._id === selectedGallery.accommodationId)
+    const accommodation = accommodations.find((acc) => acc.id === selectedGallery.accommodationId)
     if (!accommodation) return
     const nextIndex = (selectedGallery.currentImageIndex + 1) % accommodation.images.length
     setSelectedGallery({ ...selectedGallery, currentImageIndex: nextIndex })
@@ -182,7 +192,7 @@ export function AccommodationsSectionConvex() {
 
   const prevImage = () => {
     if (!selectedGallery) return
-    const accommodation = accommodations.find((acc) => acc._id === selectedGallery.accommodationId)
+    const accommodation = accommodations.find((acc) => acc.id === selectedGallery.accommodationId)
     if (!accommodation) return
     const prevIndex =
       selectedGallery.currentImageIndex === 0 ? accommodation.images.length - 1 : selectedGallery.currentImageIndex - 1
@@ -190,24 +200,23 @@ export function AccommodationsSectionConvex() {
   }
 
   const currentGalleryAccommodation = selectedGallery
-    ? accommodations.find((acc) => acc._id === selectedGallery.accommodationId)
+    ? accommodations.find((acc) => acc.id === selectedGallery.accommodationId)
     : null
 
   return (
-    <section id="accommodations" className="py-20 bg-white">
+    <section id="accommodations" className="py-20 bg-gradient-to-b from-white via-amber-50/30 to-white">
       <div className="container mx-auto px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Le Nostre Strutture Ricettive</h2>
-            <p className="text-xl text-gray-600 mb-8">
-              Scopri l'eccellenza dell'ospitalità siciliana nelle nostre esclusive proprietà
+        <div className="max-w-7xl mx-auto">
+          {/* Header - Wander Inspired */}
+          <div className="text-center mb-20">
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 text-gray-900 tracking-tight leading-tight">
+              Find your happy place
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Esperienze uniche in Sicilia. Strutture premium con vista mare, 
+              <br className="hidden md:block" />
+              affreschi storici e piscine private.
             </p>
-            <div className="bg-blue-50 p-6 rounded-lg max-w-4xl mx-auto">
-              <p className="text-blue-800 font-medium">
-                <strong>Oltre 56 posti letto</strong> distribuiti tra Terrasini, Villagrazia di Carini, Cinisi e più di
-                30 posti letto in un casale esclusivo vicino Castellammare del Golfo
-              </p>
-            </div>
           </div>
 
           {/* Loading state */}
@@ -218,82 +227,123 @@ export function AccommodationsSectionConvex() {
             </div>
           )}
 
-          {/* Accommodations Grid */}
-          <div className="grid lg:grid-cols-2 gap-8 mb-16">
-            {accommodations?.map((accommodation) => (
-              <Card key={accommodation._id} className="overflow-hidden hover:shadow-xl transition-shadow">
-                <div className="relative h-64 cursor-pointer" onClick={() => openGallery(accommodation._id, 0)}>
+          {/* Accommodations Grid - Wander-inspired Design */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
+            {accommodations?.map((accommodation) => {
+              const slug = accommodation.slug || generateSlug(accommodation.name)
+              return (
+              <Link 
+                key={accommodation.id} 
+                href={`/property/${slug}`}
+                className="group relative overflow-hidden rounded-3xl bg-white shadow-lg hover:shadow-2xl transition-all duration-500 block"
+              >
+                {/* Image Container with Overlay Effect */}
+                <div 
+                  className="relative h-80 overflow-hidden cursor-pointer"
+                >
                   <Image
-                    src={accommodation.mainImage || accommodation.images?.[0] || "/placeholder.svg"}
+                    src={(accommodation as any).mainImage || (accommodation as any).main_image || accommodation.images?.[0] || "/placeholder.svg"}
                     alt={`${accommodation.name} - Struttura ricettiva Terrasini`}
                     fill
-                    className="object-cover hover:scale-105 transition-transform duration-300"
+                    className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                   />
-                  <div className="absolute top-4 left-4">
-                    <Badge className="bg-amber-600 text-white">
-                      <Star className="w-3 h-3 mr-1" />
-                      Premium
-                    </Badge>
+                  
+                  {/* Premium Badge */}
+                  <div className="absolute top-6 left-6 bg-white/95 backdrop-blur-sm text-amber-700 px-4 py-2 rounded-full text-sm font-semibold shadow-lg flex items-center gap-2 z-10">
+                    <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
+                    Premium
                   </div>
-                  <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
-                    <div className="opacity-0 hover:opacity-100 transition-opacity duration-300 bg-white/90 px-4 py-2 rounded-lg">
-                      <p className="text-gray-900 font-medium">Clicca per vedere tutte le foto</p>
+                  
+                  {/* Gradient Overlay on Hover */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  
+                  {/* Hover Content */}
+                  <div className="absolute inset-0 flex items-end p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10">
+                    <div className="text-white space-y-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                      <p className="text-sm font-medium">{accommodation.subtitle}</p>
+                      <p className="text-xs opacity-90 line-clamp-2">{accommodation.description}</p>
                     </div>
                   </div>
                 </div>
 
-                <CardHeader>
-                  <CardTitle className="text-2xl text-gray-900">{accommodation.name}</CardTitle>
-                  <p className="text-amber-600 font-medium">{accommodation.subtitle}</p>
-                </CardHeader>
+                {/* Content - Clean and Modern */}
+                <div className="p-6 space-y-4">
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-1 group-hover:text-amber-600 transition-colors">
+                      {accommodation.name}
+                    </h3>
+                    <p className="text-amber-600 font-medium text-sm">{accommodation.subtitle}</p>
+                  </div>
 
-                <CardContent>
-                  <p className="text-gray-600 mb-4">{accommodation.description}</p>
+                  {/* Location and Capacity - Minimal Style */}
+                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                    <div className="flex items-center gap-1.5">
+                      <MapPin className="w-4 h-4" />
+                      <span>{accommodation.distance?.split(',')[0] || 'Terrasini'}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Users className="w-4 h-4" />
+                      <span>{accommodation.capacity}</span>
+                    </div>
+                  </div>
 
-                  <div className="space-y-3 mb-6">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <MapPin className="w-4 h-4 text-amber-600" />
-                      {accommodation.distance}
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Users className="w-4 h-4 text-amber-600" />
-                      {accommodation.capacity}
-                    </div>
-                    {accommodation.price && (
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Star className="w-4 h-4 text-amber-600" />
-                        {accommodation.price}
-                      </div>
+                  {/* Features - Subtle Pills */}
+                  <div className="flex flex-wrap gap-2">
+                    {accommodation.features?.slice(0, 3).map((feature, index) => (
+                      <span
+                        key={index}
+                        className="inline-flex items-center px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
+                      >
+                        {feature}
+                      </span>
+                    ))}
+                    {(accommodation.features?.length || 0) > 3 && (
+                      <span className="inline-flex items-center px-3 py-1 text-xs font-medium text-amber-700 bg-amber-50 rounded-full">
+                        +{(accommodation.features?.length || 0) - 3}
+                      </span>
                     )}
                   </div>
 
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {accommodation.features?.map((feature, index) => (
-                      <Badge key={index} variant="outline" className="text-xs">
-                        {feature}
-                      </Badge>
-                    ))}
+                  {/* Price - Prominent Display */}
+                  <div className="flex items-baseline justify-between pt-4 border-t border-gray-100">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-3xl font-bold text-gray-900">
+                        {accommodation.price?.split('/')[0] || '€80'}
+                      </span>
+                      <span className="text-gray-500 text-sm">/ notte</span>
+                    </div>
                   </div>
 
-                  <div className="flex gap-2">
+                  {/* Action Buttons - Wander Style */}
+                  <div className="flex gap-3 mt-4">
                     <Button
                       variant="outline"
-                      className="flex-1 bg-transparent"
-                      onClick={() => openGallery(accommodation._id, 0)}
+                      size="lg"
+                      className="flex-1 border-2 border-gray-200 hover:border-amber-500 hover:bg-amber-50 transition-all duration-300"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        openGallery(accommodation.id, 0)
+                      }}
                     >
-                      Vedi Galleria ({accommodation.images?.length || 0} foto)
+                      <Eye className="w-4 h-4 mr-2" />
+                      {accommodation.images?.length || 0} foto
                     </Button>
                     <Button
-                      className="flex-1 bg-amber-600 hover:bg-amber-700"
-                      onClick={() => openBookingSystem(accommodation._id, accommodation.name)}
+                      size="lg"
+                      className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        openBookingSystem(accommodation.id, accommodation.name)
+                      }}
                     >
                       <Calendar className="w-4 h-4 mr-2" />
-                      Prenota Ora
+                      Prenota
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
+                </div>
+              </Link>
+              )
+            })}
           </div>
 
           {/* Image Gallery Modal */}
@@ -334,7 +384,8 @@ export function AccommodationsSectionConvex() {
                   <Image
                     src={currentGalleryAccommodation.images?.[selectedGallery.currentImageIndex] || "/placeholder.svg"}
                     alt={
-                      currentGalleryAccommodation.imageDescriptions?.[selectedGallery.currentImageIndex] ||
+                      (currentGalleryAccommodation as any).imageDescriptions?.[selectedGallery.currentImageIndex] ||
+                      (currentGalleryAccommodation as any).image_descriptions?.[selectedGallery.currentImageIndex] ||
                       `${currentGalleryAccommodation.name} - Foto ${selectedGallery.currentImageIndex + 1}`
                     }
                     fill
@@ -346,7 +397,8 @@ export function AccommodationsSectionConvex() {
                 <div className="text-center mt-4 text-white">
                   <h3 className="text-xl font-bold mb-2">{currentGalleryAccommodation.name}</h3>
                   <p className="text-gray-300 mb-2">
-                    {currentGalleryAccommodation.imageDescriptions?.[selectedGallery.currentImageIndex] ||
+                    {(currentGalleryAccommodation as any).imageDescriptions?.[selectedGallery.currentImageIndex] ||
+                      (currentGalleryAccommodation as any).image_descriptions?.[selectedGallery.currentImageIndex] ||
                       `Foto ${selectedGallery.currentImageIndex + 1}`}
                   </p>
                   <p className="text-sm text-gray-400">

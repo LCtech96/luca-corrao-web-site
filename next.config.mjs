@@ -8,10 +8,16 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'api.qrserver.com',
+        pathname: '/v1/create-qr-code/**',
+      },
+    ],
   },
   // Optimize CSS and reduce preload warnings
   experimental: {
-    optimizeCss: true,
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons']
   },
   // Reduce preload warnings by configuring resource hints
@@ -91,5 +97,3 @@ const nextConfig = {
     return config;
   },
 }
-
-export default nextConfig

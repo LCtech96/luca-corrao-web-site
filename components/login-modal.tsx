@@ -6,6 +6,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 import { useState } from "react"
+import { ForgotPasswordModal } from "./forgot-password-modal"
+import { signInWithEmail } from "@/lib/supabase/auth-service"
+import { useToast } from "@/hooks/use-toast"
 
 interface LoginModalProps {
   onClose: () => void
@@ -15,35 +18,29 @@ export function LoginModal({ onClose }: LoginModalProps) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [showForgotPassword, setShowForgotPassword] = useState(false)
+  const { toast } = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     
     try {
-      const response = await fetch('/api/auth', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          action: 'login',
-          email,
-          password
-        })
-      })
-
-      const data = await response.json()
+      await signInWithEmail(email, password)
       
-      if (data.success) {
-        localStorage.setItem('userEmail', email)
-        onClose()
-      } else {
-        alert(data.error || 'Errore nel login')
-      }
-    } catch (error) {
+      toast({
+        title: "Accesso effettuato! ✅",
+        description: "Benvenuto!",
+      })
+      
+      onClose()
+    } catch (error: any) {
       console.error('Errore login:', error)
-      alert('Errore nel login. Riprova.')
+      toast({
+        title: "Errore di accesso",
+        description: error.message || "Email o password non corretti. Riprova.",
+        variant: "destructive",
+      })
     } finally {
       setIsLoading(false)
     }
@@ -98,7 +95,14 @@ export function LoginModal({ onClose }: LoginModalProps) {
             </Button>
           </form>
           
-          <div className="text-center">
+          <div className="text-center space-y-3">
+            <button
+              onClick={() => setShowForgotPassword(true)}
+              className="text-sm text-amber-600 hover:underline block w-full"
+            >
+              Password dimenticata?
+            </button>
+            
             <p className="text-sm text-gray-600">
               Non hai un account?{' '}
               <button 
@@ -114,6 +118,11 @@ export function LoginModal({ onClose }: LoginModalProps) {
           </div>
         </div>
       </DialogContent>
+
+      {/* Forgot Password Modal */}
+      {showForgotPassword && (
+        <ForgotPasswordModal onClose={() => setShowForgotPassword(false)} />
+      )}
     </Dialog>
   )
 } 

@@ -1,29 +1,13 @@
-// app/dashboard/page.tsx
-import { UserButton } from "@clerk/nextjs";
-import { auth } from "@clerk/nextjs/server";
-
-export default async function DashboardPage() {
-  // Get the userId from auth() -- no need to check if it's there
-  const { userId } = auth();
-
-  if (!userId) {
-    // This condition is technically not needed due to the middleware,
-    // but it's good practice for type-safety and clarity.
-    return null;
-  }
-  
-  // You can now use the userId to fetch data from your database
-  
+export default function DashboardPage() {
   return (
-    <div>
-      <header>
-        <h1>Dashboard</h1>
-        <UserButton afterSignOutUrl="/" />
-      </header>
-      <main>
-        <p>Welcome to your protected dashboard!</p>
-        <p>Your User ID is: {userId}</p>
-      </main>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+      <p className="text-gray-600">
+        La dashboard è temporaneamente disabilitata durante la migrazione a Supabase.
+      </p>
+      <p className="text-gray-600 mt-4">
+        L'autenticazione sarà gestita da Supabase Auth a breve.
+      </p>
     </div>
-  );
+  )
 }

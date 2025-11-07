@@ -144,7 +144,7 @@ export function ContactSection() {
                 variant="ghost"
                 size="lg"
                 className="text-blue-400 hover:text-blue-300 hover:bg-blue-400/10 flex items-center gap-2"
-                onClick={() => window.open("https://www.facebook.com/share/14GWprj9yY2/?mibextid=wwXIfr", "_blank")}
+                onClick={() => window.open("https://www.facebook.com/people/Luca-Corrao/pfbid021tDysnufGorRVgbBAkKyZkr94y3pRt2km9GuYixDE4b3SWS5P4faqUbbf5LQptsQl/", "_blank")}
               >
                 <Facebook className="w-6 h-6" />
                 <span className="hidden sm:inline">Facebook</span>
