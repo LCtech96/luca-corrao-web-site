@@ -229,8 +229,18 @@ export async function createWhatsAppProfile(
   return data
 }
 
+// Public host profile type
+export interface PublicHostProfile {
+  id: string
+  full_name: string
+  avatar_url: string | null
+  host_bio: string | null
+  host_languages: string[] | null
+  created_at: string
+}
+
 // Get host profiles (public)
-export async function getVerifiedHosts(): Promise<UserProfile[]> {
+export async function getVerifiedHosts(): Promise<PublicHostProfile[]> {
   const supabase = createClient()
   
   const { data, error } = await supabase
@@ -244,7 +254,7 @@ export async function getVerifiedHosts(): Promise<UserProfile[]> {
     return []
   }
   
-  return data || []
+  return (data || []) as PublicHostProfile[]
 }
 
 // Update last login
