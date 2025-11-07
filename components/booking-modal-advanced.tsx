@@ -148,6 +148,17 @@ export function BookingModalAdvanced({
         return
       }
 
+      // Verifica autenticazione utente
+      if (!user) {
+        toast({
+          title: "Registrazione richiesta",
+          description: "Devi effettuare il login per completare la prenotazione. Clicca su 'Registrati' in alto.",
+          variant: "destructive",
+          duration: 5000,
+        })
+        return
+      }
+
       // Crea la prenotazione in Supabase
       setIsSubmitting(true)
       try {
