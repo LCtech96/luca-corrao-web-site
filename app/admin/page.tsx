@@ -92,12 +92,20 @@ export default function AdminDashboard() {
               <h1 className="text-2xl font-bold text-gray-900">Dashboard Admin</h1>
               <p className="text-sm text-gray-600">Benvenuto, {user?.email}</p>
             </div>
-            <Link href="/">
-              <Button variant="outline">
-                <ChevronLeft className="w-4 h-4 mr-2" />
-                Torna al Sito
-              </Button>
-            </Link>
+            <div className="flex gap-2">
+              <Link href="/admin/users">
+                <Button variant="outline">
+                  <Users className="w-4 h-4 mr-2" />
+                  Gestisci Utenti
+                </Button>
+              </Link>
+              <Link href="/">
+                <Button variant="outline">
+                  <ChevronLeft className="w-4 h-4 mr-2" />
+                  Torna al Sito
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </div>

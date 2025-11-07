@@ -38,10 +38,12 @@ export function PaymentForm({ plan, onClose }: PaymentFormProps) {
   })
 
   const [step, setStep] = useState<"form" | "payment">("form")
+  const [paymentMethod, setPaymentMethod] = useState<"revolut" | "iban" | "crypto">("revolut")
   const [copied, setCopied] = useState(false)
 
   const IBAN = "IT91Y0200843300000107305969"
   const BENEFICIARY = "Luca Corrao"
+  const REVOLUT_LINK = "https://revolut.me/lctech96"
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -52,13 +54,22 @@ export function PaymentForm({ plan, onClose }: PaymentFormProps) {
     setStep("payment")
   }
 
-  const copyIBAN = () => {
-    navigator.clipboard.writeText(IBAN)
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
 
+  const copyIBAN = () => copyToClipboard(IBAN)
+  const copyRevolutLink = () => copyToClipboard(REVOLUT_LINK)
+
   const sendWhatsAppConfirmation = () => {
+    const paymentInfo = paymentMethod === 'revolut' 
+      ? `Pagamento tramite Revolut: ${REVOLUT_LINK}`
+      : paymentMethod === 'iban'
+      ? `Bonifico bancario a:\nIBAN: ${IBAN}\nBeneficiario: ${BENEFICIARY}\nCausale: AI Agent Vocale - ${plan.name} - ${formData.firstName} ${formData.lastName}`
+      : `Pagamento in Crypto (da concordare)`
+
     const message = `🎤 SOTTOSCRIZIONE AI AGENT VOCALE - ${plan.name}
 
 👤 DATI CLIENTE:
@@ -79,11 +90,8 @@ ${plan.name} - ${plan.price}${plan.period}
 📋 CARATTERISTICHE INCLUSE:
 ${plan.features.map((feature) => `• ${feature}`).join("\n")}
 
-💳 PAGAMENTO:
-Ho effettuato il bonifico bancario a:
-IBAN: ${IBAN}
-Beneficiario: ${BENEFICIARY}
-Causale: AI Agent Vocale - ${plan.name} - ${formData.firstName} ${formData.lastName}
+💳 METODO DI PAGAMENTO:
+${paymentInfo}
 
 ${formData.notes ? `📝 Note aggiuntive: ${formData.notes}` : ""}
 
@@ -327,12 +335,124 @@ ${formData.notes ? `📝 Note aggiuntive: ${formData.notes}` : ""}
             </div>
           </div>
 
-          {/* Dati Bonifico */}
-          <div className="bg-green-50 p-6 rounded-lg border border-green-200 mb-6">
-            <h3 className="font-semibold text-green-900 mb-4 flex items-center gap-2">
-              <Building className="w-5 h-5" />
-              Dati per il Bonifico Bancario
-            </h3>
+          {/* Selezione Metodo di Pagamento */}
+          <div className="mb-6">
+            <h3 className="font-semibold text-gray-900 mb-3">Seleziona il metodo di pagamento</h3>
+            <div className="grid md:grid-cols-3 gap-3">
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('revolut')}
+                className={`p-4 rounded-lg border-2 transition-all ${
+                  paymentMethod === 'revolut'
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="text-center">
+                  <div className="text-2xl mb-2">💳</div>
+                  <div className="font-semibold">Revolut</div>
+                  <div className="text-xs text-gray-600 mt-1">Istantaneo</div>
+                  {paymentMethod === 'revolut' && (
+                    <Badge className="mt-2 bg-blue-500">Selezionato</Badge>
+                  )}
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('iban')}
+                className={`p-4 rounded-lg border-2 transition-all ${
+                  paymentMethod === 'iban'
+                    ? 'border-green-500 bg-green-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="text-center">
+                  <div className="text-2xl mb-2">🏦</div>
+                  <div className="font-semibold">Bonifico</div>
+                  <div className="text-xs text-gray-600 mt-1">24-48h</div>
+                  {paymentMethod === 'iban' && (
+                    <Badge className="mt-2 bg-green-500">Selezionato</Badge>
+                  )}
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('crypto')}
+                className={`p-4 rounded-lg border-2 transition-all opacity-50 cursor-not-allowed ${
+                  paymentMethod === 'crypto'
+                    ? 'border-purple-500 bg-purple-50'
+                    : 'border-gray-200'
+                }`}
+                disabled
+              >
+                <div className="text-center">
+                  <div className="text-2xl mb-2">₿</div>
+                  <div className="font-semibold">Crypto</div>
+                  <div className="text-xs text-gray-600 mt-1">Presto</div>
+                  <Badge className="mt-2 bg-gray-400 text-white">Coming Soon</Badge>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          {/* Dati Pagamento - Revolut */}
+          {paymentMethod === 'revolut' && (
+            <div className="bg-blue-50 p-6 rounded-lg border border-blue-200 mb-6">
+              <h3 className="font-semibold text-blue-900 mb-4 flex items-center gap-2">
+                <CreditCard className="w-5 h-5" />
+                Pagamento Revolut
+              </h3>
+
+              <div className="space-y-4">
+                <div className="text-center mb-4">
+                  <p className="text-blue-800 mb-3">Scansiona il QR code o clicca il link per pagare:</p>
+                  <div className="bg-white p-4 rounded-lg inline-block">
+                    <img 
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(REVOLUT_LINK)}`}
+                      alt="Revolut QR Code"
+                      className="w-48 h-48 mx-auto"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-blue-800 font-medium">Link Revolut</Label>
+                  <div className="bg-white p-3 rounded border flex items-center justify-between">
+                    <a href={REVOLUT_LINK} target="_blank" rel="noopener noreferrer" className="font-mono text-blue-600 hover:underline">
+                      {REVOLUT_LINK}
+                    </a>
+                    <Button onClick={copyRevolutLink} size="sm" variant="outline" className="ml-2 bg-transparent">
+                      {copied ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                    </Button>
+                  </div>
+                  {copied && <p className="text-sm text-blue-600 mt-1">✅ Link copiato!</p>}
+                </div>
+
+                <div>
+                  <Label className="text-blue-800 font-medium">Importo da Inviare</Label>
+                  <div className="bg-white p-3 rounded border">
+                    <span className="font-mono text-xl font-bold">{plan.price}</span>
+                  </div>
+                </div>
+
+                <div className="bg-blue-100 p-3 rounded">
+                  <p className="text-sm text-blue-800">
+                    💡 <strong>Causale:</strong> {plan.name} - {formData.firstName} {formData.lastName}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Dati Bonifico - IBAN */}
+          {paymentMethod === 'iban' && (
+            <div className="bg-green-50 p-6 rounded-lg border border-green-200 mb-6">
+              <h3 className="font-semibold text-green-900 mb-4 flex items-center gap-2">
+                <Building className="w-5 h-5" />
+                Dati per il Bonifico Bancario
+              </h3>
 
             <div className="space-y-4">
               <div>
@@ -369,16 +489,17 @@ ${formData.notes ? `📝 Note aggiuntive: ${formData.notes}` : ""}
                 </div>
               </div>
             </div>
-          </div>
+            </div>
+          )}
 
           {/* Istruzioni */}
           <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-6">
             <h4 className="font-semibold text-blue-900 mb-2">📋 Istruzioni</h4>
             <ol className="text-sm text-blue-800 space-y-1">
-              <li>1. Effettua il bonifico bancario con i dati sopra indicati</li>
+              <li>1. {paymentMethod === 'revolut' ? 'Effettua il pagamento tramite Revolut con il link/QR code sopra' : 'Effettua il bonifico bancario con i dati sopra indicati'}</li>
               <li>2. Clicca "Conferma Pagamento" qui sotto per inviarci i dettagli</li>
               <li>3. Ti contatteremo su WhatsApp per confermare l'attivazione</li>
-              <li>4. Il servizio sarà attivo entro 24 ore dalla conferma del pagamento</li>
+              <li>4. Il servizio sarà attivo {paymentMethod === 'revolut' ? 'entro poche ore' : 'entro 24-48 ore'} dalla conferma del pagamento</li>
             </ol>
           </div>
 
