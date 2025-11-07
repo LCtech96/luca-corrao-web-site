@@ -33,7 +33,7 @@ export function MinimalHero() {
       
       {/* Main Hero Section */}
       <section className="flex-1 flex items-center justify-center px-4 relative overflow-hidden pt-20">
-        {/* 4K Video Background - Action Sports Style */}
+        {/* 4K Video Background - Extreme Skiing Action Sports Style */}
         <div className="absolute inset-0 z-0">
           <video
             autoPlay
@@ -42,7 +42,7 @@ export function MinimalHero() {
             playsInline
             className="absolute inset-0 w-full h-full object-cover"
           >
-            <source src="/videos/snowboard-action-4k.mp4" type="video/mp4" />
+            <source src="/videos/ski-extreme-4k.mp4" type="video/mp4" />
           </video>
           {/* Dark overlay for better text readability + Red Bull vibe */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70"></div>
