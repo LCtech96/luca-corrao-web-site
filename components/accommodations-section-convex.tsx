@@ -3,6 +3,7 @@
 import type React from "react"
 import { useState } from "react"
 import { useAccommodations } from "@/hooks/use-accommodations"
+import { useFavorites } from "@/hooks/use-favorites"
 import { Button } from "@/components/ui/button"
 import {
   MapPin,
@@ -17,6 +18,7 @@ import {
   Wifi,
   Car,
   Eye,
+  Heart,
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -157,6 +159,9 @@ export function AccommodationsSectionConvex() {
   // Use Supabase data if available, otherwise use fallback data
   const accommodations = supabaseAccommodations || fallbackAccommodations
   
+  // Favorites management
+  const { toggleFavorite, isFavorite } = useFavorites()
+  
   const [selectedGallery, setSelectedGallery] = useState<{
     accommodationId: string
     currentImageIndex: number
@@ -232,14 +237,14 @@ export function AccommodationsSectionConvex() {
             {accommodations?.map((accommodation) => {
               const slug = accommodation.slug || generateSlug(accommodation.name)
               return (
-              <Link 
+              <div 
                 key={accommodation.id} 
-                href={`/property/${slug}`}
-                className="group relative overflow-hidden rounded-3xl bg-white shadow-lg hover:shadow-2xl transition-all duration-500 block"
+                className="group relative overflow-hidden rounded-3xl bg-white shadow-lg hover:shadow-2xl transition-all duration-500"
               >
                 {/* Image Container with Overlay Effect */}
-                <div 
-                  className="relative h-80 overflow-hidden cursor-pointer"
+                <Link 
+                  href={`/property/${slug}`}
+                  className="relative h-80 overflow-hidden cursor-pointer block"
                 >
                   <Image
                     src={(accommodation as any).mainImage || (accommodation as any).main_image || accommodation.images?.[0] || "/placeholder.svg"}
@@ -254,6 +259,25 @@ export function AccommodationsSectionConvex() {
                     Premium
                   </div>
                   
+                  {/* Favorite Heart Button */}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      toggleFavorite(accommodation.id)
+                    }}
+                    className="absolute top-6 right-6 w-12 h-12 bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300 z-20 group/heart"
+                    aria-label={isFavorite(accommodation.id) ? "Rimuovi dai preferiti" : "Aggiungi ai preferiti"}
+                  >
+                    <Heart 
+                      className={`w-6 h-6 transition-all duration-300 ${
+                        isFavorite(accommodation.id) 
+                          ? 'fill-red-500 text-red-500 scale-110' 
+                          : 'text-gray-600 group-hover/heart:text-red-500 group-hover/heart:scale-110'
+                      }`}
+                    />
+                  </button>
+                  
                   {/* Gradient Overlay on Hover */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   
@@ -264,9 +288,10 @@ export function AccommodationsSectionConvex() {
                       <p className="text-xs opacity-90 line-clamp-2">{accommodation.description}</p>
                     </div>
                   </div>
-                </div>
+                </Link>
 
                 {/* Content - Clean and Modern */}
+                <Link href={`/property/${slug}`} className="block">
                 <div className="p-6 space-y-4">
                   <div>
                     <h3 className="text-2xl font-bold text-gray-900 mb-1 group-hover:text-amber-600 transition-colors">
@@ -313,9 +338,11 @@ export function AccommodationsSectionConvex() {
                       <span className="text-gray-500 text-sm">/ notte</span>
                     </div>
                   </div>
+                </div>
+                </Link>
 
                   {/* Action Buttons - Wander Style */}
-                  <div className="flex gap-3 mt-4">
+                  <div className="flex gap-3 mt-4 px-6 pb-6">
                     <Button
                       variant="outline"
                       size="lg"
@@ -340,8 +367,7 @@ export function AccommodationsSectionConvex() {
                       Prenota
                     </Button>
                   </div>
-                </div>
-              </Link>
+              </div>
               )
             })}
           </div>
