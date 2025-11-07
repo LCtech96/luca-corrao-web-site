@@ -1,7 +1,5 @@
 "use client"
 
-import Image from "next/image"
-
 interface RevolutQRProps {
   size?: number
   showLabel?: boolean
@@ -14,7 +12,8 @@ export function RevolutQR({ size = 200, showLabel = true }: RevolutQRProps) {
   return (
     <div className="inline-block text-center">
       <div className="p-4 bg-white border-2 border-gray-200 rounded-lg inline-block">
-        <Image
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           src={qrCodeUrl}
           alt="Revolut QR Code - Luca Corrao"
           width={size}
