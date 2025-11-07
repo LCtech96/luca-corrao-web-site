@@ -148,86 +148,14 @@ export function BookingModalAdvanced({
         return
       }
 
-      // Verifica autenticazione utente
-      if (!user) {
-        // Chiudi il modal di prenotazione
-        onClose()
-        
-        // Mostra alert prominente
-        alert("⚠️ REGISTRAZIONE RICHIESTA\n\nPer completare la prenotazione devi prima registrarti o effettuare il login.\n\nClicca su 'Registrati' o 'Log in' nella barra in alto e scegli:\n✅ Google\n✅ Facebook\n✅ Email/Password\n\nDopo il login potrai completare la prenotazione!")
-        
-        // Scroll to top per mostrare i pulsanti di registrazione
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-        
-        return
-      }
-
-      // Crea la prenotazione in Supabase
-      setIsSubmitting(true)
-      try {
-        // Genera un property_id se manca
-        const finalPropertyId = propertyId || `property-${propertySlug}`
-        
-        const booking = await createBooking({
-          property_id: finalPropertyId,
-          property_name: propertyName,
-          property_slug: propertySlug,
-          guest_email: bookingData.email,
-          guest_name: bookingData.name,
-          guest_phone: bookingData.phone,
-          check_in: bookingData.checkIn,
-          check_out: bookingData.checkOut,
-          guests: bookingData.guests,
-          nights: totalNights,
-          price_per_night: propertyPrice,
-          cleaning_fee: cleaningFee,
-          subtotal: subtotal,
-          total: total,
-          notes: bookingData.notes || null,
-          property_owner_email: 'luca@bedda.tech',
-        })
-
-        if (booking) {
-          setBookingId(booking.id)
-          
-          // Invia messaggio di benvenuto automatico
-          await sendChatMessage(
-            booking.id,
-            'luca@bedda.tech',
-            'Luca Corrao',
-            'host',
-            `Ciao ${bookingData.name}! Grazie per aver scelto ${propertyName}. Sono qui per rispondere a qualsiasi domanda sulla tua prenotazione.`
-          )
-          
-          toast({
-            title: "Prenotazione creata!",
-            description: "I tuoi dati sono stati salvati. Procedi con il pagamento.",
-          })
-          
-          setStep(step + 1)
-        } else {
-          throw new Error('Failed to create booking')
-        }
-      } catch (error: any) {
-        console.error('Error creating booking:', error)
-        
-        // Log dettagliato per debug
-        console.log('Booking data:', {
-          property_id: propertyId,
-          property_name: propertyName,
-          guest_email: bookingData.email,
-          user: user?.email
-        })
-        
-        toast({
-          title: "Errore nella creazione prenotazione",
-          description: error.message || "Impossibile creare la prenotazione. Verifica di essere loggato e riprova.",
-          variant: "destructive",
-          duration: 6000,
-        })
-      } finally {
-        setIsSubmitting(false)
-      }
+      // Passa direttamente allo step del pagamento (step 3)
+      // Saltiamo completamente il database e la chat
+      setStep(3)
+      
+      toast({
+        title: "Quasi fatto!",
+        description: "Scegli il metodo di pagamento per completare.",
+      })
     } else {
       setStep(step + 1)
     }
