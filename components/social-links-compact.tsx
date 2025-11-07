@@ -1,6 +1,7 @@
 "use client"
 
-import { Linkedin, Instagram, Facebook, Twitter } from "lucide-react"
+import { Linkedin, Instagram, Facebook } from "lucide-react"
+import { XIcon } from "./x-icon"
 
 export function SocialLinksCompact() {
   const socialLinks = [
@@ -24,9 +25,9 @@ export function SocialLinksCompact() {
     },
     {
       name: "X",
-      icon: Twitter,
+      icon: XIcon,
       url: "https://twitter.com/lucacorrao",
-      color: "hover:text-gray-900"
+      color: "hover:text-white"
     },
     {
       name: "bedda.AI",
