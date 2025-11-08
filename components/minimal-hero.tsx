@@ -63,7 +63,7 @@ export function MinimalHero() {
                 alt="Luca Corrao"
                 width={200}
                 height={200}
-                className="relative rounded-full shadow-2xl object-cover border-4 border-red-500/80 backdrop-blur-sm hover:scale-105 hover:border-cyan-400 transition-all duration-500"
+                className="relative rounded-full shadow-2xl object-cover border border-red-500/80 backdrop-blur-sm hover:scale-105 hover:border-cyan-400 transition-all duration-500"
                 priority
               />
             </div>
