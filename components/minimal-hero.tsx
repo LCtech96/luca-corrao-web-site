@@ -33,19 +33,11 @@ export function MinimalHero() {
       
       {/* Main Hero Section */}
       <section className="flex-1 flex items-center justify-center px-4 relative overflow-hidden pt-16">
-        {/* 4K Video Background - Extreme Skiing Action Sports Style */}
+        {/* Gradient Background - Action Sports Style (Video placeholder) */}
         <div className="absolute inset-0 z-0">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover"
-          >
-            <source src="/videos/ski-extreme-4k.mp4" type="video/mp4" />
-          </video>
-          {/* Dark overlay for better text readability + Red Bull vibe */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-blue-950 to-black"></div>
+          {/* Animated gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-cyan-900/20 via-transparent to-red-900/20 animate-pulse-slow"></div>
         </div>
         
         {/* 3D Snowfall Effect - Slow Motion */}
