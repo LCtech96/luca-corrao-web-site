@@ -127,15 +127,23 @@ export async function POST(request: NextRequest) {
       if (imageUrl && !imageUrl.startsWith('http')) {
         imageUrl = `${request.nextUrl.origin}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`
       }
+
+      // Determina il link corretto (locale o esterno)
+      const propertyLink = acc.source === 'nomadiqe' 
+        ? `EXTERNAL:${acc.externalUrl}` 
+        : acc.slug
+
+      const platformLabel = acc.source === 'nomadiqe' ? ' [su app.nomadiqe.com]' : ' [su lucacorrao.com]'
       
-      return `${index + 1}. ${acc.name} (slug: ${acc.slug})
+      return `${index + 1}. ${acc.name}${platformLabel}
+   - Slug/Link: ${propertyLink}
    - Capacità: ${acc.capacity}
    - Descrizione: ${acc.description.substring(0, 150)}...
    - Prezzo: ${acc.price || 'Da definire'}
    - Features: ${acc.features?.slice(0, 3).join(', ')}
    - Immagine URL: ${imageUrl}
    
-   IMPORTANTE: Quando suggerisci ${acc.name}, USA SEMPRE: [IMAGE:${imageUrl}:${acc.slug}]`
+   IMPORTANTE: Quando suggerisci ${acc.name}, USA: [IMAGE:${imageUrl}:${propertyLink}]`
     }).join('\n\n')
 
     // System prompt - personalizzato per il tuo sito con azioni smart
@@ -180,19 +188,30 @@ FLUSSO DI RICERCA (IMPORTANTE):
    - Perché è adatta alle sue esigenze
 
 AZIONI DISPONIBILI:
-- [IMAGE:URL:SLUG] - Mostra immagine cliccabile nella chat
-  FORMATO ESATTO: [IMAGE:https://example.com/img.jpg:lucas-suite]
-  L'utente cliccherà sull'immagine per aprire la pagina
 
-Esempio risposta per Lucas Suite:
-"Perfetto! Per 4 persone ti consiglio Lucas Suite. Ha vista mare e cucina attrezzata. 
-[IMAGE:URL_COMPLETO_DA_LISTA_SOPRA:lucas-suite]
-👆 Clicca sull'immagine per vedere tutti i dettagli!"
+1. **Strutture su lucacorrao.com:**
+   [IMAGE:imageUrl:slug]
+   Esempio: [IMAGE:https://lucacorrao.com/img.jpg:lucas-suite]
+
+2. **Strutture su app.nomadiqe.com (EXTERNAL):**
+   [IMAGE:imageUrl:EXTERNAL:https://app.nomadiqe.com/property/slug]
+   Esempio: [IMAGE:https://nomadiqe.com/img.jpg:EXTERNAL:https://app.nomadiqe.com/property/villa-sicilia]
+
+Esempio risposta per struttura su lucacorrao.com:
+"Lucas Suite è perfetta per te! Ha vista mare. 
+[IMAGE:url:lucas-suite]
+👆 Clicca per vedere i dettagli!"
+
+Esempio risposta per struttura su app.nomadiqe.com:
+"Villa Sicilia su nomadiqe.com è ottima! 
+[IMAGE:url:EXTERNAL:https://app.nomadiqe.com/property/villa-sicilia]
+👆 Clicca per aprire su app.nomadiqe.com"
 
 ⚠️ CRUCIALE: 
-- USA L'URL ESATTO dalla "Immagine URL:" della struttura sopra
-- INCLUDI SEMPRE [IMAGE:URL:SLUG] quando suggerisci una struttura
-- Non scrivere "immagine", metti direttamente il marker [IMAGE:...]
+- USA lo "Slug/Link" ESATTO dalla lista sopra
+- Se vedi "EXTERNAL:" usa quel formato per link esterni
+- INCLUDI SEMPRE [IMAGE:...] quando suggerisci struttura
+- Menziona la piattaforma (lucacorrao.com o app.nomadiqe.com)
 
 REGOLE:
 - NON inventare nomi di strutture

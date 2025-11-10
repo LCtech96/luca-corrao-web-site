@@ -9,8 +9,39 @@ export async function GET(request: NextRequest) {
     const checkIn = searchParams.get('checkIn') || ''
     const checkOut = searchParams.get('checkOut') || ''
 
-    // Recupera tutte le strutture attive
-    const allAccommodations = await getAllAccommodations()
+    // Recupera strutture da lucacorrao.com (locale)
+    const localAccommodations = await getAllAccommodations()
+
+    // Recupera strutture da app.nomadiqe.com
+    let nomadiqeAccommodations: any[] = []
+    try {
+      const nomadiqeResponse = await fetch('https://app.nomadiqe.com/api/accommodations', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        cache: 'no-store'
+      })
+      
+      if (nomadiqeResponse.ok) {
+        const nomadiqeData = await nomadiqeResponse.json()
+        nomadiqeAccommodations = (nomadiqeData.accommodations || []).map((acc: any) => ({
+          ...acc,
+          source: 'nomadiqe', // Tag per identificare la source
+          externalUrl: `https://app.nomadiqe.com/property/${acc.slug || generateSlug(acc.name)}`
+        }))
+        console.log('✅ Nomadiqe properties loaded:', nomadiqeAccommodations.length)
+      }
+    } catch (error) {
+      console.error('⚠️ Could not fetch from nomadiqe.com:', error)
+      // Non bloccare se nomadiqe non risponde
+    }
+
+    // Combina tutte le strutture
+    const allAccommodations = [
+      ...localAccommodations.map(acc => ({ ...acc, source: 'lucacorrao' })),
+      ...nomadiqeAccommodations
+    ]
 
     // Filtra basandoti sui parametri (logica semplificata)
     let filtered = allAccommodations
@@ -43,11 +74,13 @@ export async function GET(request: NextRequest) {
       description: acc.description,
       capacity: acc.capacity,
       features: acc.features,
-      mainImage: acc.main_image,
+      mainImage: acc.main_image || acc.mainImage,
       price: acc.price,
       address: acc.address,
       distance: acc.distance,
-      slug: generateSlug(acc.name)
+      slug: acc.slug || generateSlug(acc.name),
+      source: acc.source || 'lucacorrao', // lucacorrao o nomadiqe
+      externalUrl: acc.externalUrl || null // URL esterno se da nomadiqe
     }))
 
     return NextResponse.json({

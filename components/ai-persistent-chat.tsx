@@ -289,13 +289,43 @@ export function AIPersistentChat({ onClose, onNewMessage }: AIPersistentChatProp
             const isImageMessage = message.content.startsWith('[IMAGES:')
             const imagesData = isImageMessage 
               ? message.content.replace('[IMAGES:', '').replace(']', '').split('|').map(item => {
-                  // Split sull'ULTIMO ':' per non rompere https://
-                  const lastColonIndex = item.lastIndexOf(':')
-                  if (lastColonIndex === -1) return { url: '', slug: '' } // Safety check
-                  const url = item.substring(0, lastColonIndex).trim()
-                  const slug = item.substring(lastColonIndex + 1).trim()
-                  return { url, slug }
-                }).filter(img => img.url && img.slug) // Rimuovi entry invalide
+                  // Gestisce sia formato locale (url:slug) che esterno (url:EXTERNAL:fullUrl)
+                  const parts = item.split(':')
+                  
+                  if (parts.length < 3) {
+                    // Safety check
+                    return { url: '', slug: '', isExternal: false, externalUrl: '' }
+                  }
+                  
+                  // Ricostruisci URL (può avere : in https://)
+                  const urlParts: string[] = []
+                  let foundExternal = false
+                  let externalUrlParts: string[] = []
+                  
+                  for (let i = 0; i < parts.length; i++) {
+                    if (parts[i] === 'EXTERNAL') {
+                      foundExternal = true
+                      continue
+                    }
+                    
+                    if (foundExternal) {
+                      externalUrlParts.push(parts[i])
+                    } else if (i < parts.length - 1 || !foundExternal) {
+                      urlParts.push(parts[i])
+                    }
+                  }
+                  
+                  const url = foundExternal ? urlParts.join(':').trim() : urlParts.slice(0, -1).join(':').trim()
+                  const slug = foundExternal ? '' : urlParts[urlParts.length - 1]?.trim()
+                  const externalUrl = foundExternal ? externalUrlParts.join(':').trim() : ''
+                  
+                  return { 
+                    url, 
+                    slug, 
+                    isExternal: foundExternal, 
+                    externalUrl 
+                  }
+                }).filter(img => img.url && (img.slug || img.externalUrl)) // Rimuovi entry invalide
               : []
 
             return (
@@ -311,12 +341,23 @@ export function AIPersistentChat({ onClose, onNewMessage }: AIPersistentChatProp
                         key={index} 
                         className="rounded-xl sm:rounded-2xl overflow-hidden border border-cyan-500/30 shadow-lg active:scale-95 sm:hover:border-cyan-400 sm:hover:shadow-cyan-500/50 transition-all duration-300 cursor-pointer group relative"
                         onClick={() => {
-                          toast({
-                            title: "Apertura pagina...",
-                            description: "Ti sto portando alla struttura",
-                          })
-                          router.push(`/property/${img.slug}`)
-                          onClose()
+                          if (img.isExternal && img.externalUrl) {
+                            // Link esterno (app.nomadiqe.com)
+                            toast({
+                              title: "Apertura su app.nomadiqe.com",
+                              description: "Apro la pagina esterna...",
+                            })
+                            window.open(img.externalUrl, '_blank', 'noopener,noreferrer')
+                            // Non chiudere la chat per link esterni
+                          } else {
+                            // Link locale (lucacorrao.com)
+                            toast({
+                              title: "Apertura pagina...",
+                              description: "Ti sto portando alla struttura",
+                            })
+                            router.push(`/property/${img.slug}`)
+                            onClose()
+                          }
                         }}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
