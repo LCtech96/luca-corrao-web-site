@@ -66,8 +66,8 @@ export function MinimalHero() {
                 className="relative rounded-full shadow-2xl object-cover border border-red-500/80 backdrop-blur-sm hover:scale-105 hover:border-cyan-400 transition-all duration-500"
                 priority
               />
-            </div>
-            
+          </div>
+
             {/* Nome vicino alla foto */}
             <h1 className="text-4xl md:text-5xl font-bold text-white mt-4 tracking-wide drop-shadow-2xl">
               Luca Corrao

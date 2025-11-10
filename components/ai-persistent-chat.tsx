@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { X, Send, Loader2, Sparkles, ExternalLink, Trash2 } from "lucide-react"
+import { X, Send, Loader2, Sparkles, ExternalLink, Trash2, Mic, MicOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
@@ -27,14 +27,70 @@ export function AIPersistentChat({ onClose, onNewMessage }: AIPersistentChatProp
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [isListening, setIsListening] = useState(false)
   const { toast } = useToast()
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
+  const recognitionRef = useRef<any>(null)
 
   // Auto-scroll to bottom quando arrivano nuovi messaggi
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
+
+  // Fix tastiera iPhone - scroll automatico quando input è attivo
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    
+    const handleResize = () => {
+      // Scroll al bottom quando tastiera si apre su iPhone
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
+      }, 100)
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  // Setup Web Speech API per input vocale
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition()
+      recognition.lang = 'it-IT'
+      recognition.continuous = false
+      recognition.interimResults = false
+
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript
+        setInput(transcript)
+        setIsListening(false)
+      }
+
+      recognition.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error)
+        setIsListening(false)
+        if (event.error !== 'no-speech') {
+          toast({
+            title: "Errore microfono",
+            description: "Non riesco a sentire. Verifica i permessi del microfono.",
+            variant: "destructive",
+          })
+        }
+      }
+
+      recognition.onend = () => {
+        setIsListening(false)
+      }
+
+      recognitionRef.current = recognition
+    }
+  }, [toast])
 
   // Carica conversazione da localStorage
   useEffect(() => {
@@ -82,6 +138,34 @@ export function AIPersistentChat({ onClose, onNewMessage }: AIPersistentChatProp
       title: "Chat resettata",
       description: "La cronologia della conversazione è stata cancellata.",
     })
+  }
+
+  const toggleVoiceInput = () => {
+    if (!recognitionRef.current) {
+      toast({
+        title: "Microfono non supportato",
+        description: "Il tuo browser non supporta il riconoscimento vocale.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (isListening) {
+      recognitionRef.current.stop()
+      setIsListening(false)
+    } else {
+      try {
+        recognitionRef.current.start()
+        setIsListening(true)
+        toast({
+          title: "Microfono attivo",
+          description: "Parla ora... 🎤",
+        })
+      } catch (error) {
+        console.error('Voice input error:', error)
+        setIsListening(false)
+      }
+    }
   }
 
   // Funzione per rilevare intent e eseguire azioni
@@ -415,20 +499,48 @@ export function AIPersistentChat({ onClose, onNewMessage }: AIPersistentChatProp
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input - Responsive */}
-        <div className="p-3 sm:p-4 border-t border-cyan-500/20 bg-black/40 safe-area-bottom">
-          <div className="flex gap-2">
+        {/* Input - Responsive + Fix tastiera iPhone */}
+        <div className="p-3 sm:p-4 border-t border-cyan-500/20 bg-black/40 pb-safe">
+          <div className="flex gap-1.5 sm:gap-2">
+            {/* Bottone Microfono */}
+            <Button
+              onClick={toggleVoiceInput}
+              disabled={isLoading}
+              className={`rounded-full w-10 h-10 sm:w-11 sm:h-11 p-0 flex-shrink-0 transition-all duration-300 ${
+                isListening 
+                  ? 'bg-red-500 hover:bg-red-600 animate-pulse shadow-lg shadow-red-500/50' 
+                  : 'bg-gray-700 hover:bg-gray-600 border border-gray-600'
+              }`}
+              title="Input vocale"
+            >
+              {isListening ? (
+                <MicOff className="w-4 h-4 text-white" />
+              ) : (
+                <Mic className="w-4 h-4 text-white" />
+              )}
+            </Button>
+
+            {/* Input Text */}
             <Input
+              ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Scrivi un messaggio..."
-              disabled={isLoading}
+              onFocus={() => {
+                // Fix iPhone: scroll quando tastiera si apre
+                setTimeout(() => {
+                  inputRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
+                }, 300)
+              }}
+              placeholder={isListening ? "Sto ascoltando..." : "Scrivi o parla..."}
+              disabled={isLoading || isListening}
               className="flex-1 bg-gray-800/50 border-gray-700/50 text-white placeholder:text-gray-500 focus:border-cyan-400 focus:ring-cyan-400/50 rounded-full h-10 sm:h-11 text-[13px] sm:text-sm"
             />
+
+            {/* Bottone Send */}
             <Button
               onClick={handleSend}
-              disabled={isLoading || !input.trim()}
+              disabled={isLoading || !input.trim() || isListening}
               className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-full w-10 h-10 sm:w-11 sm:h-11 p-0 shadow-lg shadow-cyan-500/50 flex-shrink-0"
             >
               {isLoading ? (
@@ -439,7 +551,7 @@ export function AIPersistentChat({ onClose, onNewMessage }: AIPersistentChatProp
             </Button>
           </div>
           <p className="text-[10px] sm:text-xs text-gray-500 mt-1.5 sm:mt-2 text-center px-2">
-            Le risposte sono generate da AI e potrebbero non essere sempre accurate
+            {isListening ? "🎤 Sto ascoltando..." : "Le risposte sono generate da AI e potrebbero non essere sempre accurate"}
           </p>
         </div>
       </div>

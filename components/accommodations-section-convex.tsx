@@ -367,7 +367,7 @@ export function AccommodationsSectionConvex() {
                       Prenota
                     </Button>
                   </div>
-              </div>
+                </div>
               )
             })}
           </div>
