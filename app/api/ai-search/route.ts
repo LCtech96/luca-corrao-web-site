@@ -109,20 +109,34 @@ export async function POST(request: NextRequest) {
       if (accomResponse.ok) {
         const accomData = await accomResponse.json()
         accommodationsData = accomData.accommodations || []
+        console.log('✅ Accommodations loaded:', accommodationsData.length)
+        console.log('📸 First image URL:', accommodationsData[0]?.mainImage)
+      } else {
+        console.error('❌ Failed to fetch accommodations:', accomResponse.status)
       }
     } catch (error) {
-      console.error('Error fetching accommodations:', error)
+      console.error('❌ Error fetching accommodations:', error)
     }
 
     // Formatta strutture per il prompt
-    const accommodationsText = accommodationsData.map((acc: any, index: number) => 
-      `${index + 1}. ${acc.name} (slug: ${acc.slug})
+    const accommodationsText = accommodationsData.map((acc: any, index: number) => {
+      // Assicurati che l'URL dell'immagine sia completo e pubblico
+      let imageUrl = acc.mainImage || ''
+      
+      // Se è un URL relativo, rendilo assoluto
+      if (imageUrl && !imageUrl.startsWith('http')) {
+        imageUrl = `${request.nextUrl.origin}${imageUrl.startsWith('/') ? '' : '/'}${imageUrl}`
+      }
+      
+      return `${index + 1}. ${acc.name} (slug: ${acc.slug})
    - Capacità: ${acc.capacity}
    - Descrizione: ${acc.description.substring(0, 150)}...
    - Prezzo: ${acc.price || 'Da definire'}
    - Features: ${acc.features?.slice(0, 3).join(', ')}
-   - Immagine: ${acc.mainImage}`
-    ).join('\n\n')
+   - Immagine URL: ${imageUrl}
+   
+   IMPORTANTE: Quando suggerisci ${acc.name}, USA SEMPRE: [IMAGE:${imageUrl}:${acc.slug}]`
+    }).join('\n\n')
 
     // System prompt - personalizzato per il tuo sito con azioni smart
     const systemPrompt = `Sei NOM.AI, assistente virtuale intelligente per lucacorrao.com (portfolio e prenotazione strutture a Terrasini, Sicilia).
@@ -149,13 +163,18 @@ FLUSSO DI RICERCA (IMPORTANTE):
 
 AZIONI DISPONIBILI:
 - [IMAGE:URL:SLUG] - Mostra immagine cliccabile nella chat
-  Esempio: [IMAGE:https://example.com/img.jpg:lucas-suite]
+  FORMATO ESATTO: [IMAGE:https://example.com/img.jpg:lucas-suite]
   L'utente cliccherà sull'immagine per aprire la pagina
 
-Esempio risposta:
+Esempio risposta per Lucas Suite:
 "Perfetto! Per 4 persone ti consiglio Lucas Suite. Ha vista mare e cucina attrezzata. 
-[IMAGE:https://...:lucas-suite]
-Clicca sull'immagine per vedere tutti i dettagli!"
+[IMAGE:URL_COMPLETO_DA_LISTA_SOPRA:lucas-suite]
+👆 Clicca sull'immagine per vedere tutti i dettagli!"
+
+⚠️ CRUCIALE: 
+- USA L'URL ESATTO dalla "Immagine URL:" della struttura sopra
+- INCLUDI SEMPRE [IMAGE:URL:SLUG] quando suggerisci una struttura
+- Non scrivere "immagine", metti direttamente il marker [IMAGE:...]
 
 REGOLE:
 - NON inventare nomi di strutture
