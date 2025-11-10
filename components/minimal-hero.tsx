@@ -9,7 +9,7 @@ import { AISolutionsSection } from "./ai-solutions-section"
 import { NavigationBar } from "./navigation-bar"
 import { Snowfall3D } from "./snowfall-3d"
 import { SocialLinksCompact } from "./social-links-compact"
-import { AISearchBar } from "./ai-search-bar"
+import { ChatBubble } from "./chat-bubble"
 
 export function MinimalHero() {
   const [activeSection, setActiveSection] = useState<"structures" | "ai" | null>(null)
@@ -77,9 +77,6 @@ export function MinimalHero() {
             <SocialLinksCompact />
           </div>
 
-          {/* AI Search Bar */}
-          <AISearchBar />
-
           {/* Main Action Buttons - Red Bull Style */}
           <div className="grid md:grid-cols-2 gap-10 max-w-4xl mx-auto mb-20">
             <Button
@@ -108,6 +105,9 @@ export function MinimalHero() {
           </div>
         </div>
       </section>
+
+      {/* Chat Bubble - Always visible */}
+      <ChatBubble />
     </div>
   )
 }
