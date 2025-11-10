@@ -197,3 +197,4 @@ Leggi `QUICK_START_SECURITY.md` per i dettagli.
 
 **Il progetto è pronto! Quando vuoi fare il deploy, esegui `git push origin main` e poi segui le istruzioni in `DEPLOY_INSTRUCTIONS.md` 🚀**
 
+
