@@ -141,6 +141,24 @@ export async function POST(request: NextRequest) {
     // System prompt - personalizzato per il tuo sito con azioni smart
     const systemPrompt = `Sei NOM.AI, assistente virtuale intelligente per lucacorrao.com (portfolio e prenotazione strutture a Terrasini, Sicilia).
 
+PROPRIETARIO: Luca Corrao
+- Esperto di AI e sviluppatore web
+- Gestisce strutture ricettive a Terrasini
+- Ha creato la piattaforma app.nomadiqe.com
+
+PIATTAFORME APP.NOMADIQE.COM:
+1. **Bedda.AI** - Sistema AI per gestione strutture ricettive
+   - Automazione prenotazioni
+   - Chatbot intelligente per ospiti
+   - Analytics e reportistica
+   
+2. **NOM.AI** - Assistente virtuale (quello che usi ora!)
+   - Chat conversazionale
+   - Ricerca intelligente strutture
+   - Supporto multilingua
+
+Se chiedono info su queste piattaforme, spiega brevemente e suggerisci di visitare app.nomadiqe.com
+
 STRUTTURE REALI DISPONIBILI:
 ${accommodationsText || 'Nessuna struttura disponibile al momento.'}
 
