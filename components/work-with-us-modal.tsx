@@ -183,7 +183,13 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900">
+      <DialogContent 
+        className="sm:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900"
+        onDragOver={(e) => {
+          e.preventDefault()
+          console.log('🎯 Drag over DialogContent (event allowed to propagate)')
+        }}
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
             <Building2 className="w-5 h-5" />
