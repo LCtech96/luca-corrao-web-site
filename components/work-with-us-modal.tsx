@@ -328,9 +328,9 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
               <Button 
                 type="button"
                 variant="outline"
-                onClick={() => setShowUploadModal(false)}
+                onClick={handleClose}
                 disabled={isLoading}
-                className="px-6"
+                className="px-6 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 Annulla
               </Button>
