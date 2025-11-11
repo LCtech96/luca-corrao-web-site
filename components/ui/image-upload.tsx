@@ -116,13 +116,20 @@ export function ImageUpload({
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
+        onDragEnter={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          console.log('🎯 Drag enter')
+          setIsDragging(true)
+        }}
         className={cn(
-          "relative border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer",
+          "relative border-2 border-dashed rounded-lg p-6 text-center transition-all duration-200 cursor-pointer select-none",
           isDragging
-            ? "border-cyan-500 bg-cyan-50 dark:bg-cyan-900/20"
+            ? "border-cyan-500 bg-cyan-50 dark:bg-cyan-900/20 scale-[1.02]"
             : "border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50 hover:border-cyan-400 dark:hover:border-cyan-500"
         )}
-        onClick={() => {
+        onClick={(e) => {
+          e.preventDefault()
           console.log(`🖱️ Upload area clicked, category: ${category}`)
           const input = document.getElementById(`file-input-${category}`)
           console.log('📂 Input element:', input)
@@ -141,14 +148,23 @@ export function ImageUpload({
           className="hidden"
         />
         
-        <Upload className="w-10 h-10 text-gray-400 dark:text-gray-500 mx-auto mb-3" />
-        <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          {isUploading ? "Caricamento..." : "Carica immagini"}
+        <Upload className={cn(
+          "w-10 h-10 mx-auto mb-3 transition-all",
+          isDragging ? "text-cyan-500 scale-110 animate-bounce" : "text-gray-400 dark:text-gray-500"
+        )} />
+        <p className={cn(
+          "text-sm font-medium mb-1",
+          isDragging ? "text-cyan-600 dark:text-cyan-400 font-bold" : "text-gray-700 dark:text-gray-300"
+        )}>
+          {isDragging ? "🎯 Rilascia qui!" : isUploading ? "⏳ Caricamento..." : "📤 Carica immagini"}
         </p>
         <p className="text-xs text-gray-500 dark:text-gray-400">
-          Trascina qui o clicca per selezionare (max {maxFiles})
+          {isDragging ? "Rilascia per caricare" : "Trascina qui o clicca per selezionare (max "+maxFiles+")"}
         </p>
-        <p className="text-xs text-cyan-600 dark:text-cyan-400 mt-2">
+        <p className={cn(
+          "text-xs mt-2 font-medium",
+          uploadedImages.length > 0 ? "text-cyan-600 dark:text-cyan-400" : "text-gray-400"
+        )}>
           {uploadedImages.length}/{maxFiles} immagini caricate
         </p>
       </div>
