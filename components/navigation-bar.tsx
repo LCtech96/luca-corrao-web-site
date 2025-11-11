@@ -57,13 +57,13 @@ export function NavigationBar() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-md border-b border-red-500/30 shadow-lg shadow-red-500/20">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-black/90 backdrop-blur-md border-b border-gray-200 dark:border-red-500/30 shadow-lg dark:shadow-red-500/20">
         <div className="max-w-7xl mx-auto px-4 py-2">
           <div className="flex justify-between items-center">
             {/* Logo/Brand - Red Bull Style */}
             <div className="flex items-center space-x-2">
               <div className="w-7 h-7 bg-gradient-to-r from-red-500 to-cyan-400 rounded-full shadow-lg shadow-red-500/50"></div>
-              <span className="text-lg font-bold text-white tracking-wider">LUCA CORRAO</span>
+              <span className="text-lg font-bold text-gray-900 dark:text-white tracking-wider">LUCA CORRAO</span>
             </div>
 
             {/* Navigation Buttons */}
@@ -74,7 +74,7 @@ export function NavigationBar() {
                     variant="ghost"
                     size="sm"
                     onClick={() => setActiveModal("login")}
-                    className="flex items-center gap-2 text-gray-300 hover:text-cyan-400 hover:bg-cyan-500/10 transition-colors duration-200 font-semibold"
+                    className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-cyan-500/10 transition-colors duration-200 font-semibold"
                   >
                     <LogIn className="w-4 h-4" />
                     <span className="hidden sm:inline">Log in</span>
@@ -84,7 +84,7 @@ export function NavigationBar() {
                     variant="ghost"
                     size="sm"
                     onClick={() => setActiveModal("registration")}
-                    className="flex items-center gap-2 text-gray-300 hover:text-red-400 hover:bg-red-500/10 transition-colors duration-200 font-semibold"
+                    className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-500/10 transition-colors duration-200 font-semibold"
                   >
                     <UserPlus className="w-4 h-4" />
                     <span className="hidden sm:inline">Registrati</span>
@@ -98,7 +98,7 @@ export function NavigationBar() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="flex items-center gap-2 text-gray-300 hover:text-purple-400 hover:bg-purple-500/10 transition-colors duration-200 font-semibold"
+                        className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-500/10 transition-colors duration-200 font-semibold"
                       >
                         <Shield className="w-4 h-4" />
                         <span className="hidden sm:inline">Admin</span>
@@ -110,7 +110,7 @@ export function NavigationBar() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="flex items-center gap-2 text-gray-300 hover:text-cyan-400 hover:bg-cyan-500/10 transition-colors duration-200 font-semibold"
+                      className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-cyan-500/10 transition-colors duration-200 font-semibold"
                     >
                       <User className="w-4 h-4" />
                       <span className="hidden sm:inline">Profilo</span>
@@ -120,7 +120,7 @@ export function NavigationBar() {
                     variant="ghost"
                     size="sm"
                     onClick={handleLogout}
-                    className="flex items-center gap-2 text-gray-300 hover:text-red-400 hover:bg-red-500/10 transition-colors duration-200 font-semibold"
+                    className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-500/10 transition-colors duration-200 font-semibold"
                   >
                     <LogOut className="w-4 h-4" />
                     <span className="hidden sm:inline">Logout</span>
@@ -132,7 +132,7 @@ export function NavigationBar() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setActiveModal("work")}
-                className="flex items-center gap-2 text-gray-300 hover:text-amber-400 hover:bg-amber-500/10 transition-colors duration-200 font-semibold"
+                className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-500/10 transition-colors duration-200 font-semibold"
               >
                 <Building2 className="w-4 h-4" />
                 <span className="hidden sm:inline">Lavora con noi</span>

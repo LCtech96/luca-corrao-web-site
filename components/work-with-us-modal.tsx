@@ -93,8 +93,14 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
   }
 
   const handleSubmit = async () => {
-    if (!validateForm()) return
+    console.log('🔍 Submit triggered, formData:', formData)
     
+    if (!validateForm()) {
+      console.log('❌ Validation failed')
+      return
+    }
+    
+    console.log('✅ Validation passed')
     setIsLoading(true)
     
     try {
@@ -102,20 +108,31 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
       const userEmail = localStorage.getItem('userEmail')
       const accessToken = localStorage.getItem('googleAccessToken')
       
+      console.log('👤 User:', userEmail, 'Token:', !!accessToken)
+      
       if (!userEmail || !accessToken) {
         setErrors(["Devi prima registrarti e autenticarti con Google per caricare strutture"])
+        setIsLoading(false)
         return
       }
 
-      // Extract file IDs from uploaded images
-      const mainImageFileId = formData.coverImage.length > 0 ? formData.coverImage[0].fileId : ""
-      const imageFileIds = formData.structureImages.map(file => file.fileId)
+      // Extract file IDs from uploaded images (può essere undefined)
+      const mainImageFileId = formData.coverImage.length > 0 ? (formData.coverImage[0].fileId || null) : null
+      const imageFileIds = formData.structureImages.map(file => file.fileId).filter(Boolean)
       
       // For backward compatibility, also send URLs
       const mainImageUrl = formData.coverImage.length > 0 ? formData.coverImage[0].url : ""
-      const imageUrls = formData.structureImages.map(file => file.url)
+      const imageUrls = formData.structureImages.map(file => file.url).filter(Boolean)
 
       // Salva la struttura nel database
+      console.log('📤 Sending to API:', {
+        name: formData.structureName,
+        mainImageUrl,
+        imageUrls,
+        mainImageFileId,
+        imageFileIds
+      })
+
       const response = await fetch('/api/structures', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -134,11 +151,15 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
         })
       })
 
+      console.log('📡 Response status:', response.status)
       const data = await response.json()
+      console.log('📦 Response data:', data)
       
       if (data.success) {
+        console.log('✅ Success! Switching to success step')
         setStep("success")
       } else {
+        console.log('❌ Error from API:', data.error)
         setErrors([data.error || "Errore durante il salvataggio della struttura"])
       }
     } catch (error) {
