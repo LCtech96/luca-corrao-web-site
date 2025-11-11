@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { Upload, X, Image as ImageIcon } from "lucide-react"
 import Image from "next/image"
@@ -32,6 +32,26 @@ export function ImageUpload({
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([])
   const [isDragging, setIsDragging] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  // Event listener diretto per onChange (più robusto)
+  useEffect(() => {
+    const input = inputRef.current
+    if (!input) return
+
+    const handleChange = (e: Event) => {
+      const target = e.target as HTMLInputElement
+      console.log(`📂 File input CHANGED (direct listener), files: ${target.files?.length || 0}`)
+      handleFileSelect(target.files)
+    }
+
+    input.addEventListener('change', handleChange)
+    console.log(`✅ Event listener attached to input: file-input-${category}`)
+
+    return () => {
+      input.removeEventListener('change', handleChange)
+    }
+  }, [category])
 
   const handleFileSelect = async (files: FileList | null) => {
     if (!files || files.length === 0) {
@@ -130,21 +150,24 @@ export function ImageUpload({
         )}
         onClick={(e) => {
           e.preventDefault()
+          e.stopPropagation()
           console.log(`🖱️ Upload area clicked, category: ${category}`)
-          const input = document.getElementById(`file-input-${category}`)
-          console.log('📂 Input element:', input)
-          input?.click()
+          console.log('📂 Input ref:', inputRef.current)
+          if (inputRef.current) {
+            inputRef.current.value = '' // Reset per permettere ri-selezione stessi file
+            inputRef.current.click()
+            console.log('✅ Input clicked programmatically')
+          } else {
+            console.error('❌ Input ref is null!')
+          }
         }}
       >
         <input
+          ref={inputRef}
           id={`file-input-${category}`}
           type="file"
           accept={accept}
           multiple={maxFiles > 1}
-          onChange={(e) => {
-            console.log(`📂 File input changed, files: ${e.target.files?.length || 0}`)
-            handleFileSelect(e.target.files)
-          }}
           className="hidden"
         />
         
