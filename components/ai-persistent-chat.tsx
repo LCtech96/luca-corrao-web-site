@@ -21,7 +21,7 @@ interface AIPersistentChatProps {
 }
 
 const STORAGE_KEY = 'nomAI_chat_history'
-const WELCOME_MESSAGE = "👋 Ciao! Sono **NOM.AI**, assistente virtuale di Luca Corrao.\n\n🏠 **Strutture a Terrasini:**\nLucas Suite • Trilu • Dani Holiday\n\n🤖 **Piattaforme AI su app.nomadiqe.com:**\n• Bedda.AI - Gestione strutture ricettive\n• NOM.AI - Quello che usi ora!\n\n💬 **Posso aiutarti con:**\n• Ricerca e prenotazione strutture\n• Info su Terrasini e dintorni\n• Dettagli sulle piattaforme AI\n\nCome posso aiutarti?"
+const WELCOME_MESSAGE = "👋 Ciao! Sono NOM.AI, assistente virtuale di Luca Corrao.\n\n🏠 Strutture a Terrasini:\nLucas Suite • Trilu • Dani Holiday\n\n🤖 Piattaforme AI su app.nomadiqe.com:\n• Bedda.AI - Gestione strutture ricettive\n• NOM.AI - Quello che usi ora!\n\n💬 Posso aiutarti con:\n• Ricerca e prenotazione strutture\n• Info su Terrasini e dintorni\n• Dettagli sulle piattaforme AI\n\nCome posso aiutarti?"
 
 export function AIPersistentChat({ onClose, onNewMessage }: AIPersistentChatProps) {
   const [messages, setMessages] = useState<Message[]>([])
