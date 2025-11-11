@@ -34,7 +34,12 @@ export function ImageUpload({
   const [isUploading, setIsUploading] = useState(false)
 
   const handleFileSelect = async (files: FileList | null) => {
-    if (!files || files.length === 0) return
+    if (!files || files.length === 0) {
+      console.log('❌ No files selected')
+      return
+    }
+    
+    console.log(`📁 Files selected: ${files.length}`)
     
     const remainingSlots = maxFiles - uploadedImages.length
     if (remainingSlots <= 0) {
@@ -43,15 +48,20 @@ export function ImageUpload({
     }
 
     const filesToUpload = Array.from(files).slice(0, remainingSlots)
+    console.log(`📤 Uploading ${filesToUpload.length} files (${remainingSlots} slots available)`)
+    
     setIsUploading(true)
 
+    // Carica tutte le immagini in batch
+    const newImages: UploadedImage[] = []
+    
     for (const file of filesToUpload) {
       // Crea preview locale
       const preview = URL.createObjectURL(file)
+      console.log(`📸 Created preview for: ${file.name}`)
       
-      // Simula upload (in produzione caricheresti su Supabase Storage)
-      // Per ora usa URL temporaneo
-      const fakeUrl = preview // In produzione sarebbe l'URL di Supabase
+      // Per ora usa URL temporaneo (in produzione sarebbe Supabase Storage)
+      const fakeUrl = preview
       
       const newImage: UploadedImage = {
         url: fakeUrl,
@@ -59,10 +69,14 @@ export function ImageUpload({
         preview
       }
       
-      setUploadedImages(prev => [...prev, newImage])
+      newImages.push(newImage)
+      
+      // Chiama callback per ogni immagine
       onImageUploaded(fakeUrl)
     }
-
+    
+    setUploadedImages(prev => [...prev, ...newImages])
+    console.log(`✅ ${newImages.length} images uploaded successfully`)
     setIsUploading(false)
   }
 
@@ -73,17 +87,22 @@ export function ImageUpload({
   }
 
   const handleDrop = (e: React.DragEvent) => {
+    console.log('🎯 Drop event triggered, files:', e.dataTransfer.files.length)
     e.preventDefault()
+    e.stopPropagation()
     setIsDragging(false)
     handleFileSelect(e.dataTransfer.files)
   }
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault()
+    e.stopPropagation()
     setIsDragging(true)
   }
 
-  const handleDragLeave = () => {
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
     setIsDragging(false)
   }
 
@@ -103,14 +122,22 @@ export function ImageUpload({
             ? "border-cyan-500 bg-cyan-50 dark:bg-cyan-900/20"
             : "border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50 hover:border-cyan-400 dark:hover:border-cyan-500"
         )}
-        onClick={() => document.getElementById(`file-input-${category}`)?.click()}
+        onClick={() => {
+          console.log(`🖱️ Upload area clicked, category: ${category}`)
+          const input = document.getElementById(`file-input-${category}`)
+          console.log('📂 Input element:', input)
+          input?.click()
+        }}
       >
         <input
           id={`file-input-${category}`}
           type="file"
           accept={accept}
-          multiple
-          onChange={(e) => handleFileSelect(e.target.files)}
+          multiple={maxFiles > 1}
+          onChange={(e) => {
+            console.log(`📂 File input changed, files: ${e.target.files?.length || 0}`)
+            handleFileSelect(e.target.files)
+          }}
           className="hidden"
         />
         
