@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { ImageUpload } from "@/components/ui/image-upload"
-import { Building2, Upload, MapPin, Image, FileText, CheckCircle, AlertCircle } from "lucide-react"
+import { Building2, Upload, MapPin, Image, FileText, CheckCircle, AlertCircle, Loader2 } from "lucide-react"
 
 interface WorkWithUsModalProps {
   onClose: () => void
@@ -195,56 +195,61 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="structureName">Nome Struttura *</Label>
+                <Label htmlFor="structureName" className="text-gray-900 dark:text-gray-100 font-medium">Nome Struttura *</Label>
                 <Input
                   id="structureName"
                   placeholder="Es. Villa Panoramica"
                   value={formData.structureName}
                   onChange={(e) => handleInputChange("structureName", e.target.value)}
+                  className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="address">Indirizzo *</Label>
+                <Label htmlFor="address" className="text-gray-900 dark:text-gray-100 font-medium">Indirizzo *</Label>
                 <Input
                   id="address"
                   placeholder="Via Example, Città, Provincia"
                   value={formData.address}
                   onChange={(e) => handleInputChange("address", e.target.value)}
+                  className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Descrizione *</Label>
+              <Label htmlFor="description" className="text-gray-900 dark:text-gray-100 font-medium">Descrizione *</Label>
               <Textarea
                 id="description"
                 placeholder="Descrivi la tua struttura, i servizi offerti, le caratteristiche uniche..."
                 value={formData.description}
                 onChange={(e) => handleInputChange("description", e.target.value)}
                 rows={4}
+                className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="gpsCoordinates">Coordinate GPS (opzionale)</Label>
+              <Label htmlFor="gpsCoordinates" className="text-gray-900 dark:text-gray-100 font-medium">Coordinate GPS (opzionale)</Label>
               <Input
                 id="gpsCoordinates"
                 placeholder="Es. 38.123456, 13.123456"
                 value={formData.gpsCoordinates}
                 onChange={(e) => handleInputChange("gpsCoordinates", e.target.value)}
+                className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
               />
             </div>
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label>Immagine di Copertina *</Label>
+                <Label className="text-gray-900 dark:text-gray-100 font-medium">Immagine di Copertina *</Label>
                 <ImageUpload
                   maxFiles={1}
                   category="structure"
                   ownerId={localStorage.getItem('userEmail') || undefined}
                   onImageUploaded={(url) => {
-                    setFormData(prev => ({ ...prev, coverImage: [{ url }] as any }))
+                    console.log('📸 Cover image uploaded:', url)
+                    setFormData(prev => ({ ...prev, coverImage: [{ url, fileId: '', fileName: '', fileType: '', fileSize: 0, uploadProgress: 100 }] as any }))
                     setErrors([])
                   }}
                   className="min-h-[120px]"
@@ -252,15 +257,16 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
               </div>
 
               <div className="space-y-2">
-                <Label>Immagini della Struttura</Label>
+                <Label className="text-gray-900 dark:text-gray-100 font-medium">Immagini della Struttura</Label>
                 <ImageUpload
                   maxFiles={10}
                   category="structure"
                   ownerId={localStorage.getItem('userEmail') || undefined}
                   onImageUploaded={(url) => {
+                    console.log('📸 Structure image uploaded:', url)
                     setFormData(prev => ({ 
                       ...prev, 
-                      structureImages: [...prev.structureImages, { url }] as any 
+                      structureImages: [...prev.structureImages, { url, fileId: '', fileName: '', fileType: '', fileSize: 0, uploadProgress: 100 }] as any 
                     }))
                     setErrors([])
                   }}
@@ -269,10 +275,10 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="documents">Documentazione (opzionale)</Label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
-                  <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500 mb-2">
+                <Label htmlFor="documents" className="text-gray-900 dark:text-gray-100 font-medium">Documentazione (opzionale)</Label>
+                <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 text-center bg-gray-50 dark:bg-gray-800/50">
+                  <FileText className="w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                     Carica documenti relativi alla struttura
                   </p>
                   <input
@@ -284,13 +290,15 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
                     className="hidden"
                   />
                   <Button
+                    type="button"
                     variant="outline"
                     onClick={() => document.getElementById('documents')?.click()}
+                    className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600"
                   >
                     Scegli Documenti
                   </Button>
                   {formData.documents.length > 0 && (
-                    <p className="text-sm text-green-600 mt-2">
+                    <p className="text-sm text-green-600 dark:text-green-400 mt-2">
                       ✓ {formData.documents.length} documenti selezionati
                     </p>
                   )}
@@ -298,25 +306,47 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
               </div>
             </div>
 
-            <Button 
-              onClick={handleSubmit} 
-              disabled={isLoading}
-              className="w-full"
-            >
-              {isLoading ? "Caricamento in corso..." : "Carica Struttura"}
-            </Button>
+            <div className="flex gap-3">
+              <Button 
+                type="button"
+                onClick={async (e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  console.log('🔘 Button clicked!')
+                  await handleSubmit()
+                }}
+                disabled={isLoading}
+                className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold"
+              >
+                {isLoading ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Caricamento...
+                  </span>
+                ) : "Carica Struttura"}
+              </Button>
+              <Button 
+                type="button"
+                variant="outline"
+                onClick={() => setShowUploadModal(false)}
+                disabled={isLoading}
+                className="px-6"
+              >
+                Annulla
+              </Button>
+            </div>
           </div>
         )}
 
         {step === "success" && (
           <div className="space-y-4 text-center">
             <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
-            <h3 className="text-lg font-semibold">Struttura caricata con successo!</h3>
-            <p className="text-gray-600">
-              La tua struttura è stata aggiunta alla vetrina. 
-              Sarà visibile a tutti i visitatori del sito.
+            <h3 className="text-lg font-semibold text-gray-900">Struttura caricata con successo!</h3>
+            <p className="text-gray-700 dark:text-gray-600">
+              La tua struttura è stata inviata per approvazione. 
+              Riceverai una notifica quando sarà pubblicata sulla vetrina.
             </p>
-            <Button onClick={handleClose} className="w-full">
+            <Button onClick={handleClose} className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white">
               Chiudi
             </Button>
           </div>
