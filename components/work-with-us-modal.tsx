@@ -259,24 +259,30 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label className="text-gray-900 dark:text-gray-100 font-medium">Immagine di Copertina *</Label>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                  Prima immagine che apparirà nella vetrina
+                </p>
                 <ImageUpload
                   maxFiles={1}
-                  category="structure"
+                  category="cover"
                   ownerId={localStorage.getItem('userEmail') || undefined}
                   onImageUploaded={(url) => {
                     console.log('📸 Cover image uploaded:', url)
                     setFormData(prev => ({ ...prev, coverImage: [{ url, fileId: '', fileName: '', fileType: '', fileSize: 0, uploadProgress: 100 }] as any }))
                     setErrors([])
                   }}
-                  className="min-h-[120px]"
+                  className=""
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-gray-900 dark:text-gray-100 font-medium">Immagini della Struttura</Label>
+                <Label className="text-gray-900 dark:text-gray-100 font-medium">Galleria Foto Struttura (max 20)</Label>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                  Foto interne, esterne, servizi - Mostra le prime 4 in anteprima
+                </p>
                 <ImageUpload
-                  maxFiles={10}
-                  category="structure"
+                  maxFiles={20}
+                  category="gallery"
                   ownerId={localStorage.getItem('userEmail') || undefined}
                   onImageUploaded={(url) => {
                     console.log('📸 Structure image uploaded:', url)
@@ -286,7 +292,7 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
                     }))
                     setErrors([])
                   }}
-                  className="min-h-[120px]"
+                  className=""
                 />
               </div>
 

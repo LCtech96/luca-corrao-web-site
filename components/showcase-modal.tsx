@@ -132,12 +132,7 @@ export function ShowcaseModal({ onClose }: ShowcaseModalProps) {
     setUploadError(null)
 
     try {
-      // Nota: L'upload delle immagini tramite vetrina è disabilitato temporaneamente
-      // Per aggiungere nuove strutture, usa il pannello admin o inserisci direttamente nel database
-      
-      setUploadError("L'upload tramite vetrina è temporaneamente disabilitato. Usa il database Supabase per aggiungere strutture.")
-      setIsUploading(false)
-      return
+      // Upload ora abilitato!
       
       // Aggiungi la nuova struttura (codice disabilitato)
       const newStructure: Structure = {

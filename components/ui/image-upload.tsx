@@ -1,14 +1,24 @@
-"use client";
+"use client"
 
-import { cn } from "@/lib/utils";
+import { useState } from "react"
+import { cn } from "@/lib/utils"
+import { Upload, X, Image as ImageIcon } from "lucide-react"
+import Image from "next/image"
+import { Button } from "@/components/ui/button"
 
 interface ImageUploadProps {
-  onImageUploaded: (imageUrl: string) => void;
-  category?: string;
-  ownerId?: string;
-  className?: string;
-  maxFiles?: number;
-  accept?: string;
+  onImageUploaded: (imageUrl: string) => void
+  category?: string
+  ownerId?: string
+  className?: string
+  maxFiles?: number
+  accept?: string
+}
+
+interface UploadedImage {
+  url: string
+  file?: File
+  preview: string
 }
 
 export function ImageUpload({
@@ -16,24 +26,170 @@ export function ImageUpload({
   category = "general",
   ownerId,
   className,
-  maxFiles = 10,
+  maxFiles = 20,
   accept = "image/*",
 }: ImageUploadProps) {
+  const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([])
+  const [isDragging, setIsDragging] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
+
+  const handleFileSelect = async (files: FileList | null) => {
+    if (!files || files.length === 0) return
+    
+    const remainingSlots = maxFiles - uploadedImages.length
+    if (remainingSlots <= 0) {
+      alert(`Puoi caricare massimo ${maxFiles} immagini`)
+      return
+    }
+
+    const filesToUpload = Array.from(files).slice(0, remainingSlots)
+    setIsUploading(true)
+
+    for (const file of filesToUpload) {
+      // Crea preview locale
+      const preview = URL.createObjectURL(file)
+      
+      // Simula upload (in produzione caricheresti su Supabase Storage)
+      // Per ora usa URL temporaneo
+      const fakeUrl = preview // In produzione sarebbe l'URL di Supabase
+      
+      const newImage: UploadedImage = {
+        url: fakeUrl,
+        file,
+        preview
+      }
+      
+      setUploadedImages(prev => [...prev, newImage])
+      onImageUploaded(fakeUrl)
+    }
+
+    setIsUploading(false)
+  }
+
+  const removeImage = (index: number) => {
+    const imageToRemove = uploadedImages[index]
+    URL.revokeObjectURL(imageToRemove.preview)
+    setUploadedImages(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragging(false)
+    handleFileSelect(e.dataTransfer.files)
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragging(true)
+  }
+
+  const handleDragLeave = () => {
+    setIsDragging(false)
+  }
+
+  const visiblePreviews = uploadedImages.slice(0, 4)
+  const remainingCount = uploadedImages.length - 4
+
   return (
-    <div className={cn("p-8 bg-gray-50 rounded-lg border-2 border-dashed text-center", className)}>
-      <div className="space-y-4">
-        <div className="text-6xl">📸</div>
-        <h3 className="text-xl font-bold text-gray-700">Upload Immagini</h3>
-        <p className="text-gray-600">
-          Funzionalità di upload immagini in arrivo
+    <div className={cn("space-y-3", className)}>
+      {/* Upload Area */}
+      <div
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        className={cn(
+          "relative border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer",
+          isDragging
+            ? "border-cyan-500 bg-cyan-50 dark:bg-cyan-900/20"
+            : "border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50 hover:border-cyan-400 dark:hover:border-cyan-500"
+        )}
+        onClick={() => document.getElementById(`file-input-${category}`)?.click()}
+      >
+        <input
+          id={`file-input-${category}`}
+          type="file"
+          accept={accept}
+          multiple
+          onChange={(e) => handleFileSelect(e.target.files)}
+          className="hidden"
+        />
+        
+        <Upload className="w-10 h-10 text-gray-400 dark:text-gray-500 mx-auto mb-3" />
+        <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          {isUploading ? "Caricamento..." : "Carica immagini"}
         </p>
-        <div className="inline-block px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-semibold">
-          Coming Soon
-        </div>
-        <p className="text-sm text-gray-500 mt-4">
-          Per ora, gestisci le immagini direttamente dal pannello Supabase Storage
+        <p className="text-xs text-gray-500 dark:text-gray-400">
+          Trascina qui o clicca per selezionare (max {maxFiles})
+        </p>
+        <p className="text-xs text-cyan-600 dark:text-cyan-400 mt-2">
+          {uploadedImages.length}/{maxFiles} immagini caricate
         </p>
       </div>
+
+      {/* Preview Prime 4 Immagini */}
+      {uploadedImages.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            {uploadedImages.length === 1 ? "Anteprima immagine:" : `Anteprime (prime 4 di ${uploadedImages.length}):`}
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            {visiblePreviews.map((img, index) => (
+              <div
+                key={index}
+                className="relative group aspect-video bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={img.preview}
+                  alt={`Preview ${index + 1}`}
+                  className="w-full h-full object-cover"
+                />
+                
+                {/* Badge numero */}
+                <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
+                  #{index + 1}
+                </div>
+
+                {/* Bottone rimuovi */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    removeImage(index)
+                  }}
+                  className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* Badge "Altre X" */}
+          {remainingCount > 0 && (
+            <div className="flex items-center justify-center gap-2 py-2 px-3 bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-800 rounded-lg">
+              <ImageIcon className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+              <p className="text-sm text-cyan-700 dark:text-cyan-300 font-medium">
+                + altre {remainingCount} {remainingCount === 1 ? 'immagine' : 'immagini'}
+              </p>
+            </div>
+          )}
+
+          {/* Bottone rimuovi tutte */}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              uploadedImages.forEach(img => URL.revokeObjectURL(img.preview))
+              setUploadedImages([])
+            }}
+            className="w-full text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 border-red-200 dark:border-red-800"
+          >
+            Rimuovi tutte ({uploadedImages.length})
+          </Button>
+        </div>
+      )}
     </div>
-  );
+  )
 }
