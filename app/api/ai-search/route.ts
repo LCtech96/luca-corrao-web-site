@@ -4,6 +4,14 @@ import { NextRequest, NextResponse } from 'next/server'
 const GROQ_API_KEY = process.env.GROQ_API_KEY || ''
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
 
+// Helper function per determinare la stagione
+function getSeason(month: number): string {
+  if (month >= 2 && month <= 4) return 'Primavera'
+  if (month >= 5 && month <= 7) return 'Estate'
+  if (month >= 8 && month <= 10) return 'Autunno'
+  return 'Inverno'
+}
+
 // Rate limiting: traccia richieste per IP
 const requestCache = new Map<string, { count: number; resetTime: number }>()
 let dailyRequestCount = 0
@@ -168,8 +176,32 @@ export async function POST(request: NextRequest) {
    IMPORTANTE: Quando suggerisci ${acc.name}, USA: [IMAGE:${imageUrl}:${propertyLink}]`
     }).join('\n\n')
 
+    // Data corrente per l'AI
+    const today = new Date()
+    const dateInfo = {
+      date: today.toLocaleDateString('it-IT', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      }),
+      time: today.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }),
+      season: getSeason(today.getMonth()),
+      year: today.getFullYear(),
+      month: today.getMonth() + 1,
+      day: today.getDate()
+    }
+
     // System prompt - personalizzato per il tuo sito con azioni smart
     const systemPrompt = `Sei NOM.AI, assistente virtuale intelligente per lucacorrao.com (portfolio e prenotazione strutture a Terrasini, Sicilia).
+
+DATA E ORA CORRENTE:
+- Oggi è: ${dateInfo.date}
+- Ora: ${dateInfo.time}
+- Stagione: ${dateInfo.season}
+- Anno: ${dateInfo.year}
+
+Usa queste informazioni per rispondere a domande su data/ora e per contestualizzare consigli (es: "Per l'estate ti consiglio...", "In questo periodo...").
 
 PROPRIETARIO: Luca Corrao
 - Esperto di AI e sviluppatore web
