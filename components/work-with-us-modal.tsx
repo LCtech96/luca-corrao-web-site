@@ -5,16 +5,18 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { Building2, Upload, MapPin, Image, FileText, CheckCircle, AlertCircle, Loader2 } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 interface WorkWithUsModalProps {
   onClose: () => void
 }
 
 export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
+  const { toast } = useToast()
   const [step, setStep] = useState<"form" | "success">("form")
   const [formData, setFormData] = useState({
     structureName: "",
@@ -158,26 +160,40 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
       if (data.success) {
         console.log('✅ Success! Switching to success step')
         setStep("success")
+        
+        // Forza il re-render
+        setTimeout(() => {
+          toast({
+            title: "Struttura caricata!",
+            description: "La tua struttura è stata inviata per approvazione.",
+          })
+        }, 100)
       } else {
         console.log('❌ Error from API:', data.error)
         setErrors([data.error || "Errore durante il salvataggio della struttura"])
       }
     } catch (error) {
-      setErrors(["Errore di connessione. Riprova."])
+      console.error('💥 Exception in handleSubmit:', error)
+      setErrors([`Errore di connessione: ${error instanceof Error ? error.message : 'Unknown error'}`])
     } finally {
+      console.log('🏁 handleSubmit completed, isLoading set to false')
       setIsLoading(false)
     }
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
             <Building2 className="w-5 h-5" />
             {step === "form" && "Carica la tua struttura"}
             {step === "success" && "Struttura caricata con successo"}
           </DialogTitle>
+          <DialogDescription className="text-gray-600 dark:text-gray-400">
+            {step === "form" && "Compila il form per aggiungere la tua struttura alla vetrina"}
+            {step === "success" && "La tua struttura è stata inviata per approvazione"}
+          </DialogDescription>
         </DialogHeader>
 
         {step === "form" && (
@@ -310,13 +326,22 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
               <Button 
                 type="button"
                 onClick={async (e) => {
+                  console.log('🔘 Button clicked! Event:', e.type)
                   e.preventDefault()
                   e.stopPropagation()
-                  console.log('🔘 Button clicked!')
-                  await handleSubmit()
+                  console.log('🚀 Calling handleSubmit...')
+                  console.log('📋 Current formData:', formData)
+                  console.log('📊 isLoading:', isLoading)
+                  
+                  try {
+                    await handleSubmit()
+                    console.log('✅ handleSubmit returned successfully')
+                  } catch (err) {
+                    console.error('💥 Error in button onClick:', err)
+                  }
                 }}
                 disabled={isLoading}
-                className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold"
+                className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <span className="flex items-center gap-2">
