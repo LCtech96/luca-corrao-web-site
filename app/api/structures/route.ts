@@ -1,26 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getAllStructures, addStructure, updateStructure, deleteStructure } from '@/lib/structures-service'
+import { getAllStructures, addStructure, updateStructure, deleteStructure, approveStructure, rejectStructure } from '@/lib/supabase/structures-service'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+
+// Admin emails
+const ADMIN_EMAILS = [
+  'luca@bedda.tech',
+  'lucacorrao96@outlook.it',
+  'luca@metatech.dev',
+  'lucacorrao1996@outlook.com',
+  'luca@lucacorrao.com'
+]
 
 // GET - Recupera tutte le strutture
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const accessToken = searchParams.get('accessToken')
-
-    if (!accessToken) {
-      return NextResponse.json(
-        { error: 'Token di accesso richiesto' },
-        { status: 401 }
-      )
-    }
-
-    const structures = await getAllStructures(accessToken)
+    const structures = await getAllStructures()
     
     return NextResponse.json({ 
       success: true,
-      structures 
+      structures,
+      count: structures.length
     })
   } catch (error) {
     console.error('Errore nel recupero strutture:', error)
@@ -90,10 +90,9 @@ export async function POST(request: NextRequest) {
     const safeOwnerId = session.user.id
     const safeOwnerEmail = session.user.email || ownerEmail
 
-    // Usa Google Sheets API access token (per ora usa quello dal .env o un dummy)
-    const googleAccessToken = process.env.GOOGLE_SHEETS_API_KEY || 'dummy-token-for-now'
+    console.log('📦 Creating structure:', { name, owner, ownerEmail: safeOwnerEmail, ownerId: safeOwnerId })
 
-    const newStructure = await addStructure(googleAccessToken, {
+    const newStructure = await addStructure({
       name,
       description,
       address,
@@ -107,6 +106,12 @@ export async function POST(request: NextRequest) {
       ownerEmail: safeOwnerEmail,
       ownerId: safeOwnerId
     })
+
+    if (!newStructure) {
+      throw new Error('Failed to create structure')
+    }
+
+    console.log('✅ Structure created successfully:', newStructure.id)
 
     return NextResponse.json({ 
       success: true, 
@@ -125,19 +130,34 @@ export async function POST(request: NextRequest) {
 // PUT - Aggiorna struttura esistente
 export async function PUT(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { 
-      structureId, 
-      updates, 
-      accessToken 
-    } = body
-
-    if (!accessToken) {
+    // Verifica autenticazione
+    const cookieStore = await cookies()
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() { return cookieStore.getAll() },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options)
+            })
+          },
+        },
+      }
+    )
+    
+    const { data: { session } } = await supabase.auth.getSession()
+    
+    if (!session?.user) {
       return NextResponse.json(
-        { error: 'Token di accesso richiesto' },
+        { error: 'Devi essere autenticato' },
         { status: 401 }
       )
     }
+
+    const body = await request.json()
+    const { structureId, updates } = body
 
     if (!structureId) {
       return NextResponse.json(
@@ -146,11 +166,12 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    await updateStructure(accessToken, structureId, updates)
+    const updatedStructure = await updateStructure(structureId, updates)
 
     return NextResponse.json({ 
       success: true, 
-      message: 'Struttura aggiornata con successo'
+      message: 'Struttura aggiornata con successo',
+      structure: updatedStructure
     })
   } catch (error) {
     console.error('Errore nell\'aggiornamento struttura:', error)
@@ -164,16 +185,34 @@ export async function PUT(request: NextRequest) {
 // DELETE - Elimina struttura
 export async function DELETE(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const structureId = searchParams.get('structureId')
-    const accessToken = searchParams.get('accessToken')
-
-    if (!accessToken) {
+    // Verifica autenticazione
+    const cookieStore = await cookies()
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() { return cookieStore.getAll() },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options)
+            })
+          },
+        },
+      }
+    )
+    
+    const { data: { session } } = await supabase.auth.getSession()
+    
+    if (!session?.user) {
       return NextResponse.json(
-        { error: 'Token di accesso richiesto' },
+        { error: 'Devi essere autenticato' },
         { status: 401 }
       )
     }
+
+    const { searchParams } = new URL(request.url)
+    const structureId = searchParams.get('structureId')
 
     if (!structureId) {
       return NextResponse.json(
@@ -182,7 +221,11 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    await deleteStructure(accessToken, structureId)
+    const success = await deleteStructure(structureId)
+
+    if (!success) {
+      throw new Error('Failed to delete structure')
+    }
 
     return NextResponse.json({ 
       success: true, 
