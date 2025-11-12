@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { X, ArrowLeft, MessageCircle, Phone, Mail } from "lucide-react"
-import { AccommodationsSectionConvex } from "./accommodations-section-convex"
+import { AccommodationsSection } from "./accommodations-section"
 
 interface StructuresSectionProps {
   onClose: () => void
@@ -38,7 +38,7 @@ export function StructuresSection({ onClose }: StructuresSectionProps) {
 
       {/* Content */}
       <div className="pb-20">
-        <AccommodationsSectionConvex />
+        <AccommodationsSection />
 
         {/* Contact Section - Tema Scuro Moderno */}
         <section className="py-20 bg-gradient-to-br from-amber-600/20 via-orange-600/20 to-red-600/20 backdrop-blur-sm text-white border-t border-amber-500/20">
