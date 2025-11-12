@@ -229,7 +229,7 @@ export function ImageUpload({
           <>
             <Loader2 className="w-10 h-10 mx-auto mb-3 text-cyan-500 animate-spin" />
             <p className="text-sm font-medium mb-1 text-cyan-600 dark:text-cyan-400">
-              ⏳ Caricamento su Supabase Storage...
+              ⏳ Caricamento su Lucacorrao.com...
             </p>
             <div className="w-full max-w-xs mx-auto bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-2">
               <div 

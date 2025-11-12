@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useAccommodations } from "@/hooks/use-accommodations"
 import { useStructures } from "@/hooks/use-structures"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Building2, MapPin, Star, Eye, X, Plus, Upload, User } from "lucide-react"
 import Image from "next/image"
@@ -179,6 +179,9 @@ export function ShowcaseModal({ onClose }: ShowcaseModalProps) {
             <Building2 className="w-5 h-5" />
             Vetrina Strutture
           </DialogTitle>
+          <DialogDescription>
+            Esplora le nostre strutture disponibili a Terrasini
+          </DialogDescription>
         </DialogHeader>
 
         {uploadError && (
