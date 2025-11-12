@@ -2,9 +2,11 @@
 
 import { useState, useRef, useEffect } from "react"
 import { cn } from "@/lib/utils"
-import { Upload, X, Image as ImageIcon } from "lucide-react"
+import { Upload, X, Image as ImageIcon, Loader2 } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
+import { uploadImageToStorage } from "@/lib/supabase/storage-service"
+import { useAuth } from "@/hooks/use-auth"
 
 interface ImageUploadProps {
   onImageUploaded: (imageUrl: string) => void
@@ -32,7 +34,9 @@ export function ImageUpload({
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([])
   const [isDragging, setIsDragging] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState<number>(0)
   const inputRef = useRef<HTMLInputElement>(null)
+  const { user } = useAuth()
 
   // Event listener diretto per onChange (più robusto)
   useEffect(() => {
@@ -97,33 +101,49 @@ export function ImageUpload({
     console.log(`📤 Uploading ${filesToUpload.length} files (${remainingSlots} slots available)`)
     
     setIsUploading(true)
+    setUploadProgress(0)
 
-    // Carica tutte le immagini in batch
+    // Carica tutte le immagini su Supabase Storage
     const newImages: UploadedImage[] = []
+    const folder = user?.id || ownerId || 'anonymous'
     
-    for (const file of filesToUpload) {
-      // Crea preview locale
-      const preview = URL.createObjectURL(file)
-      console.log(`📸 Created preview for: ${file.name}`)
+    for (let i = 0; i < filesToUpload.length; i++) {
+      const file = filesToUpload[i]
+      setUploadProgress(Math.round(((i + 1) / filesToUpload.length) * 100))
       
-      // Per ora usa URL temporaneo (in produzione sarebbe Supabase Storage)
-      const fakeUrl = preview
-      
-      const newImage: UploadedImage = {
-        url: fakeUrl,
-        file,
-        preview
+      try {
+        console.log(`📤 Uploading ${i+1}/${filesToUpload.length}: ${file.name}`)
+        
+        // Upload to Supabase Storage
+        const result = await uploadImageToStorage(file, 'structures-images', folder)
+        
+        console.log(`✅ Uploaded to Storage: ${result.url}`)
+        
+        // Crea preview locale per UI immediata
+        const preview = URL.createObjectURL(file)
+        
+        const newImage: UploadedImage = {
+          url: result.url, // URL permanente da Supabase Storage
+          file,
+          preview // Preview locale per UI
+        }
+        
+        newImages.push(newImage)
+        
+        // Chiama callback con URL permanente
+        onImageUploaded(result.url)
+        
+        console.log(`📸 ${category} image uploaded: ${result.url}`)
+      } catch (error) {
+        console.error(`❌ Failed to upload ${file.name}:`, error)
+        // Continua con le altre immagini anche se una fallisce
       }
-      
-      newImages.push(newImage)
-      
-      // Chiama callback per ogni immagine
-      onImageUploaded(fakeUrl)
     }
     
     setUploadedImages(prev => [...prev, ...newImages])
     console.log(`✅ ${newImages.length} images uploaded successfully`)
     setIsUploading(false)
+    setUploadProgress(0)
   }
 
   const removeImage = (index: number) => {
@@ -182,13 +202,17 @@ export function ImageUpload({
           type="file"
           accept={accept}
           multiple={maxFiles > 1}
+          disabled={isUploading}
           onChange={(e) => {
             console.log(`🔔 CHANGE (React onChange), files: ${e.target.files?.length}`)
             if (e.target.files && e.target.files.length > 0) {
               handleFileSelect(e.target.files)
             }
           }}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+          className={cn(
+            "absolute inset-0 w-full h-full opacity-0 z-10",
+            isUploading ? "cursor-not-allowed" : "cursor-pointer"
+          )}
           style={{ 
             position: 'absolute',
             top: 0,
@@ -196,30 +220,50 @@ export function ImageUpload({
             width: '100%',
             height: '100%',
             opacity: 0,
-            cursor: 'pointer',
+            cursor: isUploading ? 'not-allowed' : 'pointer',
             zIndex: 10
           }}
         />
         
-        <Upload className={cn(
-          "w-10 h-10 mx-auto mb-3 transition-all",
-          isDragging ? "text-cyan-500 scale-110 animate-bounce" : "text-gray-400 dark:text-gray-500"
-        )} />
-        <p className={cn(
-          "text-sm font-medium mb-1",
-          isDragging ? "text-cyan-600 dark:text-cyan-400 font-bold" : "text-gray-700 dark:text-gray-300"
-        )}>
-          {isDragging ? "🎯 Rilascia qui!" : isUploading ? "⏳ Caricamento..." : "📤 Carica immagini"}
-        </p>
-        <p className="text-xs text-gray-500 dark:text-gray-400">
-          {isDragging ? "Rilascia per caricare" : "Trascina qui o clicca per selezionare (max "+maxFiles+")"}
-        </p>
-        <p className={cn(
-          "text-xs mt-2 font-medium",
-          uploadedImages.length > 0 ? "text-cyan-600 dark:text-cyan-400" : "text-gray-400"
-        )}>
-          {uploadedImages.length}/{maxFiles} immagini caricate
-        </p>
+        {isUploading ? (
+          <>
+            <Loader2 className="w-10 h-10 mx-auto mb-3 text-cyan-500 animate-spin" />
+            <p className="text-sm font-medium mb-1 text-cyan-600 dark:text-cyan-400">
+              ⏳ Caricamento su Supabase Storage...
+            </p>
+            <div className="w-full max-w-xs mx-auto bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-2">
+              <div 
+                className="bg-gradient-to-r from-cyan-500 to-blue-600 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${uploadProgress}%` }}
+              />
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {uploadProgress}% completato
+            </p>
+          </>
+        ) : (
+          <>
+            <Upload className={cn(
+              "w-10 h-10 mx-auto mb-3 transition-all",
+              isDragging ? "text-cyan-500 scale-110 animate-bounce" : "text-gray-400 dark:text-gray-500"
+            )} />
+            <p className={cn(
+              "text-sm font-medium mb-1",
+              isDragging ? "text-cyan-600 dark:text-cyan-400 font-bold" : "text-gray-700 dark:text-gray-300"
+            )}>
+              {isDragging ? "🎯 Rilascia qui!" : "📤 Carica immagini"}
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {isDragging ? "Rilascia per caricare" : "Trascina qui o clicca per selezionare (max "+maxFiles+")"}
+            </p>
+            <p className={cn(
+              "text-xs mt-2 font-medium",
+              uploadedImages.length > 0 ? "text-cyan-600 dark:text-cyan-400" : "text-gray-400"
+            )}>
+              {uploadedImages.length}/{maxFiles} immagini caricate
+            </p>
+          </>
+        )}
       </div>
 
       {/* Preview Prime 4 Immagini */}
