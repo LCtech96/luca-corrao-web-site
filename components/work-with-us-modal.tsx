@@ -72,23 +72,36 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
   }
 
   const validateForm = () => {
+    console.log('🔍 Validating form...')
+    console.log('📋 structureName:', formData.structureName)
+    console.log('📋 description:', formData.description)
+    console.log('📋 address:', formData.address)
+    console.log('📋 coverImage.length:', formData.coverImage.length)
+    
     const newErrors: string[] = []
     
     if (!formData.structureName) {
       newErrors.push("Nome struttura è obbligatorio")
+      console.log('❌ Nome mancante')
     }
     
     if (!formData.description) {
       newErrors.push("Descrizione è obbligatoria")
+      console.log('❌ Descrizione mancante')
     }
     
     if (!formData.address) {
       newErrors.push("Indirizzo è obbligatorio")
+      console.log('❌ Indirizzo mancante')
     }
     
     if (formData.coverImage.length === 0) {
       newErrors.push("Immagine di copertina è obbligatoria")
+      console.log('❌ Copertina mancante')
     }
+    
+    console.log(`📊 Validation result: ${newErrors.length === 0 ? '✅ PASS' : '❌ FAIL'}`)
+    console.log('❌ Errors:', newErrors)
     
     setErrors(newErrors)
     return newErrors.length === 0
