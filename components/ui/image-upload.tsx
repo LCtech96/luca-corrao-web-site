@@ -37,19 +37,45 @@ export function ImageUpload({
   // Event listener diretto per onChange (più robusto)
   useEffect(() => {
     const input = inputRef.current
-    if (!input) return
-
-    const handleChange = (e: Event) => {
-      const target = e.target as HTMLInputElement
-      console.log(`📂 File input CHANGED (direct listener), files: ${target.files?.length || 0}`)
-      handleFileSelect(target.files)
+    if (!input) {
+      console.error(`❌ Input ref is null for category: ${category}`)
+      return
     }
 
-    input.addEventListener('change', handleChange)
+    console.log(`✅ Attaching event listener to:`, input)
+    console.log(`   - ID: ${input.id}`)
+    console.log(`   - Type: ${input.type}`)
+    console.log(`   - Multiple: ${input.multiple}`)
+    console.log(`   - Accept: ${input.accept}`)
+
+    const handleChange = (e: Event) => {
+      console.log(`🔔 CHANGE EVENT FIRED! Event:`, e)
+      const target = e.target as HTMLInputElement
+      console.log(`📂 File input CHANGED (direct listener), files: ${target.files?.length || 0}`)
+      
+      if (target.files && target.files.length > 0) {
+        console.log(`📋 File details:`)
+        for (let i = 0; i < target.files.length; i++) {
+          console.log(`   ${i+1}. ${target.files[i].name} (${target.files[i].size} bytes)`)
+        }
+        handleFileSelect(target.files)
+      } else {
+        console.warn(`⚠️ Change event fired but no files selected`)
+      }
+    }
+
+    input.addEventListener('change', handleChange, { capture: false })
     console.log(`✅ Event listener attached to input: file-input-${category}`)
+
+    // Test se l'input è funzionante
+    console.log(`🧪 Input status:`)
+    console.log(`   - Disabled: ${input.disabled}`)
+    console.log(`   - ReadOnly: ${input.readOnly}`)
+    console.log(`   - Hidden: ${input.offsetParent === null}`)
 
     return () => {
       input.removeEventListener('change', handleChange)
+      console.log(`🗑️ Event listener removed from: file-input-${category}`)
     }
   }, [category])
 
