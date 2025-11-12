@@ -17,6 +17,7 @@ export interface Structure {
   imageFileIds?: string[]
   owner: string
   ownerEmail: string
+  ownerId?: string // Supabase user ID
   createdAt: string
   isOwner: boolean
 }
@@ -90,7 +91,9 @@ export async function addStructure(
       newStructure.imageFileIds?.join(',') || '',
       newStructure.owner,
       newStructure.ownerEmail,
-      newStructure.createdAt
+      newStructure.ownerId || '',
+      newStructure.createdAt,
+      'false' // is_active: false by default (awaiting approval)
     ]
 
     await sheets.spreadsheets.values.append({

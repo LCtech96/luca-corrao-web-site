@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { Building2, Upload, MapPin, Image, FileText, CheckCircle, AlertCircle, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { useAuth } from "@/hooks/use-auth"
 
 interface WorkWithUsModalProps {
   onClose: () => void
@@ -17,6 +18,7 @@ interface WorkWithUsModalProps {
 
 export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
   const { toast } = useToast()
+  const { user, loading: authLoading } = useAuth()
   const [step, setStep] = useState<"form" | "success">("form")
   const [formData, setFormData] = useState({
     structureName: "",
@@ -119,17 +121,20 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
     setIsLoading(true)
     
     try {
-      // Verifica se l'utente è registrato
-      const userEmail = localStorage.getItem('userEmail')
-      const accessToken = localStorage.getItem('googleAccessToken')
+      // Verifica se l'utente è registrato usando Supabase Auth
+      const userEmail = user?.email || null
+      const userId = user?.id || null
       
-      console.log('👤 User:', userEmail, 'Token:', !!accessToken)
+      console.log('👤 User:', userEmail, 'ID:', userId, 'AuthLoading:', authLoading)
       
-      if (!userEmail || !accessToken) {
+      if (!user || !userEmail) {
         setErrors(["Devi prima registrarti e autenticarti con Google per caricare strutture"])
         setIsLoading(false)
+        console.log('❌ User not authenticated')
         return
       }
+      
+      console.log('✅ User authenticated:', userEmail)
 
       // Extract file IDs from uploaded images (può essere undefined)
       const mainImageFileId = formData.coverImage.length > 0 ? (formData.coverImage[0].fileId || null) : null
@@ -162,7 +167,7 @@ export function WorkWithUsModal({ onClose }: WorkWithUsModalProps) {
           imageFileIds: imageFileIds,
           owner: userEmail.split('@')[0], // Usa la parte prima della @ come nome
           ownerEmail: userEmail,
-          accessToken
+          ownerId: userId
         })
       })
 
