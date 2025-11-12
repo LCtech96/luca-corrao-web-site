@@ -80,6 +80,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Drop existing trigger if exists
+DROP TRIGGER IF EXISTS trigger_update_structures_timestamp ON public.structures;
+
 CREATE TRIGGER trigger_update_structures_timestamp
     BEFORE UPDATE ON public.structures
     FOR EACH ROW
