@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Building2, MapPin, Star, Eye, X, Plus, Upload, User } from "lucide-react"
-import Image from "next/image"
 import { createAccommodation } from "@/lib/supabase/accommodations-service"
 import { uploadFile } from "@/lib/supabase/files-service"
 import { useAuth } from "@/hooks/use-auth"
@@ -212,11 +211,11 @@ export function ShowcaseModal({ onClose }: ShowcaseModalProps) {
                   onClick={() => setSelectedStructure(structure)}
                 >
                   <div className="relative h-full">
-                    <Image
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
                       src={structure.mainImage}
                       alt={structure.name}
-                      fill
-                      className="object-cover"
+                      className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
@@ -391,11 +390,10 @@ export function ShowcaseModal({ onClose }: ShowcaseModalProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <div className="aspect-video bg-gray-200 rounded-lg overflow-hidden mb-4">
-                      <Image
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
                         src={selectedStructure.mainImage}
                         alt={selectedStructure.name}
-                        width={400}
-                        height={300}
                         className="w-full h-full object-cover"
                       />
                     </div>
@@ -431,11 +429,10 @@ export function ShowcaseModal({ onClose }: ShowcaseModalProps) {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                       {selectedStructure.images.slice(1).map((image, index) => (
                         <div key={index} className="aspect-square bg-gray-200 rounded-lg overflow-hidden">
-                          <Image
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
                             src={image}
                             alt={`${selectedStructure.name} - Immagine ${index + 2}`}
-                            width={150}
-                            height={150}
                             className="w-full h-full object-cover"
                           />
                         </div>
