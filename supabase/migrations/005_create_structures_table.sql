@@ -30,6 +30,13 @@ CREATE INDEX IF NOT EXISTS idx_structures_is_active ON public.structures(is_acti
 -- Enable Row Level Security
 ALTER TABLE public.structures ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can view approved structures" ON public.structures;
+DROP POLICY IF EXISTS "Users can view own structures" ON public.structures;
+DROP POLICY IF EXISTS "Authenticated users can insert structures" ON public.structures;
+DROP POLICY IF EXISTS "Users can update own structures" ON public.structures;
+DROP POLICY IF EXISTS "Users can delete own structures" ON public.structures;
+
 -- Policy: Users can view only approved structures
 CREATE POLICY "Users can view approved structures"
     ON public.structures
