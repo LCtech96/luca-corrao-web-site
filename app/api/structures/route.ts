@@ -33,9 +33,12 @@ export async function GET(request: NextRequest) {
 
 // POST - Aggiungi nuova struttura
 export async function POST(request: NextRequest) {
+  console.log('🔷 POST /api/structures called')
   try {
+    console.log('🔷 Getting cookies...')
     // Verifica autenticazione con Supabase server-side
     const cookieStore = await cookies()
+    console.log('🔷 Cookies retrieved, creating Supabase client...')
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -53,9 +56,12 @@ export async function POST(request: NextRequest) {
       }
     )
     
+    console.log('🔷 Getting session...')
     const { data: { session } } = await supabase.auth.getSession()
+    console.log('🔷 Session:', session ? 'Found' : 'Not found', session?.user?.email)
     
     if (!session?.user) {
+      console.log('❌ No user in session')
       return NextResponse.json(
         { error: 'Devi essere autenticato per caricare una struttura' },
         { status: 401 }
@@ -119,9 +125,16 @@ export async function POST(request: NextRequest) {
       structure: newStructure
     })
   } catch (error) {
-    console.error('Errore nell\'aggiunta struttura:', error)
+    console.error('💥 ERRORE COMPLETO nell\'aggiunta struttura:', error)
+    console.error('💥 Error name:', (error as any)?.name)
+    console.error('💥 Error message:', (error as any)?.message)
+    console.error('💥 Error stack:', (error as any)?.stack)
     return NextResponse.json(
-      { error: 'Errore nell\'aggiunta della struttura' },
+      { 
+        error: 'Errore nell\'aggiunta della struttura',
+        details: error instanceof Error ? error.message : 'Unknown error',
+        errorType: (error as any)?.name || 'Unknown'
+      },
       { status: 500 }
     )
   }

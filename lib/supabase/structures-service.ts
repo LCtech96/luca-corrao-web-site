@@ -57,34 +57,53 @@ export async function getUserStructures(userId: string): Promise<Structure[]> {
 
 // Add new structure
 export async function addStructure(structure: Omit<Structure, 'id' | 'createdAt' | 'updatedAt' | 'isActive' | 'status'>): Promise<Structure | null> {
+  console.log('🔷 addStructure called with:', {
+    name: structure.name,
+    owner: structure.owner,
+    ownerId: structure.ownerId
+  })
+  
   const supabase = createClient()
+  
+  console.log('🔷 Supabase client created')
+  
+  const insertData = {
+    name: structure.name,
+    description: structure.description,
+    address: structure.address,
+    gps_coordinates: structure.gpsCoordinates || null,
+    rating: structure.rating,
+    main_image: structure.mainImage,
+    images: structure.images,
+    main_image_file_id: structure.mainImageFileId || null,
+    image_file_ids: structure.imageFileIds || null,
+    owner: structure.owner,
+    owner_email: structure.ownerEmail,
+    owner_id: structure.ownerId,
+    is_active: false, // Pending approval
+    status: 'pending'
+  }
+  
+  console.log('🔷 Insert data prepared:', insertData)
   
   const { data, error } = await supabase
     .from('structures')
-    .insert([{
-      name: structure.name,
-      description: structure.description,
-      address: structure.address,
-      gps_coordinates: structure.gpsCoordinates || null,
-      rating: structure.rating,
-      main_image: structure.mainImage,
-      images: structure.images,
-      main_image_file_id: structure.mainImageFileId || null,
-      image_file_ids: structure.imageFileIds || null,
-      owner: structure.owner,
-      owner_email: structure.ownerEmail,
-      owner_id: structure.ownerId,
-      is_active: false, // Pending approval
-      status: 'pending'
-    }])
+    .insert([insertData])
     .select()
     .single()
 
+  console.log('🔷 Insert result - data:', data, 'error:', error)
+
   if (error) {
-    console.error('Error adding structure:', error)
+    console.error('❌ Error adding structure:', error)
+    console.error('❌ Error code:', error.code)
+    console.error('❌ Error details:', error.details)
+    console.error('❌ Error hint:', error.hint)
+    console.error('❌ Error message:', error.message)
     throw error
   }
 
+  console.log('✅ Structure added successfully:', data?.id)
   return data ? formatStructure(data) : null
 }
 
