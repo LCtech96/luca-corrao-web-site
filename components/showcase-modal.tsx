@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useAccommodations } from "@/hooks/use-accommodations"
+import { useStructures } from "@/hooks/use-structures"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -42,13 +43,12 @@ export function ShowcaseModal({ onClose }: ShowcaseModalProps) {
   const { toast } = useToast()
   const structuresPerPage = 12
 
-  // Note: Structures are now loaded from Supabase database
-
-  // Fetch structures from Supabase
-  const { accommodations: supabaseStructures } = useAccommodations()
+  // Fetch both accommodations and user-submitted structures
+  const { accommodations: supabaseAccommodations } = useAccommodations()
+  const { structures: userStructures } = useStructures()
   
-  // Transform Supabase data to match expected Structure interface
-  const allStructures: Structure[] = (supabaseStructures || []).map(acc => ({
+  // Transform accommodations to match Structure interface
+  const accommodationsAsStructures: Structure[] = (supabaseAccommodations || []).map(acc => ({
     id: acc.id,
     name: acc.name,
     description: acc.description,
@@ -59,6 +59,22 @@ export function ShowcaseModal({ onClose }: ShowcaseModalProps) {
     owner: acc.owner,
     isOwner: (acc as any).isOwner || (acc as any).is_owner || false
   }))
+  
+  // Transform user structures
+  const transformedUserStructures: Structure[] = (userStructures || []).map(struct => ({
+    id: struct.id,
+    name: struct.name,
+    description: struct.description,
+    address: struct.address,
+    rating: struct.rating,
+    mainImage: struct.mainImage,
+    images: struct.images,
+    owner: struct.owner,
+    isOwner: user?.id === struct.ownerId
+  }))
+  
+  // Combine both lists (user structures first, then accommodations)
+  const allStructures: Structure[] = [...transformedUserStructures, ...accommodationsAsStructures]
 
   useEffect(() => {
     return () => {
