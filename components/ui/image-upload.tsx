@@ -174,27 +174,31 @@ export function ImageUpload({
             ? "border-cyan-500 bg-cyan-50 dark:bg-cyan-900/20 scale-[1.02]"
             : "border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50 hover:border-cyan-400 dark:hover:border-cyan-500"
         )}
-        onClick={(e) => {
-          e.preventDefault()
-          e.stopPropagation()
-          console.log(`🖱️ Upload area clicked, category: ${category}`)
-          console.log('📂 Input ref:', inputRef.current)
-          if (inputRef.current) {
-            inputRef.current.value = '' // Reset per permettere ri-selezione stessi file
-            inputRef.current.click()
-            console.log('✅ Input clicked programmatically')
-          } else {
-            console.error('❌ Input ref is null!')
-          }
-        }}
       >
+        {/* Input visibile ma trasparente - FIX per iPhone emulation */}
         <input
           ref={inputRef}
           id={`file-input-${category}`}
           type="file"
           accept={accept}
           multiple={maxFiles > 1}
-          className="hidden"
+          onChange={(e) => {
+            console.log(`🔔 CHANGE (React onChange), files: ${e.target.files?.length}`)
+            if (e.target.files && e.target.files.length > 0) {
+              handleFileSelect(e.target.files)
+            }
+          }}
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+          style={{ 
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            opacity: 0,
+            cursor: 'pointer',
+            zIndex: 10
+          }}
         />
         
         <Upload className={cn(
