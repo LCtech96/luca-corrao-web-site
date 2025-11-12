@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/use-auth"
 import { getAllBookings, getAllChatMessages, type Booking, type ChatMessage } from "@/lib/supabase/bookings-service"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, Users, Mail, Phone, MessageCircle, Euro, ChevronLeft } from "lucide-react"
+import { Calendar, Users, Mail, Phone, MessageCircle, Euro, ChevronLeft, Building2 } from "lucide-react"
 import Link from "next/link"
 
 export default function AdminDashboard() {
@@ -93,6 +93,12 @@ export default function AdminDashboard() {
               <p className="text-sm text-gray-600">Benvenuto, {user?.email}</p>
             </div>
             <div className="flex gap-2">
+              <Link href="/admin/structures">
+                <Button variant="outline">
+                  <Building2 className="w-4 h-4 mr-2" />
+                  Gestisci Strutture
+                </Button>
+              </Link>
               <Link href="/admin/users">
                 <Button variant="outline">
                   <Users className="w-4 h-4 mr-2" />
