@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
       owner,
       ownerEmail: safeOwnerEmail,
       ownerId: safeOwnerId
-    })
+    }, supabase) // ← PASSA IL CLIENT AUTENTICATO!
 
     if (!newStructure) {
       throw new Error('Failed to create structure')
@@ -179,7 +179,7 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    const updatedStructure = await updateStructure(structureId, updates)
+    const updatedStructure = await updateStructure(structureId, updates, supabase)
 
     return NextResponse.json({ 
       success: true, 
@@ -234,7 +234,7 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    const success = await deleteStructure(structureId)
+    const success = await deleteStructure(structureId, supabase)
 
     if (!success) {
       throw new Error('Failed to delete structure')

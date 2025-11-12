@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/client'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 export interface Structure {
   id: string
@@ -21,8 +22,8 @@ export interface Structure {
 }
 
 // Get all structures (admin can see all, users see only approved)
-export async function getAllStructures(): Promise<Structure[]> {
-  const supabase = createClient()
+export async function getAllStructures(supabaseClient?: SupabaseClient): Promise<Structure[]> {
+  const supabase = supabaseClient || createClient()
   
   const { data, error } = await supabase
     .from('structures')
@@ -38,8 +39,8 @@ export async function getAllStructures(): Promise<Structure[]> {
 }
 
 // Get user's own structures
-export async function getUserStructures(userId: string): Promise<Structure[]> {
-  const supabase = createClient()
+export async function getUserStructures(userId: string, supabaseClient?: SupabaseClient): Promise<Structure[]> {
+  const supabase = supabaseClient || createClient()
   
   const { data, error } = await supabase
     .from('structures')
@@ -56,16 +57,20 @@ export async function getUserStructures(userId: string): Promise<Structure[]> {
 }
 
 // Add new structure
-export async function addStructure(structure: Omit<Structure, 'id' | 'createdAt' | 'updatedAt' | 'isActive' | 'status'>): Promise<Structure | null> {
+export async function addStructure(
+  structure: Omit<Structure, 'id' | 'createdAt' | 'updatedAt' | 'isActive' | 'status'>,
+  supabaseClient?: SupabaseClient
+): Promise<Structure | null> {
   console.log('🔷 addStructure called with:', {
     name: structure.name,
     owner: structure.owner,
-    ownerId: structure.ownerId
+    ownerId: structure.ownerId,
+    hasSupabaseClient: !!supabaseClient
   })
   
-  const supabase = createClient()
+  const supabase = supabaseClient || createClient()
   
-  console.log('🔷 Supabase client created')
+  console.log('🔷 Supabase client:', supabaseClient ? 'Server client (authenticated)' : 'Default client')
   
   const insertData = {
     name: structure.name,
@@ -108,8 +113,8 @@ export async function addStructure(structure: Omit<Structure, 'id' | 'createdAt'
 }
 
 // Update structure (owner or admin)
-export async function updateStructure(id: string, updates: Partial<Structure>): Promise<Structure | null> {
-  const supabase = createClient()
+export async function updateStructure(id: string, updates: Partial<Structure>, supabaseClient?: SupabaseClient): Promise<Structure | null> {
+  const supabase = supabaseClient || createClient()
   
   const updateData: any = {}
   if (updates.name) updateData.name = updates.name
@@ -140,8 +145,8 @@ export async function updateStructure(id: string, updates: Partial<Structure>): 
 }
 
 // Delete structure (owner or admin)
-export async function deleteStructure(id: string): Promise<boolean> {
-  const supabase = createClient()
+export async function deleteStructure(id: string, supabaseClient?: SupabaseClient): Promise<boolean> {
+  const supabase = supabaseClient || createClient()
   
   const { error } = await supabase
     .from('structures')
@@ -157,13 +162,13 @@ export async function deleteStructure(id: string): Promise<boolean> {
 }
 
 // Approve structure (admin only - check done in API route)
-export async function approveStructure(id: string): Promise<Structure | null> {
-  return updateStructure(id, { isActive: true, status: 'approved' })
+export async function approveStructure(id: string, supabaseClient?: SupabaseClient): Promise<Structure | null> {
+  return updateStructure(id, { isActive: true, status: 'approved' }, supabaseClient)
 }
 
 // Reject structure (admin only - check done in API route)
-export async function rejectStructure(id: string): Promise<Structure | null> {
-  return updateStructure(id, { isActive: false, status: 'rejected' })
+export async function rejectStructure(id: string, supabaseClient?: SupabaseClient): Promise<Structure | null> {
+  return updateStructure(id, { isActive: false, status: 'rejected' }, supabaseClient)
 }
 
 // Format structure from database format to app format
