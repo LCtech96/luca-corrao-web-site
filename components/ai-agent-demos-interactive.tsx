@@ -139,7 +139,10 @@ export function AIAgentDemosInteractive({ onClose }: AIAgentDemosInteractiveProp
   }
 
   useEffect(() => {
-    scrollToBottom()
+    // Scroll solo quando arriva un nuovo messaggio e l'ultimo è dell'AI
+    if (messages.length > 0 && messages[messages.length - 1].role === "assistant") {
+      scrollToBottom()
+    }
   }, [messages])
 
   useEffect(() => {
@@ -378,9 +381,9 @@ export function AIAgentDemosInteractive({ onClose }: AIAgentDemosInteractiveProp
               </div>
             </div>
           ) : (
-            <div className="flex flex-col h-full">
+            <div className="flex flex-col h-full max-h-[calc(90vh-200px)]">
               {/* Chat Messages */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50 dark:bg-gray-950">
+              <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50 dark:bg-gray-950 min-h-0">
                 {messages.map((message, idx) => (
                   <div
                     key={idx}
