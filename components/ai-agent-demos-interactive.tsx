@@ -320,7 +320,7 @@ export function AIAgentDemosInteractive({ onClose }: AIAgentDemosInteractiveProp
 
         <CardContent className="flex-1 overflow-hidden p-0">
           {!selectedAgent ? (
-            <div className="p-6 overflow-y-auto h-full">
+            <div className="p-6 overflow-y-auto h-full max-h-[calc(90vh-120px)]">
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                 {aiAgents.map((agent) => (
                   <Card
