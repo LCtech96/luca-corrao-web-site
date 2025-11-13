@@ -313,10 +313,19 @@ IMPORTANTE:
     let groqMessages
     if (messages && Array.isArray(messages)) {
       // Nuovo formato: conversazione completa
-      groqMessages = [
-        { role: 'system', content: systemPrompt },
-        ...messages
-      ]
+      // Se il primo messaggio è già un system prompt, usalo invece del default
+      const hasCustomSystemPrompt = messages.length > 0 && messages[0].role === 'system'
+      
+      if (hasCustomSystemPrompt) {
+        // Usa il system prompt personalizzato fornito
+        groqMessages = [...messages]
+      } else {
+        // Usa il system prompt default per strutture ricettive
+        groqMessages = [
+          { role: 'system', content: systemPrompt },
+          ...messages
+        ]
+      }
     } else {
       // Vecchio formato: singola query
       groqMessages = [

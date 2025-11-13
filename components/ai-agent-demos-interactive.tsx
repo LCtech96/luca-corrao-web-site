@@ -20,6 +20,7 @@ import {
   Send,
   Loader2,
   Bot,
+  ExternalLink,
 } from "lucide-react"
 import { AI_AGENT_PROMPTS, type AIAgentId } from "@/lib/ai-agents-prompts"
 
@@ -241,22 +242,56 @@ export function AIAgentDemosInteractive({ onClose }: AIAgentDemosInteractiveProp
     }
   }
 
+  const handleWhatsAppContact = () => {
+    // Prepara il messaggio per WhatsApp con l'intera conversazione
+    const agentName = selectedAgentData?.name || "AI Agent"
+    let whatsappMessage = `Ciao Luca! Ho chattato con il ${agentName} e vorrei saperne di più.\n\n`
+    
+    // Aggiungi le ultime 4-5 interazioni più rilevanti
+    const recentMessages = messages.slice(-6)
+    whatsappMessage += "Ecco un riassunto della conversazione:\n\n"
+    
+    recentMessages.forEach((msg) => {
+      const speaker = msg.role === "assistant" ? "AI" : "Io"
+      whatsappMessage += `${speaker}: ${msg.content.substring(0, 200)}${msg.content.length > 200 ? "..." : ""}\n\n`
+    })
+    
+    whatsappMessage += "Vorrei ricevere maggiori informazioni e un preventivo personalizzato.\nGrazie!"
+    
+    const phoneNumber = "+393514206353"
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(whatsappMessage)}`
+    window.open(whatsappUrl, "_blank")
+  }
+
   return (
     <div className="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-6xl max-h-[90vh] overflow-hidden flex flex-col bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
         <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950 dark:to-purple-950 border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               {selectedAgent && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleBackToList}
-                  className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-white/50 dark:hover:bg-gray-800/50"
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Indietro
-                </Button>
+                <>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleBackToList}
+                    className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-white/50 dark:hover:bg-gray-800/50"
+                  >
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Indietro
+                  </Button>
+                  {messages.length > 2 && (
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={handleWhatsAppContact}
+                      className="bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      <MessageCircle className="w-4 h-4 mr-2" />
+                      Contatta Luca
+                    </Button>
+                  )}
+                </>
               )}
               <div>
                 <CardTitle className="text-2xl text-gray-900 dark:text-gray-100">
