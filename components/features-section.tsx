@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Brain, Code, Bot } from "lucide-react"
 import { useState } from "react"
 import { ConsultationForm } from "./consultation-form"
-import { AIAgentDemos } from "./ai-agent-demos"
+import { AIAgentDemosInteractive } from "./ai-agent-demos-interactive"
 
 const features = [
   {
@@ -15,8 +15,8 @@ const features = [
     subtitle: "Il Futuro è Ora",
     description:
       "Scopri come l'Intelligenza Artificiale sta plasmando le soluzioni di domani e la nostra expertise nello sviluppo software.",
-    color: "text-blue-600",
-    bgColor: "bg-blue-50",
+    color: "text-blue-600 dark:text-blue-400",
+    bgColor: "bg-blue-50 dark:bg-blue-950",
     url: "https://www.bedda.tech",
   },
   {
@@ -26,8 +26,8 @@ const features = [
     subtitle: "Agenti Intelligenti al Tuo Servizio",
     description:
       "La creazione di sistemi autonomi per ottimizzare il tuo business attraverso l'automazione intelligente.",
-    color: "text-indigo-600",
-    bgColor: "bg-indigo-50",
+    color: "text-indigo-600 dark:text-indigo-400",
+    bgColor: "bg-indigo-50 dark:bg-indigo-950",
     hasDemos: true,
   },
   {
@@ -36,8 +36,8 @@ const features = [
     title: "Consulenza Strategica AI",
     subtitle: "Trasformazione Digitale Avanzata",
     description: "Assistenza tecnica specializzata e integrazione AI per rivoluzionare digitalmente la tua azienda.",
-    color: "text-green-600",
-    bgColor: "bg-green-50",
+    color: "text-green-600 dark:text-green-400",
+    bgColor: "bg-green-50 dark:bg-green-950",
     hasForm: true,
   },
 ]
@@ -58,11 +58,11 @@ export function FeaturesSection() {
   }
 
   return (
-    <section id="features" className="py-20 bg-gray-50">
+    <section id="features" className="py-20 bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Soluzioni AI Avanzate</h2>
-          <p className="text-xl text-gray-600">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">Soluzioni AI Avanzate</h2>
+          <p className="text-xl text-gray-600 dark:text-gray-300">
             Clicca su ogni sezione per approfondire e scoprire come l'AI può trasformare il tuo business
           </p>
         </div>
@@ -71,18 +71,18 @@ export function FeaturesSection() {
           {features.map((feature, index) => (
             <Card
               key={index}
-              className="hover:shadow-xl transition-all duration-300 cursor-pointer group hover:-translate-y-2"
+              className="hover:shadow-xl transition-all duration-300 cursor-pointer group hover:-translate-y-2 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
               onClick={() => handleFeatureClick(feature)}
             >
               <CardHeader className={`${feature.bgColor} rounded-t-lg`}>
                 <div className={`w-12 h-12 ${feature.color} mb-4`}>
                   <feature.icon className="w-full h-full" />
                 </div>
-                <CardTitle className="text-xl text-gray-900 group-hover:text-gray-700">{feature.title}</CardTitle>
+                <CardTitle className="text-xl text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300">{feature.title}</CardTitle>
                 <p className={`text-sm font-medium ${feature.color}`}>{feature.subtitle}</p>
               </CardHeader>
               <CardContent className="p-6">
-                <p className="text-gray-600 mb-4 leading-relaxed">{feature.description}</p>
+                <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">{feature.description}</p>
                 <Button
                   variant="outline"
                   size="sm"
@@ -105,7 +105,7 @@ export function FeaturesSection() {
         {selectedFeature === "strategic-consulting" && <ConsultationForm onClose={handleCloseModal} />}
 
         {/* AI Agent Demos Modal */}
-        {selectedFeature === "ai-agents" && <AIAgentDemos onClose={handleCloseModal} />}
+        {selectedFeature === "ai-agents" && <AIAgentDemosInteractive onClose={handleCloseModal} />}
       </div>
     </section>
   )
