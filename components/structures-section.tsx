@@ -80,9 +80,9 @@ export function StructuresSection({ onClose }: StructuresSectionProps) {
                   <Button
                     variant="link"
                     className="text-purple-400 hover:text-purple-300 p-0"
-                    onClick={() => window.open("mailto:luca@bedda.tech", "_blank")}
+                    onClick={() => window.open("mailto:lucacorrao1996@gmail.com", "_blank")}
                   >
-                    luca@bedda.tech
+                    lucacorrao1996@gmail.com
                   </Button>
                 </div>
               </div>

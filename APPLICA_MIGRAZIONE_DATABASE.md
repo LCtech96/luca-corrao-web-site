@@ -141,7 +141,7 @@ Dopo l'applicazione, testa:
 SELECT COUNT(*) FROM user_profiles;
 
 -- Test 2: Verifica che le policy funzionino
-SELECT * FROM user_profiles WHERE email = 'luca@bedda.tech';
+SELECT * FROM user_profiles WHERE email = 'lucacorrao1996@gmail.com';
 
 -- Test 3: Verifica funzione request_host_status
 SELECT request_host_status('test@example.com', 'Test bio', ARRAY['Italiano', 'Inglese']);

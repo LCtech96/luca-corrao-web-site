@@ -3,7 +3,7 @@
 import { useAuth } from './use-auth'
 
 const ADMIN_EMAILS = [
-  'luca@bedda.tech',
+  'lucacorrao1996@gmail.com',
   'lucacorrao96@outlook.it',
   'luca@metatech.dev',
   'lucacorrao1996@outlook.com',

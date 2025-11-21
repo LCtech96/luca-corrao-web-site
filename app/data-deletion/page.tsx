@@ -95,8 +95,8 @@ export default function DataDeletionPage() {
                 
                 <div className="bg-blue-50 p-6 rounded-lg">
                   <p className="text-2xl font-bold text-blue-900 mb-2">
-                    <a href="mailto:luca@bedda.tech" className="hover:underline">
-                      luca@bedda.tech
+                    <a href="mailto:lucacorrao1996@gmail.com" className="hover:underline">
+                      lucacorrao1996@gmail.com
                     </a>
                   </p>
                   <p className="text-gray-700 text-sm">
@@ -128,7 +128,7 @@ export default function DataDeletionPage() {
                     </div>
                     <div>
                       <p className="font-semibold text-gray-900">Invio Richiesta</p>
-                      <p className="text-gray-600 text-sm">Invia email a luca@bedda.tech</p>
+                      <p className="text-gray-600 text-sm">Invia email a lucacorrao1996@gmail.com</p>
                     </div>
                   </li>
                   <li className="flex gap-4">
@@ -168,7 +168,7 @@ export default function DataDeletionPage() {
                 Per qualsiasi domanda sulla cancellazione dei dati o sulla privacy, contattaci:
               </p>
               <div className="space-y-2">
-                <p><strong>Email:</strong> <a href="mailto:luca@bedda.tech" className="text-blue-600 hover:underline">luca@bedda.tech</a></p>
+                <p><strong>Email:</strong> <a href="mailto:lucacorrao1996@gmail.com" className="text-blue-600 hover:underline">lucacorrao1996@gmail.com</a></p>
                 <p><strong>Privacy Policy:</strong> <Link href="/privacy" className="text-blue-600 hover:underline">lucacorrao.com/privacy</Link></p>
               </div>
             </div>

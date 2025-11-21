@@ -117,7 +117,7 @@ export function BookingModalAdvanced({
         setTimeout(async () => {
           await sendChatMessage(
             bookingId,
-            'luca@bedda.tech',
+            'lucacorrao1996@gmail.com',
             'Luca Corrao',
             'host',
             "Grazie per il messaggio! Ti risponderò al più presto. Nel frattempo puoi procedere con la prenotazione."
@@ -610,7 +610,7 @@ export function BookingModalAdvanced({
                     })
                     
                     // Invia email di notifica a Luca (da implementare)
-                    console.log('📧 Notifica inviata a luca@bedda.tech:', {
+                    console.log('📧 Notifica inviata a lucacorrao1996@gmail.com:', {
                       booking: bookingData,
                       payment: paymentMethod,
                       total: total

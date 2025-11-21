@@ -65,7 +65,7 @@ BEGIN
     NEW.email_confirmed_at IS NOT NULL,
     -- Check if email is in admin list
     CASE 
-      WHEN NEW.email IN ('luca@bedda.tech', 'lucacorrao96@outlook.it', 'luca@metatech.dev', 'lucacorrao1996@outlook.com', 'luca@lucacorrao.com') 
+      WHEN NEW.email IN ('lucacorrao1996@gmail.com', 'lucacorrao96@outlook.it', 'luca@metatech.dev', 'lucacorrao1996@outlook.com', 'luca@lucacorrao.com') 
       THEN 'admin'
       ELSE 'guest'
     END
@@ -113,7 +113,7 @@ CREATE POLICY "Admins can read all profiles"
   FOR SELECT
   USING (
     current_setting('request.jwt.claims', true)::json->>'email' IN (
-      'luca@bedda.tech', 
+      'lucacorrao1996@gmail.com', 
       'lucacorrao96@outlook.it', 
       'luca@metatech.dev', 
       'lucacorrao1996@outlook.com', 
@@ -246,7 +246,7 @@ CREATE OR REPLACE FUNCTION verify_host(
 RETURNS BOOLEAN AS $$
 BEGIN
   -- Check if admin
-  IF admin_email NOT IN ('luca@bedda.tech', 'lucacorrao96@outlook.it', 'luca@metatech.dev', 'lucacorrao1996@outlook.com', 'luca@lucacorrao.com') THEN
+  IF admin_email NOT IN ('lucacorrao1996@gmail.com', 'lucacorrao96@outlook.it', 'luca@metatech.dev', 'lucacorrao1996@outlook.com', 'luca@lucacorrao.com') THEN
     RAISE EXCEPTION 'Only admins can verify hosts';
   END IF;
   

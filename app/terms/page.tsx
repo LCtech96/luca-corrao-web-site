@@ -115,7 +115,7 @@ export default function TermsPage() {
             <h2 className="text-2xl font-bold mb-4 text-gray-900">10. Contatti</h2>
             <p>Per domande sui Termini e Condizioni:</p>
             <ul className="list-none space-y-2">
-              <li><strong>Email:</strong> <a href="mailto:luca@bedda.tech" className="text-blue-600 hover:underline">luca@bedda.tech</a></li>
+              <li><strong>Email:</strong> <a href="mailto:lucacorrao1996@gmail.com" className="text-blue-600 hover:underline">lucacorrao1996@gmail.com</a></li>
               <li><strong>Sito:</strong> <a href="https://lucacorrao.com" className="text-blue-600 hover:underline">lucacorrao.com</a></li>
             </ul>
           </section>

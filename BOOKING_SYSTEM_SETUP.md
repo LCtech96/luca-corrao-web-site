@@ -19,7 +19,7 @@ Sistema completo di prenotazione con:
 1. **Lettura**: Ogni utente vede SOLO le proprie prenotazioni
 2. **Scrittura**: Ogni utente crea SOLO le proprie prenotazioni
 3. **Admin**: Solo le email autorizzate vedono TUTTO
-   - `luca@bedda.tech`
+   - `lucacorrao1996@gmail.com`
    - `lucacorrao96@outlook.it`
    - `luca@metatech.dev`
    - `lucacorrao1996@outlook.com`
@@ -103,7 +103,7 @@ Dovrebbe mostrare `rowsecurity = true` per entrambe.
 Accessibile da: `/admin`
 
 **Email autorizzate:**
-- `luca@bedda.tech` ✅
+- `lucacorrao1996@gmail.com` ✅
 - `lucacorrao96@outlook.it` ✅
 - `luca@metatech.dev` ✅
 - `lucacorrao1996@outlook.com` ✅
@@ -142,7 +142,7 @@ Luca (admin) vede:
 SELECT * FROM chat_messages;
 -- Risultato: solo i messaggi delle sue prenotazioni
 
--- Cosa vede luca@bedda.tech
+-- Cosa vede lucacorrao1996@gmail.com
 SELECT * FROM chat_messages;
 -- Risultato: TUTTI i messaggi di TUTTI
 ```
@@ -183,7 +183,7 @@ https://revolut.me/lctech96
 
 ### **Per Luca (Admin):**
 
-1. Login con `luca@bedda.tech` o `lucacorrao96@outlook.it`
+1. Login con `lucacorrao1996@gmail.com` o `lucacorrao96@outlook.it`
 2. Click bottone "Admin" nella nav bar (🛡️ Shield icon)
 3. Vedi dashboard con:
    - Tutte le prenotazioni
@@ -206,7 +206,7 @@ https://revolut.me/lctech96
 - price_per_night, cleaning_fee, subtotal, total
 - payment_method, payment_status
 - notes, status
-- property_owner_email (sempre luca@bedda.tech)
+- property_owner_email (sempre lucacorrao1996@gmail.com)
 - created_at, updated_at
 ```
 
@@ -231,7 +231,7 @@ https://revolut.me/lctech96
 
 | Email | Ruolo | Permessi |
 |-------|-------|----------|
-| `luca@bedda.tech` | **Admin** | ✅ Vede TUTTO |
+| `lucacorrao1996@gmail.com` | **Admin** | ✅ Vede TUTTO |
 | `lucacorrao96@outlook.it` | **Admin** | ✅ Vede TUTTO |
 | `luca@metatech.dev` | **Admin** | ✅ Vede TUTTO |
 | `lucacorrao1996@outlook.com` | **Admin** | ✅ Vede TUTTO |
@@ -274,7 +274,7 @@ https://revolut.me/lctech96
 ## 📞 Contatti
 
 **Admin Email (Tutte Autorizzate):**
-- luca@bedda.tech
+- lucacorrao1996@gmail.com
 - lucacorrao96@outlook.it
 - luca@metatech.dev
 - lucacorrao1996@outlook.com

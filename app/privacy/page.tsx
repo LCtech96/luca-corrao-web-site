@@ -87,7 +87,7 @@ export default function PrivacyPolicyPage() {
               <li><strong>Opposizione:</strong> Opporti al trattamento dei tuoi dati</li>
             </ul>
             <p className="mt-4">
-              Per esercitare questi diritti, contattaci a: <a href="mailto:luca@bedda.tech" className="text-blue-600 hover:underline">luca@bedda.tech</a>
+              Per esercitare questi diritti, contattaci a: <a href="mailto:lucacorrao1996@gmail.com" className="text-blue-600 hover:underline">lucacorrao1996@gmail.com</a>
             </p>
           </section>
 
@@ -111,7 +111,7 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-2xl font-bold mb-4 text-gray-900">9. Contatti</h2>
             <p>Per domande sulla privacy, contattaci:</p>
             <ul className="list-none space-y-2">
-              <li><strong>Email:</strong> <a href="mailto:luca@bedda.tech" className="text-blue-600 hover:underline">luca@bedda.tech</a></li>
+              <li><strong>Email:</strong> <a href="mailto:lucacorrao1996@gmail.com" className="text-blue-600 hover:underline">lucacorrao1996@gmail.com</a></li>
               <li><strong>Sito:</strong> <a href="https://lucacorrao.com" className="text-blue-600 hover:underline">lucacorrao.com</a></li>
             </ul>
           </section>

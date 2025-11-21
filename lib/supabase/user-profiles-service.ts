@@ -119,7 +119,7 @@ export function isAdmin(profile: UserProfile | null): boolean {
   if (!profile || !profile.email) return false
   
   const adminEmails = [
-    'luca@bedda.tech',
+    'lucacorrao1996@gmail.com',
     'lucacorrao96@outlook.it',
     'luca@metatech.dev',
     'lucacorrao1996@outlook.com',

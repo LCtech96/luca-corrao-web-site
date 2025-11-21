@@ -182,7 +182,7 @@
 ## 📊 Email Admin Autorizzate
 
 Le seguenti email hanno **automaticamente** ruolo `admin`:
-1. `luca@bedda.tech`
+1. `lucacorrao1996@gmail.com`
 2. `lucacorrao96@outlook.it`
 3. `luca@metatech.dev`
 4. `lucacorrao1996@outlook.com`

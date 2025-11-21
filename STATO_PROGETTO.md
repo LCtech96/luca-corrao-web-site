@@ -32,7 +32,7 @@
 
 ### **🛡️ Admin Dashboard**
 - ✅ **Admin-Only Access** - Solo email autorizzate:
-  - `luca@bedda.tech`
+  - `lucacorrao1996@gmail.com`
   - `lucacorrao96@outlook.it`
   - `luca@metatech.dev`
   - `lucacorrao1996@outlook.com`

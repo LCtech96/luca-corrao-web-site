@@ -90,7 +90,7 @@ CREATE POLICY "Users can read their own bookings"
   USING (
     guest_email = current_setting('request.jwt.claims', true)::json->>'email'
     OR property_owner_email = current_setting('request.jwt.claims', true)::json->>'email'
-    OR current_setting('request.jwt.claims', true)::json->>'email' IN ('luca@bedda.tech', 'lucacorrao96@outlook.it', 'luca@metatech.dev', 'lucacorrao1996@outlook.com', 'luca@lucacorrao.com')
+    OR current_setting('request.jwt.claims', true)::json->>'email' IN ('lucacorrao1996@gmail.com', 'lucacorrao96@outlook.it', 'luca@metatech.dev', 'lucacorrao1996@outlook.com', 'luca@lucacorrao.com')
   );
 
 -- 2. Gli utenti possono CREARE le proprie prenotazioni
@@ -108,7 +108,7 @@ CREATE POLICY "Users can update their own bookings"
   USING (
     guest_email = current_setting('request.jwt.claims', true)::json->>'email'
     OR property_owner_email = current_setting('request.jwt.claims', true)::json->>'email'
-    OR current_setting('request.jwt.claims', true)::json->>'email' IN ('luca@bedda.tech', 'lucacorrao96@outlook.it', 'luca@metatech.dev', 'lucacorrao1996@outlook.com', 'luca@lucacorrao.com')
+    OR current_setting('request.jwt.claims', true)::json->>'email' IN ('lucacorrao1996@gmail.com', 'lucacorrao96@outlook.it', 'luca@metatech.dev', 'lucacorrao1996@outlook.com', 'luca@lucacorrao.com')
   );
 
 -- CHAT POLICIES
@@ -136,7 +136,7 @@ CREATE POLICY "Users can read their own chat messages"
     )
     OR
     -- L'utente è l'ADMIN (Luca)
-    current_setting('request.jwt.claims', true)::json->>'email' IN ('luca@bedda.tech', 'lucacorrao96@outlook.it')
+    current_setting('request.jwt.claims', true)::json->>'email' IN ('lucacorrao1996@gmail.com', 'lucacorrao96@outlook.it')
   );
 
 -- 2. Gli utenti possono INVIARE messaggi solo nelle proprie prenotazioni
@@ -159,7 +159,7 @@ CREATE POLICY "Users can send messages in their bookings"
     )
     OR
     -- L'utente è l'ADMIN (Luca)
-    current_setting('request.jwt.claims', true)::json->>'email' IN ('luca@bedda.tech', 'lucacorrao96@outlook.it')
+    current_setting('request.jwt.claims', true)::json->>'email' IN ('lucacorrao1996@gmail.com', 'lucacorrao96@outlook.it')
   );
 
 -- 3. Gli utenti possono AGGIORNARE (mark as read) solo i propri messaggi
@@ -168,7 +168,7 @@ CREATE POLICY "Users can update their own messages"
   FOR UPDATE
   USING (
     sender_email = current_setting('request.jwt.claims', true)::json->>'email'
-    OR current_setting('request.jwt.claims', true)::json->>'email' IN ('luca@bedda.tech', 'lucacorrao96@outlook.it', 'luca@metatech.dev', 'lucacorrao1996@outlook.com', 'luca@lucacorrao.com')
+    OR current_setting('request.jwt.claims', true)::json->>'email' IN ('lucacorrao1996@gmail.com', 'lucacorrao96@outlook.it', 'luca@metatech.dev', 'lucacorrao1996@outlook.com', 'luca@lucacorrao.com')
   );
 
 -- Create function to update updated_at timestamp
@@ -202,5 +202,5 @@ GRANT SELECT ON admin_all_bookings TO authenticated;
 
 COMMENT ON TABLE bookings IS 'Prenotazioni con Row Level Security - ogni utente vede solo le proprie';
 COMMENT ON TABLE chat_messages IS 'Messaggi chat con RLS - privacy totale tra utenti, solo admin vede tutto';
-COMMENT ON VIEW admin_all_bookings IS 'Vista admin - accessibile solo da: luca@bedda.tech, lucacorrao96@outlook.it, luca@metatech.dev, lucacorrao1996@outlook.com, luca@lucacorrao.com';
+COMMENT ON VIEW admin_all_bookings IS 'Vista admin - accessibile solo da: lucacorrao1996@gmail.com, lucacorrao96@outlook.it, luca@metatech.dev, lucacorrao1996@outlook.com, luca@lucacorrao.com';
 
