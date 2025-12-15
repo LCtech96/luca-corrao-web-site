@@ -7,7 +7,20 @@ import { useState } from "react"
 import { ConsultationForm } from "./consultation-form"
 import { AIAgentDemosInteractive } from "./ai-agent-demos-interactive"
 
-const features = [
+type Feature = {
+  id: string
+  icon: React.ComponentType<{ className?: string }>
+  title: string
+  subtitle: string
+  description: string
+  color: string
+  bgColor: string
+  url?: string
+  hasForm?: boolean
+  hasDemos?: boolean
+}
+
+const features: Feature[] = [
   {
     id: "ai-vision",
     icon: Brain,
@@ -44,7 +57,7 @@ const features = [
 export function FeaturesSection() {
   const [selectedFeature, setSelectedFeature] = useState<string | null>(null)
 
-  const handleFeatureClick = (feature: any) => {
+  const handleFeatureClick = (feature: Feature) => {
     if (feature.url) {
       window.open(feature.url, "_blank")
     } else if (feature.hasForm || feature.hasDemos) {
