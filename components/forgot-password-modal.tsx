@@ -43,9 +43,25 @@ export function ForgotPasswordModal({ onClose }: ForgotPasswordModalProps) {
       })
     } catch (error: any) {
       console.error('Password reset error:', error)
+      
+      // Messaggi di errore più specifici
+      let errorMessage = "Impossibile inviare l'email. Riprova."
+      
+      if (error.message) {
+        if (error.message.includes('rate limit') || error.message.includes('too many')) {
+          errorMessage = "Troppi tentativi. Attendi qualche minuto prima di riprovare."
+        } else if (error.message.includes('not found') || error.message.includes('user')) {
+          errorMessage = "Email non trovata. Verifica di aver inserito l'email corretta."
+        } else if (error.message.includes('network') || error.message.includes('fetch')) {
+          errorMessage = "Errore di connessione. Verifica la tua connessione internet."
+        } else {
+          errorMessage = error.message
+        }
+      }
+      
       toast({
         title: "Errore",
-        description: error.message || "Impossibile inviare l'email. Riprova.",
+        description: errorMessage,
         variant: "destructive",
       })
     } finally {

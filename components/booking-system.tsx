@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Calendar, X, ChevronLeft, ChevronRight } from "lucide-react"
+import { Calendar, X, ChevronLeft, ChevronRight, QrCode, CheckCircle2 } from "lucide-react"
+import Image from "next/image"
 
 interface BookingData {
   id: string
@@ -177,13 +178,15 @@ const saveBookings = (bookings: BookingData[]) => {
 }
 
 export function BookingSystem({ propertyId, propertyName, onClose }: BookingSystemProps) {
-  const [currentView, setCurrentView] = useState<"calendar" | "form">("calendar")
+  const [currentView, setCurrentView] = useState<"calendar" | "form" | "payment">("calendar")
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDates, setSelectedDates] = useState<{ checkIn: string; checkOut: string }>({
     checkIn: "",
     checkOut: "",
   })
   const [bookings, setBookings] = useState<BookingData[]>([])
+  const [paymentMethod, setPaymentMethod] = useState<"qr-code">("qr-code")
+  const [showQRCode, setShowQRCode] = useState(false)
 
   const [bookingForm, setBookingForm] = useState({
     guestName: "",
@@ -249,6 +252,7 @@ export function BookingSystem({ propertyId, propertyName, onClose }: BookingSyst
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    // Salva la prenotazione
     const newBooking: BookingData = {
       id: Date.now().toString(),
       propertyId,
@@ -264,7 +268,18 @@ export function BookingSystem({ propertyId, propertyName, onClose }: BookingSyst
     setBookings(updatedBookings)
     saveBookings(updatedBookings)
 
-    // Send WhatsApp notification
+    // Mostra prima il QR code per il pagamento
+    setShowQRCode(true)
+    setCurrentView("payment")
+  }
+
+  const handleSendWhatsApp = () => {
+    const nights = Math.ceil(
+      (new Date(selectedDates.checkOut).getTime() - new Date(selectedDates.checkIn).getTime()) /
+        (1000 * 60 * 60 * 24),
+    )
+
+    // Send WhatsApp notification con informazioni sul pagamento
     const message = `🏠 NUOVA PRENOTAZIONE CONFERMATA - ${propertyName}
 
 👤 Nome: ${bookingForm.guestName} ${bookingForm.guestSurname}
@@ -273,7 +288,10 @@ export function BookingSystem({ propertyId, propertyName, onClose }: BookingSyst
 👥 Ospiti: ${bookingForm.numberOfGuests}
 📅 Check-in: ${selectedDates.checkIn}
 📅 Check-out: ${selectedDates.checkOut}
+🌙 Notti: ${nights}
 💬 Richieste speciali: ${bookingForm.specialRequests || "Nessuna"}
+
+💳 Metodo di pagamento: QR Code (vedi immagine inviata)
 
 ✅ Prenotazione automaticamente confermata!`
 
@@ -508,6 +526,31 @@ export function BookingSystem({ propertyId, propertyName, onClose }: BookingSyst
                 </div>
               </div>
 
+              {/* Metodo di Pagamento */}
+              <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <h4 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
+                  <QrCode className="w-5 h-5" />
+                  Metodo di Pagamento
+                </h4>
+                <div className="space-y-2">
+                  <label className="flex items-center gap-3 p-3 bg-white rounded-lg border-2 border-blue-300 cursor-pointer hover:bg-blue-50 transition-colors">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="qr-code"
+                      checked={paymentMethod === "qr-code"}
+                      onChange={() => setPaymentMethod("qr-code")}
+                      className="w-4 h-4 text-blue-600"
+                    />
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900">Pagamento tramite QR Code</div>
+                      <div className="text-sm text-gray-600">Scansiona il QR code per effettuare il pagamento</div>
+                    </div>
+                    <QrCode className="w-6 h-6 text-blue-600" />
+                  </label>
+                </div>
+              </div>
+
               <form onSubmit={handleBookingSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
@@ -606,7 +649,7 @@ export function BookingSystem({ propertyId, propertyName, onClose }: BookingSyst
                 <div className="bg-green-50 p-4 rounded-lg border border-green-200">
                   <h4 className="font-semibold text-green-800 mb-2">✅ Prenotazione Immediata</h4>
                   <p className="text-sm text-green-700">
-                    La tua prenotazione sarà confermata immediatamente. Riceverai tutti i dettagli via WhatsApp.
+                    La tua prenotazione sarà confermata immediatamente. Dopo aver confermato, ti mostreremo il QR code per il pagamento.
                   </p>
                 </div>
 
@@ -619,6 +662,87 @@ export function BookingSystem({ propertyId, propertyName, onClose }: BookingSyst
                   </Button>
                 </div>
               </form>
+            </div>
+          )}
+
+          {/* Payment QR Code View */}
+          {currentView === "payment" && showQRCode && (
+            <div className="max-w-2xl mx-auto">
+              <div className="text-center mb-6">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+                  <CheckCircle2 className="w-8 h-8 text-green-600" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Prenotazione Confermata!</h3>
+                <p className="text-gray-600">Ora effettua il pagamento tramite QR Code</p>
+              </div>
+
+              <div className="bg-white p-6 rounded-lg border-2 border-amber-200 shadow-lg mb-6">
+                <div className="text-center mb-4">
+                  <h4 className="font-semibold text-gray-900 mb-2 flex items-center justify-center gap-2">
+                    <QrCode className="w-5 h-5 text-amber-600" />
+                    Scansiona il QR Code per Pagare
+                  </h4>
+                  <p className="text-sm text-gray-600">Usa l'app del tuo smartphone per scansionare il codice</p>
+                </div>
+                
+                <div className="flex justify-center mb-4">
+                  <div className="relative w-64 h-64 bg-white p-4 rounded-lg border-2 border-gray-200">
+                    <Image
+                      src="/images/qr-code-payment.png"
+                      alt="QR Code per il pagamento"
+                      width={256}
+                      height={256}
+                      className="w-full h-full object-contain"
+                      priority
+                    />
+                  </div>
+                </div>
+
+                <div className="text-center">
+                  <p className="text-sm font-medium text-gray-700 mb-1">@lctech96</p>
+                  <p className="text-xs text-gray-500">Scansiona con la tua app di pagamento preferita</p>
+                </div>
+              </div>
+
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-6">
+                <h4 className="font-semibold text-blue-900 mb-2">📋 Riepilogo Prenotazione</h4>
+                <div className="space-y-1 text-sm text-blue-800">
+                  <p>📍 Struttura: {propertyName}</p>
+                  <p>👤 Ospite: {bookingForm.guestName} {bookingForm.guestSurname}</p>
+                  <p>📅 Check-in: {selectedDates.checkIn}</p>
+                  <p>📅 Check-out: {selectedDates.checkOut}</p>
+                  <p>🌙 Notti: {Math.ceil(
+                    (new Date(selectedDates.checkOut).getTime() - new Date(selectedDates.checkIn).getTime()) /
+                      (1000 * 60 * 60 * 24),
+                  )}</p>
+                  <p>💳 Metodo di pagamento: QR Code</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <Button 
+                  onClick={handleSendWhatsApp} 
+                  className="flex-1 bg-green-600 hover:bg-green-700"
+                >
+                  Invia Conferma via WhatsApp
+                </Button>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => {
+                    setShowQRCode(false)
+                    setCurrentView("form")
+                  }}
+                >
+                  Indietro
+                </Button>
+              </div>
+
+              <div className="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                <p className="text-xs text-amber-800 text-center">
+                  💡 Dopo aver effettuato il pagamento, clicca su "Invia Conferma via WhatsApp" per completare la prenotazione
+                </p>
+              </div>
             </div>
           )}
         </CardContent>

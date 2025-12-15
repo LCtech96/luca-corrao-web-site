@@ -30,9 +30,9 @@ export function SocialLinksCompact() {
       color: "hover:text-white"
     },
     {
-      name: "bedda.AI",
+      name: "Nomadiqe.com",
       icon: null, // Logo custom
-      url: "https://bedda.tech",
+      url: "https://nomadiqe.com",
       color: "hover:text-cyan-400",
       isText: true
     }
@@ -50,7 +50,7 @@ export function SocialLinksCompact() {
           title={link.name}
         >
           {link.isText ? (
-            <span className="text-xs font-bold tracking-wider">bedda.AI</span>
+            <span className="text-xs font-bold tracking-wider">Nomadiqe.com</span>
           ) : (
             link.icon && <link.icon className="w-4 h-4" />
           )}

@@ -1,10 +1,10 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Building2, Bot, MessageCircle, Phone } from "lucide-react"
+import { Building2, Bot } from "lucide-react"
 import Image from "next/image"
-import { StructuresSection } from "./structures-section"
 import { AISolutionsSection } from "./ai-solutions-section"
 import { NavigationBar } from "./navigation-bar"
 import { Snowfall3D } from "./snowfall-3d"
@@ -12,14 +12,10 @@ import { SocialLinksCompact } from "./social-links-compact"
 import { ChatBubble } from "./chat-bubble"
 
 export function MinimalHero() {
-  const [activeSection, setActiveSection] = useState<"structures" | "ai" | null>(null)
+  const [activeSection, setActiveSection] = useState<"ai" | null>(null)
 
   const closeSection = () => {
     setActiveSection(null)
-  }
-
-  if (activeSection === "structures") {
-    return <StructuresSection onClose={closeSection} />
   }
 
   if (activeSection === "ai") {
@@ -63,6 +59,7 @@ export function MinimalHero() {
                 alt="Luca Corrao"
                 width={200}
                 height={200}
+                sizes="200px"
                 className="relative rounded-full shadow-2xl object-cover border border-red-500/80 backdrop-blur-sm hover:scale-105 hover:border-cyan-400 transition-all duration-500"
                 priority
               />
@@ -81,14 +78,16 @@ export function MinimalHero() {
           <div className="grid md:grid-cols-2 gap-10 max-w-4xl mx-auto mb-20">
             <Button
               size="lg"
-              onClick={() => setActiveSection("structures")}
+              asChild
               className="h-32 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:via-orange-600 hover:to-amber-700 text-white text-2xl font-black shadow-2xl shadow-amber-500/60 hover:shadow-[0_0_40px_rgba(251,146,60,0.8)] transform hover:scale-110 transition-all duration-300 border-2 border-amber-300/30 rounded-2xl uppercase tracking-wide"
             >
-              <Building2 className="w-14 h-14 mr-6" />
-              <div className="text-left">
-                <div className="text-2xl font-black">Esplora le Strutture</div>
-                <div className="text-sm opacity-95 font-semibold">Ospitalità di Eccellenza</div>
-              </div>
+              <Link href="/esplora-le-strutture">
+                <Building2 className="w-14 h-14 mr-6" />
+                <div className="text-left">
+                  <div className="text-2xl font-black">Esplora le Strutture</div>
+                  <div className="text-sm opacity-95 font-semibold">Ospitalità di Eccellenza</div>
+                </div>
+              </Link>
             </Button>
 
             <Button

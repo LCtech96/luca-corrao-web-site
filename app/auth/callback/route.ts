@@ -6,6 +6,7 @@ import { cookies } from 'next/headers'
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
+  const type = requestUrl.searchParams.get('type')
   const origin = requestUrl.origin
 
   if (code) {
@@ -18,11 +19,23 @@ export async function GET(request: NextRequest) {
       
       if (error) {
         console.error('Error exchanging code for session:', error)
-        // Redirect to home with error
+        // Se è un errore di reset password, reindirizza alla pagina di reset con errore
+        if (type === 'recovery') {
+          return NextResponse.redirect(`${origin}/auth/reset-password?error=invalid_token`)
+        }
+        // Altrimenti reindirizza alla home con errore
         return NextResponse.redirect(`${origin}/?error=auth_callback_error`)
+      }
+      
+      // Se è un reset password, reindirizza alla pagina di reset
+      if (type === 'recovery') {
+        return NextResponse.redirect(`${origin}/auth/reset-password`)
       }
     } catch (err) {
       console.error('Exception in auth callback:', err)
+      if (type === 'recovery') {
+        return NextResponse.redirect(`${origin}/auth/reset-password?error=callback_exception`)
+      }
       return NextResponse.redirect(`${origin}/?error=auth_callback_exception`)
     }
   }

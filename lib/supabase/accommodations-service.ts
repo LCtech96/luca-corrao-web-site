@@ -10,6 +10,15 @@ export async function getAllAccommodations() {
   try {
     const supabase = createClient()
     
+    // Check if Supabase is properly configured
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    
+    if (!supabaseUrl || !supabaseKey) {
+      console.warn('⚠️ Supabase environment variables not configured. Returning empty array.')
+      return []
+    }
+    
     const { data, error } = await supabase
       .from('accommodations')
       .select('*')
@@ -18,12 +27,23 @@ export async function getAllAccommodations() {
     
     if (error) {
       console.error('Error fetching accommodations:', error)
+      // Log more details about the error
+      if (error.message) {
+        console.error('Error message:', error.message)
+      }
+      if (error.details) {
+        console.error('Error details:', error.details)
+      }
       return []
     }
     
     return data || []
   } catch (error) {
     console.error('Error in getAllAccommodations:', error)
+    if (error instanceof Error) {
+      console.error('Error message:', error.message)
+      console.error('Error stack:', error.stack)
+    }
     return []
   }
 }

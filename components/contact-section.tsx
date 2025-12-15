@@ -52,16 +52,6 @@ export function ContactSection() {
                   Contattaci per la tua Soluzione Software
                 </Button>
               </CardContent>
-              {/* Background Logo */}
-              <div className="absolute inset-0 flex items-center justify-center opacity-5">
-                <Image
-                  src="/images/bedda-tech-logo.png"
-                  alt="Bedda Tech Logo"
-                  width={200}
-                  height={200}
-                  className="object-contain"
-                />
-              </div>
             </Card>
 
             <Card className="bg-white/10 border-white/20 hover:bg-white/20 transition-colors">

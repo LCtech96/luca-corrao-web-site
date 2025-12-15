@@ -30,7 +30,7 @@ import { BookingSystem } from "./booking-system"
 
 export function AccommodationsSection() {
   // Fetch accommodations from Supabase
-  const { accommodations: accommodationsData } = useAccommodations()
+  const { accommodations: accommodationsData, isLoading, error } = useAccommodations()
   const accommodations = accommodationsData || []
   
   const [selectedAccommodation, setSelectedAccommodation] = useState<string | null>(null)
@@ -96,12 +96,12 @@ export function AccommodationsSection() {
     : null
 
   return (
-    <section id="accommodations" className="py-20 bg-white">
+    <section id="accommodations" className="py-20 bg-white dark:bg-gray-900">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Le Nostre Strutture Ricettive</h2>
-            <p className="text-xl text-gray-600 mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Le Nostre Strutture Ricettive</h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
               Scopri l'eccellenza dell'ospitalità siciliana nelle nostre esclusive proprietà
             </p>
             <div className="bg-blue-50 p-6 rounded-lg max-w-4xl mx-auto">
@@ -112,15 +112,46 @@ export function AccommodationsSection() {
             </div>
           </div>
 
+          {/* Loading State */}
+          {isLoading && (
+            <div className="text-center py-12">
+              <p className="text-gray-600 dark:text-gray-300">Caricamento strutture...</p>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && !isLoading && (
+            <div className="text-center py-12">
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 max-w-2xl mx-auto">
+                <p className="text-amber-800 font-semibold mb-2">⚠️ Database temporaneamente non disponibile</p>
+                <p className="text-sm text-amber-700 mb-4">
+                  Il database Supabase è attualmente in fase di ripristino. Le strutture saranno disponibili a breve.
+                </p>
+                <p className="text-xs text-amber-600">
+                  {error.message || "Errore di connessione al database"}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!isLoading && !error && accommodations.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-gray-600 dark:text-gray-300">Nessuna struttura disponibile al momento.</p>
+            </div>
+          )}
+
           {/* Accommodations Grid */}
-          <div className="grid lg:grid-cols-2 gap-8 mb-16">
-            {accommodations.map((accommodation) => (
-              <Card key={accommodation.id} className="overflow-hidden hover:shadow-xl transition-shadow">
+          {!isLoading && !error && accommodations.length > 0 && (
+            <div className="grid lg:grid-cols-2 gap-8 mb-16">
+              {accommodations.map((accommodation) => (
+                <Card key={accommodation.id} className="overflow-hidden hover:shadow-xl transition-shadow">
                 <div className="relative h-64 cursor-pointer" onClick={() => openGallery(accommodation.id, 0)}>
                   <Image
                     src={accommodation.images[0] || "/placeholder.svg"}
                     alt={`${accommodation.name} - Struttura ricettiva Terrasini`}
                     fill
+                    sizes="(max-width: 1024px) 100vw, 50vw"
                     className="object-cover hover:scale-105 transition-transform duration-300"
                   />
                   <div className="absolute top-4 left-4">
@@ -137,19 +168,19 @@ export function AccommodationsSection() {
                 </div>
 
                 <CardHeader>
-                  <CardTitle className="text-2xl text-gray-900">{accommodation.name}</CardTitle>
+                  <CardTitle className="text-2xl text-gray-900 dark:text-white">{accommodation.name}</CardTitle>
                   <p className="text-amber-600 font-medium">{accommodation.subtitle}</p>
                 </CardHeader>
 
                 <CardContent>
-                  <p className="text-gray-600 mb-4">{accommodation.description}</p>
+                  <p className="text-gray-600 dark:text-gray-300 mb-4">{accommodation.description}</p>
 
                   <div className="space-y-3 mb-6">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                       <MapPin className="w-4 h-4 text-amber-600" />
                       {accommodation.distance}
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                       <Users className="w-4 h-4 text-amber-600" />
                       {accommodation.capacity}
                     </div>
@@ -182,7 +213,8 @@ export function AccommodationsSection() {
                 </CardContent>
               </Card>
             ))}
-          </div>
+            </div>
+          )}
 
           {/* Image Gallery Modal */}
           {selectedGallery && currentGalleryAccommodation && (
@@ -226,6 +258,7 @@ export function AccommodationsSection() {
                       `${currentGalleryAccommodation.name} - Foto ${selectedGallery.currentImageIndex + 1}`
                     }
                     fill
+                    sizes="100vw"
                     className="object-contain"
                   />
                 </div>
@@ -258,6 +291,7 @@ export function AccommodationsSection() {
                         src={image || "/placeholder.svg"}
                         alt={`Thumbnail ${index + 1}`}
                         fill
+                        sizes="64px"
                         className="object-cover"
                       />
                     </div>
@@ -288,6 +322,7 @@ export function AccommodationsSection() {
                   src="/images/terrasini-beach.jpg"
                   alt="Spiaggia di Terrasini - Acque cristalline a 300 metri dalle nostre strutture"
                   fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
@@ -301,6 +336,7 @@ export function AccommodationsSection() {
                   src="/images/terrasini-sunset.jpg"
                   alt="Tramonto a Terrasini - Paesaggio mozzafiato della costa siciliana"
                   fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />

@@ -5,6 +5,7 @@ import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { SupabaseProvider } from "@/components/supabase-provider"
+import { ThemeProvider } from "@/components/theme-provider"
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -38,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-      <html lang="it" className={inter.variable}>
+      <html lang="it" className={inter.variable} suppressHydrationWarning>
         <head>
           {/* Performance optimizations */}
           <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -73,9 +74,16 @@ export default function RootLayout({
           )}
         </head>
         <body className={`${inter.className} antialiased`}>
-        <SupabaseProvider>
-              {children}
-        </SupabaseProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+          disableTransitionOnChange={false}
+        >
+          <SupabaseProvider>
+                {children}
+          </SupabaseProvider>
+        </ThemeProvider>
         </body>
       </html>
   )

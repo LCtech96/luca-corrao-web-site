@@ -122,7 +122,6 @@ export function AISolutionsSection({ onClose }: AISolutionsSectionProps) {
                 <p className="text-sm text-blue-300 mb-2">
                   © 2024 Luca Corrao. Tutti i diritti riservati. | Intelligenza Artificiale & Innovazione
                 </p>
-                <p className="text-xs text-blue-400">🚀 Bedda Tech - Il futuro dell'AI è qui</p>
               </div>
             </div>
           </div>

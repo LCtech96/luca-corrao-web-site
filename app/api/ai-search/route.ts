@@ -209,7 +209,7 @@ PROPRIETARIO: Luca Corrao
 - Ha creato la piattaforma app.nomadiqe.com
 
 PIATTAFORME APP.NOMADIQE.COM:
-1. **Bedda.AI** - Sistema AI per gestione strutture ricettive
+1. **Sistema AI per gestione strutture ricettive**
    - Automazione prenotazioni
    - Chatbot intelligente per ospiti
    - Analytics e reportistica

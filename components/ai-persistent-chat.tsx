@@ -533,12 +533,12 @@ export function AIPersistentChat({ onClose, onNewMessage }: AIPersistentChatProp
                   <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400 flex-shrink-0" />
                 </h2>
                 <a 
-                  href="https://app.nomadiqe.com" 
+                  href="https://facevoice.ai" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="text-[10px] sm:text-xs text-gray-400 hover:text-cyan-400 transition-colors flex items-center gap-0.5 sm:gap-1 truncate"
                 >
-                  <span className="truncate">Powered by app.nomadiqe.com</span>
+                  <span className="truncate">Powered by facevoice.ai</span>
                   <ExternalLink className="w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0" />
                 </a>
               </div>

@@ -1,23 +1,85 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect, Suspense } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { updatePassword } from "@/lib/supabase/auth-service"
+import { createClient } from "@/lib/supabase/client"
 import { useToast } from "@/hooks/use-toast"
-import { Lock, Eye, EyeOff, CheckCircle } from "lucide-react"
+import { Lock, Eye, EyeOff, CheckCircle, AlertCircle } from "lucide-react"
 import Link from "next/link"
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { toast } = useToast()
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [isValidToken, setIsValidToken] = useState<boolean | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  // Verifica il token quando la pagina si carica
+  useEffect(() => {
+    const verifyToken = async () => {
+      const supabase = createClient()
+      
+      // Controlla se c'è un hash fragment con il token (Supabase usa hash per reset password)
+      if (typeof window !== 'undefined') {
+        const hash = window.location.hash
+        const params = new URLSearchParams(hash.substring(1))
+        const accessToken = params.get('access_token')
+        const type = params.get('type')
+        
+        // Se c'è un token nell'hash, verifichiamo la sessione
+        if (accessToken && type === 'recovery') {
+          try {
+            // Supabase gestisce automaticamente il token dall'hash
+            const { data: { session }, error } = await supabase.auth.getSession()
+            
+            if (error || !session) {
+              setIsValidToken(false)
+              setErrorMessage("Link di reset non valido o scaduto. Richiedi un nuovo link di reset password.")
+            } else {
+              setIsValidToken(true)
+            }
+          } catch (err) {
+            console.error('Error verifying token:', err)
+            setIsValidToken(false)
+            setErrorMessage("Errore nella verifica del link. Riprova più tardi.")
+          }
+        } else {
+          // Controlla se c'è un code nei query params (alternativa)
+          const code = searchParams.get('code')
+          if (code) {
+            try {
+              const { data: { session }, error } = await supabase.auth.getSession()
+              if (error || !session) {
+                setIsValidToken(false)
+                setErrorMessage("Link di reset non valido o scaduto. Richiedi un nuovo link di reset password.")
+              } else {
+                setIsValidToken(true)
+              }
+            } catch (err) {
+              console.error('Error verifying code:', err)
+              setIsValidToken(false)
+              setErrorMessage("Errore nella verifica del link. Riprova più tardi.")
+            }
+          } else {
+            // Nessun token trovato
+            setIsValidToken(false)
+            setErrorMessage("Link di reset non valido. Assicurati di aver cliccato sul link completo dall'email.")
+          }
+        }
+      }
+    }
+
+    verifyToken()
+  }, [searchParams])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -43,6 +105,14 @@ export default function ResetPasswordPage() {
     setIsLoading(true)
 
     try {
+      // Verifica che ci sia ancora una sessione valida
+      const supabase = createClient()
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      
+      if (sessionError || !session) {
+        throw new Error("La sessione di reset è scaduta. Richiedi un nuovo link di reset password.")
+      }
+
       await updatePassword(password)
       
       setIsSuccess(true)
@@ -57,11 +127,18 @@ export default function ResetPasswordPage() {
       }, 2000)
     } catch (error: any) {
       console.error('Password update error:', error)
+      const errorMsg = error.message || "Impossibile aggiornare la password. Riprova."
       toast({
         title: "Errore",
-        description: error.message || "Impossibile aggiornare la password. Riprova.",
+        description: errorMsg,
         variant: "destructive",
       })
+      
+      // Se la sessione è scaduta, mostra un messaggio più chiaro
+      if (errorMsg.includes("scaduta") || errorMsg.includes("expired")) {
+        setErrorMessage(errorMsg)
+        setIsValidToken(false)
+      }
     } finally {
       setIsLoading(false)
     }
@@ -81,6 +158,63 @@ export default function ResetPasswordPage() {
               Vai alla Home
             </Button>
           </Link>
+        </div>
+      </div>
+    )
+  }
+
+  // Mostra loading mentre verifica il token
+  if (isValidToken === null) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50 p-4">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+          <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <Lock className="w-8 h-8 text-amber-600" />
+          </div>
+          <h1 className="text-2xl font-bold mb-2 text-gray-900">Verifica del link...</h1>
+          <p className="text-gray-600">Stiamo verificando il tuo link di reset password</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Mostra errore se il token non è valido
+  if (isValidToken === false) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50 p-4">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+          <div className="text-center mb-6">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <AlertCircle className="w-8 h-8 text-red-600" />
+            </div>
+            <h1 className="text-2xl font-bold mb-2 text-gray-900">Link Non Valido</h1>
+            <p className="text-gray-600 mb-4">{errorMessage || "Il link di reset password non è valido o è scaduto."}</p>
+          </div>
+
+          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-6">
+            <h3 className="font-semibold text-blue-900 mb-2">Cosa puoi fare:</h3>
+            <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
+              <li>Richiedi un nuovo link di reset password</li>
+              <li>Assicurati di aver cliccato sul link completo dall'email</li>
+              <li>Controlla che il link non sia scaduto (valido per 24 ore)</li>
+            </ul>
+          </div>
+
+          <div className="space-y-3">
+            <Button
+              onClick={() => router.push('/')}
+              className="w-full bg-amber-600 hover:bg-amber-700"
+            >
+              Torna alla Home
+            </Button>
+            <Button
+              onClick={() => router.push('/?showLogin=true')}
+              variant="outline"
+              className="w-full"
+            >
+              Richiedi Nuovo Link
+            </Button>
+          </div>
         </div>
       </div>
     )
@@ -180,6 +314,23 @@ export default function ResetPasswordPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-50 p-4">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center">
+          <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <Lock className="w-8 h-8 text-amber-600" />
+          </div>
+          <h1 className="text-2xl font-bold mb-2 text-gray-900">Caricamento...</h1>
+        </div>
+      </div>
+    }>
+      <ResetPasswordContent />
+    </Suspense>
   )
 }
 
