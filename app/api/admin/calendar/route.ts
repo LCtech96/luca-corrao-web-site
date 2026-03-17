@@ -6,6 +6,26 @@ import { parseIcalEvents } from "@/lib/ical"
 import { absoluteUrl } from "@/lib/seo"
 import { properties } from "@/lib/properties-data"
 
+function isValidDateString(value: unknown): value is string {
+  return typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)
+}
+
+function eachDateInclusive(startDate: string, endDate: string): string[] {
+  const start = new Date(`${startDate}T00:00:00.000Z`)
+  const end = new Date(`${endDate}T00:00:00.000Z`)
+  const out: string[] = []
+
+  for (let cursor = start; cursor <= end; cursor = new Date(cursor.getTime() + 86400000)) {
+    out.push(cursor.toISOString().slice(0, 10))
+  }
+  return out
+}
+
+function dayOfWeek(dateString: string): number {
+  // 0=Sun ... 6=Sat
+  return new Date(`${dateString}T00:00:00.000Z`).getUTCDay()
+}
+
 function slugify(value: string): string {
   return value
     .toLowerCase()
@@ -144,6 +164,47 @@ export async function POST(request: NextRequest) {
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json({ success: true })
+  }
+
+  if (action === "set_price_range") {
+    const { propertySlug, startDate, endDate, price, mode } = body as {
+      propertySlug?: string
+      startDate?: string
+      endDate?: string
+      price?: number
+      mode?: "all" | "weekdays" | "weekend"
+    }
+
+    if (!propertySlug || !isValidDateString(startDate) || !isValidDateString(endDate) || price === undefined) {
+      return NextResponse.json({ error: "propertySlug, startDate, endDate, price required" }, { status: 400 })
+    }
+    if (endDate < startDate) {
+      return NextResponse.json({ error: "endDate must be >= startDate" }, { status: 400 })
+    }
+    if (!Number.isFinite(Number(price)) || Number(price) <= 0) {
+      return NextResponse.json({ error: "price must be > 0" }, { status: 400 })
+    }
+
+    const dates = eachDateInclusive(startDate, endDate).filter((date) => {
+      const dow = dayOfWeek(date)
+      if (mode === "weekdays") return dow >= 1 && dow <= 5
+      if (mode === "weekend") return dow === 0 || dow === 6
+      return true
+    })
+
+    if (!dates.length) return NextResponse.json({ success: true, affected: 0 })
+
+    const rows = dates.map((date) => ({
+      property_slug: propertySlug,
+      date,
+      price,
+      created_by: admin.user.id,
+    }))
+
+    const { error } = await admin.supabase.from("price_overrides").upsert(rows, { onConflict: "property_slug,date" })
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    return NextResponse.json({ success: true, affected: rows.length })
   }
 
   if (action === "delete_price") {

@@ -39,6 +39,10 @@ export default function AdminCalendarPage() {
 
   const [priceDate, setPriceDate] = useState("")
   const [priceValue, setPriceValue] = useState("")
+  const [bulkStartDate, setBulkStartDate] = useState("")
+  const [bulkEndDate, setBulkEndDate] = useState("")
+  const [bulkPriceValue, setBulkPriceValue] = useState("")
+  const [bulkMode, setBulkMode] = useState<"all" | "weekdays" | "weekend">("all")
   const [blockStartDate, setBlockStartDate] = useState("")
   const [blockEndDate, setBlockEndDate] = useState("")
   const [syncSource, setSyncSource] = useState("airbnb")
@@ -149,6 +153,32 @@ export default function AdminCalendarPage() {
     setBlockEndDate("")
   }
 
+  const addBulkPrices = async () => {
+    if (!selectedProperty || !bulkStartDate || !bulkEndDate || !bulkPriceValue) return
+    if (bulkEndDate < bulkStartDate) {
+      alert("La data di fine deve essere uguale o successiva alla data di inizio")
+      return
+    }
+    const parsed = Number(bulkPriceValue)
+    if (!Number.isFinite(parsed) || parsed <= 0) {
+      alert("Prezzo non valido")
+      return
+    }
+    const result = await postAction({
+      action: "set_price_range",
+      propertySlug: selectedProperty,
+      startDate: bulkStartDate,
+      endDate: bulkEndDate,
+      price: parsed,
+      mode: bulkMode,
+    })
+    alert(`Prezzi aggiornati: ${result.affected || 0} date`)
+    setBulkStartDate("")
+    setBulkEndDate("")
+    setBulkPriceValue("")
+    setBulkMode("all")
+  }
+
   const importIcal = async () => {
     if (!selectedProperty || !syncUrl) return
     if (!syncUrl.includes(".ics") && !syncUrl.includes(".ical")) {
@@ -245,6 +275,45 @@ export default function AdminCalendarPage() {
               Salva prezzo
             </Button>
           </div>
+
+          <div className="mt-6 border-t pt-6">
+            <h3 className="text-lg font-semibold mb-3">Aggiornamento multiplo (range)</h3>
+            <div className="grid md:grid-cols-4 gap-3 mb-3">
+              <input
+                type="date"
+                value={bulkStartDate}
+                onChange={(e) => setBulkStartDate(e.target.value)}
+                className="border rounded-md px-3 py-2"
+              />
+              <input
+                type="date"
+                value={bulkEndDate}
+                onChange={(e) => setBulkEndDate(e.target.value)}
+                className="border rounded-md px-3 py-2"
+              />
+              <input
+                type="number"
+                min="1"
+                step="0.01"
+                value={bulkPriceValue}
+                onChange={(e) => setBulkPriceValue(e.target.value)}
+                placeholder="Prezzo notte"
+                className="border rounded-md px-3 py-2"
+              />
+              <select value={bulkMode} onChange={(e) => setBulkMode(e.target.value as any)} className="border rounded-md px-3 py-2">
+                <option value="all">Tutti i giorni</option>
+                <option value="weekdays">Solo lun-ven</option>
+                <option value="weekend">Solo weekend</option>
+              </select>
+            </div>
+            <Button onClick={() => addBulkPrices().catch((error) => alert((error as Error).message))} disabled={saving || !selectedProperty}>
+              Applica al range
+            </Button>
+            <p className="text-xs text-gray-500 mt-2">
+              Nota: i link iCal di Airbnb/Booking sincronizzano solo disponibilità (non i prezzi). Questo range serve per applicare velocemente un listino.
+            </p>
+          </div>
+
           <div className="space-y-2">
             {prices.length === 0 && <p className="text-sm text-gray-500">Nessun override prezzo.</p>}
             {prices.map((item) => (
