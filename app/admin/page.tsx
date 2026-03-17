@@ -93,6 +93,12 @@ export default function AdminDashboard() {
               <p className="text-sm text-gray-600">Benvenuto, {user?.email}</p>
             </div>
             <div className="flex gap-2">
+              <Link href="/admin/calendar">
+                <Button variant="outline">
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Prezzi & iCal
+                </Button>
+              </Link>
               <Link href="/admin/structures">
                 <Button variant="outline">
                   <Building2 className="w-4 h-4 mr-2" />
