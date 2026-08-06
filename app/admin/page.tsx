@@ -36,10 +36,10 @@ export default function AdminDashboard() {
 
   if (authLoading || adminLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Caricamento...</p>
+          <p className="text-gray-600 dark:text-gray-300">Caricamento...</p>
         </div>
       </div>
     )
@@ -47,13 +47,13 @@ export default function AdminDashboard() {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-950">
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-4 text-red-600">Accesso Negato</h1>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
             Solo gli amministratori possono accedere a questa pagina.
           </p>
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-4">
             Email corrente: {user?.email || 'Non autenticato'}
           </p>
           <Link href="/">
@@ -83,16 +83,16 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* Header */}
-      <div className="bg-white border-b sticky top-0 z-10">
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Dashboard Admin</h1>
-              <p className="text-sm text-gray-600">Benvenuto, {user?.email}</p>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">Dashboard Admin</h1>
+              <p className="text-sm text-gray-600 dark:text-gray-300 truncate">Benvenuto, {user?.email}</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Link href="/admin/calendar">
                 <Button variant="outline">
                   <Calendar className="w-4 h-4 mr-2" />
@@ -125,32 +125,32 @@ export default function AdminDashboard() {
       <div className="container mx-auto px-4 py-8">
         {/* Stats Cards */}
         <div className="grid md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-gray-600 text-sm mb-2">Prenotazioni Totali</h3>
-            <p className="text-3xl font-bold text-gray-900">{bookings.length}</p>
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow">
+            <h3 className="text-gray-600 dark:text-gray-300 text-sm mb-2">Prenotazioni Totali</h3>
+            <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">{bookings.length}</p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-gray-600 text-sm mb-2">In Attesa</h3>
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow">
+            <h3 className="text-gray-600 dark:text-gray-300 text-sm mb-2">In Attesa</h3>
             <p className="text-3xl font-bold text-yellow-600">
               {bookings.filter(b => b.status === 'pending').length}
             </p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-gray-600 text-sm mb-2">Confermate</h3>
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow">
+            <h3 className="text-gray-600 dark:text-gray-300 text-sm mb-2">Confermate</h3>
             <p className="text-3xl font-bold text-green-600">
               {bookings.filter(b => b.status === 'confirmed').length}
             </p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-gray-600 text-sm mb-2">Messaggi Totali</h3>
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow">
+            <h3 className="text-gray-600 dark:text-gray-300 text-sm mb-2">Messaggi Totali</h3>
             <p className="text-3xl font-bold text-blue-600">{messages.length}</p>
           </div>
         </div>
 
         {/* Bookings List */}
-        <div className="bg-white rounded-lg shadow">
+        <div className="bg-white dark:bg-gray-900 rounded-lg shadow">
           <div className="p-6 border-b">
-            <h2 className="text-xl font-bold">Tutte le Prenotazioni</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Tutte le Prenotazioni</h2>
           </div>
           
           {loading ? (
@@ -158,7 +158,7 @@ export default function AdminDashboard() {
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600 mx-auto"></div>
             </div>
           ) : bookings.length === 0 ? (
-            <div className="p-8 text-center text-gray-600">
+            <div className="p-8 text-center text-gray-600 dark:text-gray-300">
               Nessuna prenotazione ancora
             </div>
           ) : (
@@ -168,11 +168,11 @@ export default function AdminDashboard() {
                 const isExpanded = selectedBooking === booking.id
                 
                 return (
-                  <div key={booking.id} className="p-6 hover:bg-gray-50 transition-colors">
+                  <div key={booking.id} className="p-6 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-lg font-bold text-gray-900">{booking.property_name}</h3>
+                          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{booking.property_name}</h3>
                           <Badge className={getStatusColor(booking.status)}>
                             {booking.status}
                           </Badge>
@@ -181,7 +181,7 @@ export default function AdminDashboard() {
                           )}
                         </div>
                         
-                        <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
+                        <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-300">
                           <div className="flex items-center gap-2">
                             <Mail className="w-4 h-4" />
                             <span>{booking.guest_name}</span>
@@ -215,7 +215,7 @@ export default function AdminDashboard() {
                         </div>
 
                         {booking.notes && (
-                          <div className="mt-3 p-3 bg-blue-50 rounded text-sm">
+                          <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-950/40 rounded text-sm text-gray-800 dark:text-gray-200">
                             <strong>Note:</strong> {booking.notes}
                           </div>
                         )}
@@ -235,8 +235,8 @@ export default function AdminDashboard() {
 
                     {/* Chat Messages */}
                     {isExpanded && bookingMessages.length > 0 && (
-                      <div className="mt-4 p-4 bg-gray-50 rounded-lg border">
-                        <h4 className="font-semibold mb-3">Chat con {booking.guest_name}</h4>
+                      <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border">
+                        <h4 className="font-semibold mb-3 text-gray-900 dark:text-gray-100">Chat con {booking.guest_name}</h4>
                         <div className="space-y-2 max-h-64 overflow-y-auto">
                           {bookingMessages.map((msg) => (
                             <div
@@ -246,7 +246,7 @@ export default function AdminDashboard() {
                               <div
                                 className={`max-w-[70%] p-3 rounded-lg ${
                                   msg.sender_type === 'guest'
-                                    ? 'bg-white border'
+                                    ? 'bg-white dark:bg-gray-900 border text-gray-900 dark:text-gray-100'
                                     : 'bg-amber-500 text-white'
                                 }`}
                               >
@@ -264,7 +264,7 @@ export default function AdminDashboard() {
                       </div>
                     )}
 
-                    <div className="mt-4 text-xs text-gray-400">
+                    <div className="mt-4 text-xs text-gray-400 dark:text-gray-500">
                       Prenotazione creata: {new Date(booking.created_at).toLocaleString('it-IT')}
                     </div>
                   </div>

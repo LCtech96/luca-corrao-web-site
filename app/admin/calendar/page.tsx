@@ -196,7 +196,7 @@ export default function AdminCalendarPage() {
 
   if (authLoading || adminLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600"></div>
       </div>
     )
@@ -204,10 +204,10 @@ export default function AdminCalendarPage() {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-950">
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-3 text-red-600">Accesso Negato</h1>
-          <p className="text-gray-600 mb-6">Solo admin può gestire prezzi e sincronizzazioni calendario.</p>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">Solo admin può gestire prezzi e sincronizzazioni calendario.</p>
           <Link href="/">
             <Button>Torna alla Home</Button>
           </Link>
@@ -217,17 +217,17 @@ export default function AdminCalendarPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white border-b sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <Calendar className="w-6 h-6 text-amber-600" />
-              Calendario, Prezzi e iCal
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+              <Calendar className="w-6 h-6 text-amber-600 shrink-0" />
+              <span className="truncate">Calendario, Prezzi e iCal</span>
             </h1>
-            <p className="text-sm text-gray-600">Admin: {user?.email}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300 truncate">Admin: {user?.email}</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Link href="/admin">
               <Button variant="outline">
                 <ChevronLeft className="w-4 h-4 mr-2" />
@@ -243,8 +243,8 @@ export default function AdminCalendarPage() {
       </div>
 
       <div className="container mx-auto px-4 py-8 space-y-6">
-        <div className="bg-white rounded-lg shadow p-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">Struttura</label>
+        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Struttura</label>
           <select
             value={selectedProperty}
             onChange={(event) => setSelectedProperty(event.target.value)}
@@ -258,8 +258,8 @@ export default function AdminCalendarPage() {
           </select>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">Prezzi per data</h2>
+        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Prezzi per data</h2>
           <div className="grid md:grid-cols-3 gap-3 mb-4">
             <input type="date" value={priceDate} onChange={(e) => setPriceDate(e.target.value)} className="border rounded-md px-3 py-2" />
             <input
@@ -277,7 +277,7 @@ export default function AdminCalendarPage() {
           </div>
 
           <div className="mt-6 border-t pt-6">
-            <h3 className="text-lg font-semibold mb-3">Aggiornamento multiplo (range)</h3>
+            <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">Aggiornamento multiplo (range)</h3>
             <div className="grid md:grid-cols-4 gap-3 mb-3">
               <input
                 type="date"
@@ -309,15 +309,15 @@ export default function AdminCalendarPage() {
             <Button onClick={() => addBulkPrices().catch((error) => alert((error as Error).message))} disabled={saving || !selectedProperty}>
               Applica al range
             </Button>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mt-2">
               Nota: i link iCal di Airbnb/Booking sincronizzano solo disponibilità (non i prezzi). Questo range serve per applicare velocemente un listino.
             </p>
           </div>
 
           <div className="space-y-2">
-            {prices.length === 0 && <p className="text-sm text-gray-500">Nessun override prezzo.</p>}
+            {prices.length === 0 && <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Nessun override prezzo.</p>}
             {prices.map((item) => (
-              <div key={item.id} className="flex items-center justify-between border rounded-md px-3 py-2">
+              <div key={item.id} className="flex items-center justify-between border border-gray-200 dark:border-gray-700 rounded-md px-3 py-2 text-gray-900 dark:text-gray-100">
                 <span>
                   {item.date} - <strong>EUR {Number(item.price).toFixed(2)}</strong>
                 </span>
@@ -338,8 +338,8 @@ export default function AdminCalendarPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">Blocchi calendario manuali</h2>
+        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Blocchi calendario manuali</h2>
           <div className="grid md:grid-cols-3 gap-3 mb-4">
             <input
               type="date"
@@ -358,9 +358,9 @@ export default function AdminCalendarPage() {
             </Button>
           </div>
           <div className="space-y-2">
-            {blocks.length === 0 && <p className="text-sm text-gray-500">Nessun blocco calendario.</p>}
+            {blocks.length === 0 && <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500">Nessun blocco calendario.</p>}
             {blocks.map((block) => (
-              <div key={block.id} className="flex items-center justify-between border rounded-md px-3 py-2">
+              <div key={block.id} className="flex items-center justify-between border border-gray-200 dark:border-gray-700 rounded-md px-3 py-2 text-gray-900 dark:text-gray-100">
                 <span>
                   {block.start_date} {"->"} {block.end_date} ({block.source})
                 </span>
@@ -377,8 +377,8 @@ export default function AdminCalendarPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">Sincronizzazione iCal (Airbnb / Booking)</h2>
+        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Sincronizzazione iCal (Airbnb / Booking)</h2>
           <div className="grid md:grid-cols-3 gap-3 mb-3">
             <select value={syncSource} onChange={(e) => setSyncSource(e.target.value)} className="border rounded-md px-3 py-2">
               <option value="airbnb">Airbnb</option>
@@ -413,14 +413,14 @@ export default function AdminCalendarPage() {
             </Button>
           </div>
           {sourceRecord && (
-            <p className="text-sm text-gray-600 mb-3">
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
               Ultima sync {sourceRecord.source_name}: {sourceRecord.last_synced_at ? new Date(sourceRecord.last_synced_at).toLocaleString("it-IT") : "mai"}
               {sourceRecord.last_status ? ` - ${sourceRecord.last_status}` : ""}
             </p>
           )}
-          <div className="rounded-md bg-gray-100 p-3">
-            <p className="text-sm font-medium mb-1">Link export iCal (.ics) da inserire su Airbnb/Booking:</p>
-            <code className="text-xs break-all">{exportUrl || "Seleziona una struttura per vedere il link export."}</code>
+          <div className="rounded-md bg-gray-100 dark:bg-gray-800 p-3">
+            <p className="text-sm font-medium mb-1 text-gray-900 dark:text-gray-100">Link export iCal (.ics) da inserire su Airbnb/Booking:</p>
+            <code className="text-xs break-all text-gray-800 dark:text-gray-200">{exportUrl || "Seleziona una struttura per vedere il link export."}</code>
           </div>
         </div>
       </div>

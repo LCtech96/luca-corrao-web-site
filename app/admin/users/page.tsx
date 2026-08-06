@@ -88,10 +88,10 @@ export default function UsersAdminPage() {
 
   if (authLoading || adminLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Caricamento...</p>
+          <p className="text-gray-600 dark:text-gray-300">Caricamento...</p>
         </div>
       </div>
     )
@@ -99,10 +99,10 @@ export default function UsersAdminPage() {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-950">
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-4 text-red-600">Accesso Negato</h1>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
             Solo gli amministratori possono accedere a questa pagina.
           </p>
           <Link href="/">
@@ -131,19 +131,19 @@ export default function UsersAdminPage() {
   const admins = users.filter(u => u.role === 'admin')
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* Header */}
-      <div className="bg-white border-b sticky top-0 z-10">
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <Users className="w-6 h-6 text-blue-600" />
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <Users className="w-6 h-6 text-blue-600 shrink-0" />
                 Gestione Utenti
               </h1>
-              <p className="text-sm text-gray-600">Admin: {user?.email}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300 truncate">Admin: {user?.email}</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Link href="/admin">
                 <Button variant="outline">
                   <ChevronLeft className="w-4 h-4 mr-2" />
@@ -166,9 +166,9 @@ export default function UsersAdminPage() {
           <Card>
             <CardContent className="pt-6">
               <div className="text-center">
-                <Users className="w-8 h-8 text-gray-600 mx-auto mb-2" />
-                <div className="text-3xl font-bold text-gray-900">{users.length}</div>
-                <div className="text-sm text-gray-600 mt-1">Utenti Totali</div>
+                <Users className="w-8 h-8 text-gray-600 dark:text-gray-300 mx-auto mb-2" />
+                <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">{users.length}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300 mt-1">Utenti Totali</div>
               </div>
             </CardContent>
           </Card>
@@ -177,7 +177,7 @@ export default function UsersAdminPage() {
               <div className="text-center">
                 <Shield className="w-8 h-8 text-red-600 mx-auto mb-2" />
                 <div className="text-3xl font-bold text-red-600">{admins.length}</div>
-                <div className="text-sm text-gray-600 mt-1">Amministratori</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300 mt-1">Amministratori</div>
               </div>
             </CardContent>
           </Card>
@@ -186,7 +186,7 @@ export default function UsersAdminPage() {
               <div className="text-center">
                 <Home className="w-8 h-8 text-blue-600 mx-auto mb-2" />
                 <div className="text-3xl font-bold text-blue-600">{verifiedHosts.length}</div>
-                <div className="text-sm text-gray-600 mt-1">Host Verificati</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300 mt-1">Host Verificati</div>
               </div>
             </CardContent>
           </Card>
@@ -195,7 +195,7 @@ export default function UsersAdminPage() {
               <div className="text-center">
                 <Clock className="w-8 h-8 text-amber-600 mx-auto mb-2" />
                 <div className="text-3xl font-bold text-amber-600">{pendingHosts.length}</div>
-                <div className="text-sm text-gray-600 mt-1">Richieste Pending</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300 mt-1">Richieste Pending</div>
               </div>
             </CardContent>
           </Card>
@@ -213,14 +213,14 @@ export default function UsersAdminPage() {
             <CardContent className="p-0">
               <div className="divide-y">
                 {pendingHosts.map((user) => (
-                  <div key={user.id} className="p-4 hover:bg-gray-50">
+                  <div key={user.id} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <h3 className="font-semibold text-lg">{user.full_name}</h3>
                           <Badge className="bg-amber-100 text-amber-800">In Attesa</Badge>
                         </div>
-                        <div className="space-y-1 text-sm text-gray-600">
+                        <div className="space-y-1 text-sm text-gray-600 dark:text-gray-300">
                           {user.email && (
                             <div className="flex items-center gap-2">
                               <Mail className="w-4 h-4" />
@@ -235,7 +235,7 @@ export default function UsersAdminPage() {
                           )}
                         </div>
                         {user.host_bio && (
-                          <div className="mt-3 p-3 bg-blue-50 rounded text-sm">
+                          <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-950/40 rounded text-sm">
                             <strong>Bio:</strong> {user.host_bio}
                           </div>
                         )}
@@ -273,7 +273,7 @@ export default function UsersAdminPage() {
         <Card className="mb-6">
           <CardContent className="pt-6">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
               <Input
                 type="text"
                 placeholder="Cerca utenti per nome, email, telefono o ruolo..."
@@ -296,17 +296,17 @@ export default function UsersAdminPage() {
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600 mx-auto"></div>
               </div>
             ) : filteredUsers.length === 0 ? (
-              <div className="p-8 text-center text-gray-600">
+              <div className="p-8 text-center text-gray-600 dark:text-gray-300">
                 Nessun utente trovato
               </div>
             ) : (
               <div className="divide-y max-h-[600px] overflow-y-auto">
                 {filteredUsers.map((user) => (
-                  <div key={user.id} className="p-4 hover:bg-gray-50">
+                  <div key={user.id} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <h3 className="font-semibold">{user.full_name}</h3>
+                          <h3 className="font-semibold text-gray-900 dark:text-gray-100">{user.full_name}</h3>
                           <Badge className={getRoleBadge(user.role)}>
                             {user.role.toUpperCase()}
                           </Badge>
@@ -326,7 +326,7 @@ export default function UsersAdminPage() {
                             </Badge>
                           )}
                         </div>
-                        <div className="grid md:grid-cols-2 gap-2 text-sm text-gray-600">
+                        <div className="grid md:grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-300">
                           {user.email && (
                             <div className="flex items-center gap-2">
                               <Mail className="w-4 h-4" />
@@ -346,7 +346,7 @@ export default function UsersAdminPage() {
                             </div>
                           )}
                         </div>
-                        <div className="mt-2 text-xs text-gray-500">
+                        <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500">
                           Registrato: {new Date(user.created_at).toLocaleDateString('it-IT')}
                           {user.last_login && ` • Ultimo accesso: ${new Date(user.last_login).toLocaleDateString('it-IT')}`}
                         </div>
