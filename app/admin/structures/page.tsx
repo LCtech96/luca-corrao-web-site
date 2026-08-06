@@ -112,10 +112,10 @@ export default function StructuresAdminPage() {
 
   if (authLoading || adminLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Caricamento...</p>
+          <p className="text-gray-600 dark:text-gray-300">Caricamento...</p>
         </div>
       </div>
     )
@@ -123,10 +123,10 @@ export default function StructuresAdminPage() {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-950">
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-4 text-red-600">Accesso Negato</h1>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
             Solo gli amministratori possono accedere a questa pagina.
           </p>
           <Link href="/">
@@ -159,19 +159,19 @@ export default function StructuresAdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* Header */}
-      <div className="bg-white border-b sticky top-0 z-10">
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <Building2 className="w-6 h-6 text-amber-600" />
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <Building2 className="w-6 h-6 text-amber-600 shrink-0" />
                 Gestione Strutture
               </h1>
-              <p className="text-sm text-gray-600">Approva o rifiuta le strutture caricate dagli utenti</p>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Approva o rifiuta le strutture caricate dagli utenti</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Link href="/admin">
                 <Button variant="outline">
                   <ChevronLeft className="w-4 h-4 mr-2" />
@@ -191,29 +191,29 @@ export default function StructuresAdminPage() {
     <div className="container mx-auto px-4 py-8">
         {/* Stats Cards */}
         <div className="grid md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-gray-600 text-sm mb-2">Totale Strutture</h3>
-            <p className="text-3xl font-bold text-gray-900">{structures.length}</p>
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow">
+            <h3 className="text-gray-600 dark:text-gray-300 text-sm mb-2">Totale Strutture</h3>
+            <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">{structures.length}</p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow border-l-4 border-yellow-500">
-            <h3 className="text-gray-600 text-sm mb-2">In Attesa</h3>
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow border-l-4 border-yellow-500">
+            <h3 className="text-gray-600 dark:text-gray-300 text-sm mb-2">In Attesa</h3>
             <p className="text-3xl font-bold text-yellow-600">{pendingCount}</p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow border-l-4 border-green-500">
-            <h3 className="text-gray-600 text-sm mb-2">Approvate</h3>
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow border-l-4 border-green-500">
+            <h3 className="text-gray-600 dark:text-gray-300 text-sm mb-2">Approvate</h3>
             <p className="text-3xl font-bold text-green-600">{approvedCount}</p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow border-l-4 border-red-500">
-            <h3 className="text-gray-600 text-sm mb-2">Rifiutate</h3>
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow border-l-4 border-red-500">
+            <h3 className="text-gray-600 dark:text-gray-300 text-sm mb-2">Rifiutate</h3>
             <p className="text-3xl font-bold text-red-600">{rejectedCount}</p>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="bg-white p-4 rounded-lg shadow mb-6">
+        <div className="bg-white dark:bg-gray-900 p-4 rounded-lg shadow mb-6">
           <div className="flex items-center gap-2 flex-wrap">
-            <Filter className="w-4 h-4 text-gray-600" />
-            <span className="text-sm font-medium text-gray-700">Filtra per stato:</span>
+            <Filter className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Filtra per stato:</span>
             <Button
               size="sm"
               variant={filter === 'pending' ? 'default' : 'outline'}
@@ -252,15 +252,15 @@ export default function StructuresAdminPage() {
         {loading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Caricamento strutture...</p>
+            <p className="text-gray-600 dark:text-gray-300">Caricamento strutture...</p>
           </div>
         ) : filteredStructures.length === 0 ? (
-          <div className="bg-white p-12 rounded-lg shadow text-center">
+          <div className="bg-white dark:bg-gray-900 p-12 rounded-lg shadow text-center">
             <Building2 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">
+            <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
               Nessuna struttura {filter !== 'all' ? `${filter === 'pending' ? 'in attesa' : filter === 'approved' ? 'approvata' : 'rifiutata'}` : 'trovata'}
             </h3>
-            <p className="text-gray-500">
+            <p className="text-gray-500 dark:text-gray-400 dark:text-gray-500">
               {filter === 'pending' && 'Le nuove richieste appariranno qui'}
               {filter === 'approved' && 'Nessuna struttura è stata ancora approvata'}
               {filter === 'rejected' && 'Nessuna struttura è stata rifiutata'}
@@ -270,15 +270,15 @@ export default function StructuresAdminPage() {
         ) : (
           <div className="grid gap-6">
             {filteredStructures.map((structure) => (
-              <div key={structure.id} className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow">
+              <div key={structure.id} className="bg-white dark:bg-gray-900 rounded-lg shadow hover:shadow-lg transition-shadow">
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-xl font-bold text-gray-900">{structure.name}</h3>
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">{structure.name}</h3>
                         {getStatusBadge(structure.status)}
                       </div>
-                      <div className="space-y-2 text-sm text-gray-600">
+                      <div className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
                         <div className="flex items-center gap-2">
                           <User className="w-4 h-4" />
                           <span>Proprietario: <strong>{structure.owner}</strong></span>
@@ -307,13 +307,13 @@ export default function StructuresAdminPage() {
                   </div>
 
                   <div className="mb-4">
-                    <p className="text-sm text-gray-700 line-clamp-2">{structure.description}</p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2">{structure.description}</p>
                   </div>
 
                   {/* Images Preview */}
                   {structure.images && structure.images.length > 0 && (
                     <div className="mb-4">
-                      <p className="text-xs text-gray-500 mb-2">Galleria ({structure.images.length} immagini):</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 mb-2">Galleria ({structure.images.length} immagini):</p>
                       <div className="flex gap-2 overflow-x-auto pb-2">
                         {structure.images.slice(0, 5).map((img, idx) => (
                           <img
@@ -325,7 +325,7 @@ export default function StructuresAdminPage() {
                         ))}
                         {structure.images.length > 5 && (
                           <div className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center flex-shrink-0">
-                            <span className="text-xs text-gray-600">+{structure.images.length - 5}</span>
+                            <span className="text-xs text-gray-600 dark:text-gray-300">+{structure.images.length - 5}</span>
                           </div>
                         )}
                       </div>
@@ -410,9 +410,9 @@ export default function StructuresAdminPage() {
       {/* Detail Modal */}
       {selectedStructure && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setSelectedStructure(null)}>
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="sticky top-0 bg-white border-b p-6 flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-gray-900">{selectedStructure.name}</h2>
+          <div className="bg-white dark:bg-gray-900 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 p-6 flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{selectedStructure.name}</h2>
               <Button variant="ghost" size="sm" onClick={() => setSelectedStructure(null)}>
                 <X className="w-5 h-5" />
               </Button>
@@ -421,7 +421,7 @@ export default function StructuresAdminPage() {
             <div className="p-6 space-y-6">
               {/* Main Image */}
               <div>
-                <h3 className="text-sm font-semibold text-gray-700 mb-2">Immagine di Copertina</h3>
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Immagine di Copertina</h3>
                 <img
                   src={selectedStructure.mainImage}
                   alt={selectedStructure.name}
@@ -432,27 +432,27 @@ export default function StructuresAdminPage() {
               {/* Info */}
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-700 mb-2">Informazioni</h3>
+                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Informazioni</h3>
                   <div className="space-y-2 text-sm">
                     <div className="flex items-start gap-2">
                       <User className="w-4 h-4 mt-0.5 flex-shrink-0" />
                       <div>
                         <p className="font-medium">Proprietario</p>
-                        <p className="text-gray-600">{selectedStructure.owner}</p>
+                        <p className="text-gray-600 dark:text-gray-300">{selectedStructure.owner}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-2">
                       <Mail className="w-4 h-4 mt-0.5 flex-shrink-0" />
                       <div>
                         <p className="font-medium">Email</p>
-                        <p className="text-gray-600">{selectedStructure.ownerEmail}</p>
+                        <p className="text-gray-600 dark:text-gray-300">{selectedStructure.ownerEmail}</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-2">
                       <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
                       <div>
                         <p className="font-medium">Indirizzo</p>
-                        <p className="text-gray-600">{selectedStructure.address}</p>
+                        <p className="text-gray-600 dark:text-gray-300">{selectedStructure.address}</p>
                       </div>
                     </div>
                     {selectedStructure.gpsCoordinates && (
@@ -460,14 +460,14 @@ export default function StructuresAdminPage() {
                         <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-medium">Coordinate GPS</p>
-                          <p className="text-gray-600">{selectedStructure.gpsCoordinates}</p>
+                          <p className="text-gray-600 dark:text-gray-300">{selectedStructure.gpsCoordinates}</p>
                         </div>
                       </div>
                     )}
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-700 mb-2">Stato</h3>
+                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Stato</h3>
                   <div className="space-y-2 text-sm">
                     <div>
                       <p className="font-medium mb-1">Status</p>
@@ -475,11 +475,11 @@ export default function StructuresAdminPage() {
                     </div>
                     <div>
                       <p className="font-medium">Data caricamento</p>
-                      <p className="text-gray-600">{new Date(selectedStructure.createdAt).toLocaleString('it-IT')}</p>
+                      <p className="text-gray-600 dark:text-gray-300">{new Date(selectedStructure.createdAt).toLocaleString('it-IT')}</p>
                     </div>
                     <div>
                       <p className="font-medium">Ultimo aggiornamento</p>
-                      <p className="text-gray-600">{new Date(selectedStructure.updatedAt).toLocaleString('it-IT')}</p>
+                      <p className="text-gray-600 dark:text-gray-300">{new Date(selectedStructure.updatedAt).toLocaleString('it-IT')}</p>
                     </div>
                   </div>
                 </div>
@@ -487,14 +487,14 @@ export default function StructuresAdminPage() {
 
               {/* Description */}
               <div>
-                <h3 className="text-sm font-semibold text-gray-700 mb-2">Descrizione</h3>
-                <p className="text-sm text-gray-600 whitespace-pre-line">{selectedStructure.description}</p>
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Descrizione</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-300 whitespace-pre-line">{selectedStructure.description}</p>
               </div>
 
               {/* Gallery */}
               {selectedStructure.images && selectedStructure.images.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-700 mb-2">Galleria Immagini ({selectedStructure.images.length})</h3>
+                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Galleria Immagini ({selectedStructure.images.length})</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {selectedStructure.images.map((img, idx) => (
                       <img

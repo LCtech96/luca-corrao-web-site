@@ -89,6 +89,62 @@
   background: #2563eb;
 }
 
+/*
+ * Admin panel contrast fixes:
+ * Dark mode sets a light body text color. Admin pages used white cards without
+ * explicit text colors, so headings/labels/list rows became white-on-white.
+ * Also force readable native form controls (inputs/selects inherit color-scheme).
+ */
+.admin-panel {
+  color: #111827; /* gray-900 */
+  min-height: 100vh;
+  background-color: #f9fafb; /* gray-50 */
+}
+
+.dark .admin-panel {
+  color: #f3f4f6; /* gray-100 */
+  background-color: #030712; /* gray-950 */
+}
+
+.admin-panel input:not([type="checkbox"]):not([type="radio"]),
+.admin-panel select,
+.admin-panel textarea {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 0.375rem;
+  color-scheme: light;
+}
+
+.admin-panel input::placeholder,
+.admin-panel textarea::placeholder {
+  color: #6b7280 !important;
+}
+
+.dark .admin-panel input:not([type="checkbox"]):not([type="radio"]),
+.dark .admin-panel select,
+.dark .admin-panel textarea {
+  background-color: #111827 !important;
+  color: #f3f4f6 !important;
+  border-color: #374151 !important;
+  color-scheme: dark;
+}
+
+.dark .admin-panel input::placeholder,
+.dark .admin-panel textarea::placeholder {
+  color: #9ca3af !important;
+}
+
+.admin-panel option {
+  background-color: #ffffff;
+  color: #111827;
+}
+
+.dark .admin-panel option {
+  background-color: #111827;
+  color: #f3f4f6;
+}
+
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
