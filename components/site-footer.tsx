@@ -24,7 +24,7 @@ export function SiteFooter({ className, variant = "default" }: SiteFooterProps) 
       ? "text-amber-300"
       : variant === "ai"
         ? "text-blue-300"
-        : "text-gray-500 dark:text-gray-400"
+        : "text-gray-300"
 
   return (
     <footer
