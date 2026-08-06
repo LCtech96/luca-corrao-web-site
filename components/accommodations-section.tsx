@@ -25,15 +25,19 @@ import {
 } from "lucide-react"
 import Image from "next/image"
 import { BookingSystem } from "./booking-system"
-import { useTranslation } from "@/lib/i18n"
+import { useLanguage, useTranslation } from "@/lib/i18n"
+import { localizeAccommodation } from "@/lib/i18n/accommodation-content"
 
 // Note: Accommodations are now loaded from Supabase database
 
 export function AccommodationsSection() {
   const t = useTranslation()
+  const { locale } = useLanguage()
   // Fetch accommodations from Supabase
   const { accommodations: accommodationsData, isLoading, error } = useAccommodations()
-  const accommodations = accommodationsData || []
+  const accommodations = (accommodationsData || []).map((item) =>
+    localizeAccommodation(item, locale),
+  )
   
   const [selectedAccommodation, setSelectedAccommodation] = useState<string | null>(null)
   const [selectedGallery, setSelectedGallery] = useState<{
