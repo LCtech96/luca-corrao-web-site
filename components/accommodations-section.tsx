@@ -25,10 +25,12 @@ import {
 } from "lucide-react"
 import Image from "next/image"
 import { BookingSystem } from "./booking-system"
+import { useTranslation } from "@/lib/i18n"
 
 // Note: Accommodations are now loaded from Supabase database
 
 export function AccommodationsSection() {
+  const t = useTranslation()
   // Fetch accommodations from Supabase
   const { accommodations: accommodationsData, isLoading, error } = useAccommodations()
   const accommodations = accommodationsData || []
@@ -55,7 +57,7 @@ export function AccommodationsSection() {
 
   const handleBookingSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    alert("Richiesta di prenotazione inviata! Ti contatteremo presto via WhatsApp per la conferma.")
+    alert(t.accommodations.bookingSent)
   }
 
   const openGallery = (accommodationId: string, imageIndex = 0) => {
@@ -100,14 +102,13 @@ export function AccommodationsSection() {
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Le Nostre Strutture Ricettive</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">{t.accommodations.sectionTitle}</h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-              Scopri l'eccellenza dell'ospitalità siciliana nelle nostre esclusive proprietà
+              {t.accommodations.sectionSubtitle}
             </p>
             <div className="bg-blue-50 p-6 rounded-lg max-w-4xl mx-auto">
               <p className="text-blue-800 font-medium">
-                <strong>Oltre 56 posti letto</strong> distribuiti tra Terrasini, Villagrazia di Carini, Cinisi e più di
-                30 posti letto in un casale esclusivo vicino Castellammare del Golfo
+                {t.accommodations.capacityNote}
               </p>
             </div>
           </div>
@@ -115,7 +116,7 @@ export function AccommodationsSection() {
           {/* Loading State */}
           {isLoading && (
             <div className="text-center py-12">
-              <p className="text-gray-600 dark:text-gray-300">Caricamento strutture...</p>
+              <p className="text-gray-600 dark:text-gray-300">{t.accommodations.loading}</p>
             </div>
           )}
 
@@ -123,12 +124,12 @@ export function AccommodationsSection() {
           {error && !isLoading && (
             <div className="text-center py-12">
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 max-w-2xl mx-auto">
-                <p className="text-amber-800 font-semibold mb-2">⚠️ Database temporaneamente non disponibile</p>
+                <p className="text-amber-800 font-semibold mb-2">⚠️ {t.accommodations.dbUnavailableTitle}</p>
                 <p className="text-sm text-amber-700 mb-4">
-                  Il database Supabase è attualmente in fase di ripristino. Le strutture saranno disponibili a breve.
+                  {t.accommodations.dbUnavailableDesc}
                 </p>
                 <p className="text-xs text-amber-600">
-                  {error.message || "Errore di connessione al database"}
+                  {error.message || t.accommodations.dbConnectionError}
                 </p>
               </div>
             </div>
@@ -137,7 +138,7 @@ export function AccommodationsSection() {
           {/* Empty State */}
           {!isLoading && !error && accommodations.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-gray-600 dark:text-gray-300">Nessuna struttura disponibile al momento.</p>
+              <p className="text-gray-600 dark:text-gray-300">{t.accommodations.empty}</p>
             </div>
           )}
 
@@ -162,7 +163,7 @@ export function AccommodationsSection() {
                   </div>
                   <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
                     <div className="opacity-0 hover:opacity-100 transition-opacity duration-300 bg-white/90 px-4 py-2 rounded-lg">
-                      <p className="text-gray-900 font-medium">Clicca per vedere tutte le foto</p>
+                      <p className="text-gray-900 font-medium">{t.accommodations.clickForPhotos}</p>
                     </div>
                   </div>
                 </div>
@@ -200,14 +201,14 @@ export function AccommodationsSection() {
                       className="flex-1 bg-transparent"
                       onClick={() => openGallery(accommodation.id, 0)}
                     >
-                      Vedi Galleria ({accommodation.images.length} foto)
+                      {t.accommodations.viewGalleryCount.replace("{count}", String(accommodation.images.length))}
                     </Button>
                     <Button
                       className="flex-1 bg-amber-600 hover:bg-amber-700"
                       onClick={() => openBookingSystem(accommodation.id, accommodation.name)}
                     >
                       <Calendar className="w-4 h-4 mr-2" />
-                      Prenota Ora
+                      {t.accommodations.bookNow}
                     </Button>
                   </div>
                 </CardContent>
@@ -271,7 +272,9 @@ export function AccommodationsSection() {
                       `Foto ${selectedGallery.currentImageIndex + 1}`}
                   </p>
                   <p className="text-sm text-gray-400">
-                    {selectedGallery.currentImageIndex + 1} di {currentGalleryAccommodation.images.length}
+                    {t.accommodations.photoOf
+                      .replace("{current}", String(selectedGallery.currentImageIndex + 1))
+                      .replace("{total}", String(currentGalleryAccommodation.images.length))}
                   </p>
                 </div>
 
@@ -396,7 +399,7 @@ export function AccommodationsSection() {
                 <form onSubmit={handleBookingSubmit} className="space-y-4">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="name">Nome Completo *</Label>
+                      <Label htmlFor="name">{t.accommodations.name} *</Label>
                       <Input
                         id="name"
                         required
@@ -428,7 +431,7 @@ export function AccommodationsSection() {
 
                   <div className="grid md:grid-cols-3 gap-4">
                     <div>
-                      <Label htmlFor="checkIn">Check-in *</Label>
+                      <Label htmlFor="checkIn">{t.accommodations.checkIn} *</Label>
                       <Input
                         id="checkIn"
                         type="date"
@@ -438,7 +441,7 @@ export function AccommodationsSection() {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="checkOut">Check-out *</Label>
+                      <Label htmlFor="checkOut">{t.accommodations.checkOut} *</Label>
                       <Input
                         id="checkOut"
                         type="date"
@@ -467,7 +470,7 @@ export function AccommodationsSection() {
                       rows={3}
                       value={bookingForm.message}
                       onChange={(e) => setBookingForm((prev) => ({ ...prev, message: e.target.value }))}
-                      placeholder="Eventuali richieste particolari o informazioni aggiuntive..."
+                      placeholder={t.accommodations.messagePlaceholder}
                     />
                   </div>
 
@@ -480,7 +483,7 @@ export function AccommodationsSection() {
 
                   <div className="flex gap-4">
                     <Button type="submit" className="flex-1 bg-amber-600 hover:bg-amber-700">
-                      Invia Richiesta
+                      {t.accommodations.sendRequest}
                     </Button>
                     <Button type="button" variant="outline" onClick={() => setSelectedAccommodation(null)}>
                       Annulla

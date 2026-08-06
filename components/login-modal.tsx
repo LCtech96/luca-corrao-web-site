@@ -9,6 +9,7 @@ import { useState } from "react"
 import { ForgotPasswordModal } from "./forgot-password-modal"
 import { signInWithEmail } from "@/lib/supabase/auth-service"
 import { useToast } from "@/hooks/use-toast"
+import { useTranslation } from "@/lib/i18n"
 
 interface LoginModalProps {
   onClose: () => void
@@ -20,6 +21,7 @@ export function LoginModal({ onClose }: LoginModalProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [showForgotPassword, setShowForgotPassword] = useState(false)
   const { toast } = useToast()
+  const t = useTranslation()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -29,16 +31,16 @@ export function LoginModal({ onClose }: LoginModalProps) {
       await signInWithEmail(email, password)
       
       toast({
-        title: "Accesso effettuato! ✅",
-        description: "Benvenuto!",
+        title: t.login.successTitle,
+        description: t.login.successDesc,
       })
       
       onClose()
     } catch (error: any) {
       console.error('Errore login:', error)
       toast({
-        title: "Errore di accesso",
-        description: error.message || "Email o password non corretti. Riprova.",
+        title: t.login.errorTitle,
+        description: error.message || t.login.errorDesc,
         variant: "destructive",
       })
     } finally {
@@ -51,37 +53,37 @@ export function LoginModal({ onClose }: LoginModalProps) {
       <DialogContent className="max-w-md">
         <DialogHeader>
           <VisuallyHidden>
-            <DialogTitle>Accedi</DialogTitle>
+            <DialogTitle>{t.login.title}</DialogTitle>
           </VisuallyHidden>
         </DialogHeader>
         
         <div className="space-y-4">
           <div className="text-center">
-            <h2 className="text-2xl font-bold">Accedi</h2>
-            <p className="text-gray-600">Inserisci le tue credenziali</p>
+            <h2 className="text-2xl font-bold">{t.login.title}</h2>
+            <p className="text-gray-600">{t.login.subtitle}</p>
           </div>
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t.login.email}</Label>
               <Input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="la-tua-email@example.com"
+                placeholder={t.login.emailPlaceholder}
                 required
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t.login.password}</Label>
               <Input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="La tua password"
+                placeholder={t.login.password}
                 required
               />
             </div>
@@ -91,7 +93,7 @@ export function LoginModal({ onClose }: LoginModalProps) {
               className="w-full"
               disabled={isLoading}
             >
-              {isLoading ? 'Accesso in corso...' : 'Accedi'}
+              {isLoading ? t.login.submitting : t.login.submit}
             </Button>
           </form>
           
@@ -100,19 +102,17 @@ export function LoginModal({ onClose }: LoginModalProps) {
               onClick={() => setShowForgotPassword(true)}
               className="text-sm text-amber-600 hover:underline block w-full"
             >
-              Password dimenticata?
+              {t.login.forgotPassword}
             </button>
             
             <p className="text-sm text-gray-600">
-              Non hai un account?{' '}
               <button 
                 className="text-blue-600 hover:underline"
                 onClick={() => {
                   onClose()
-                  // Qui potresti aprire il modal di registrazione
                 }}
               >
-                Registrati
+                {t.nav.register}
               </button>
             </p>
           </div>
