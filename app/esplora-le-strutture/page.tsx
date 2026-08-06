@@ -16,22 +16,22 @@ export default function EsploraLeStrutturePage() {
     <div className="min-h-screen bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:via-black dark:to-gray-900">
       {/* Header with Back Button - Tema Scuro */}
       <div className="sticky top-0 z-50 bg-white/90 dark:bg-black/90 backdrop-blur-md border-b border-gray-200 dark:border-cyan-500/30 shadow-lg">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center justify-between gap-2">
+        <div className="container mx-auto px-3 sm:px-4 py-3">
+          <div className="flex items-center justify-between gap-2 min-w-0">
             <Button
               variant="ghost"
+              size="icon"
               asChild
-              className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-cyan-500/10"
+              className="shrink-0 text-gray-700 dark:text-gray-300 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-cyan-500/10"
             >
-              <Link href="/">
+              <Link href="/" aria-label={t.accommodations.backHome}>
                 <ArrowLeft className="w-5 h-5" />
-                <span className="hidden sm:inline">{t.accommodations.backHome}</span>
               </Link>
             </Button>
-            <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-amber-500 to-orange-600 dark:from-amber-400 dark:to-orange-500 bg-clip-text text-transparent">
+            <h1 className="text-base sm:text-2xl font-bold text-gray-900 dark:text-white bg-gradient-to-r from-amber-500 to-orange-600 dark:from-amber-400 dark:to-orange-500 bg-clip-text text-transparent truncate text-center min-w-0">
               {t.accommodations.pageTitle}
             </h1>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 shrink-0">
               <div className="hidden md:block">
                 <LanguageSelector compact />
               </div>

@@ -18,6 +18,8 @@ export const it = {
     admin: "Admin",
     workWithUs: "Lavora con noi",
     showcase: "Vetrina",
+    menu: "Menu",
+    openMenu: "Apri menu",
     logoutSuccessTitle: "Logout effettuato",
     logoutSuccessDesc: "Sei stato disconnesso con successo.",
     logoutErrorTitle: "Errore",

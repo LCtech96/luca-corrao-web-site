@@ -20,6 +20,8 @@ export const fr: TranslationKeys = {
     admin: "Admin",
     workWithUs: "Travaillez avec nous",
     showcase: "Vitrine",
+    menu: "Menu",
+    openMenu: "Ouvrir le menu",
     logoutSuccessTitle: "Déconnecté",
     logoutSuccessDesc: "Vous avez été déconnecté avec succès.",
     logoutErrorTitle: "Erreur",
