@@ -1,4 +1,4 @@
-export const LOCALES = ["it", "en", "de", "fr", "es"] as const
+export const LOCALES = ["it", "en", "de", "fr"] as const
 
 export type Locale = (typeof LOCALES)[number]
 
@@ -7,7 +7,6 @@ export const LOCALE_LABELS: Record<Locale, string> = {
   en: "English",
   de: "Deutsch",
   fr: "Français",
-  es: "Español",
 }
 
 export const DEFAULT_LOCALE: Locale = "it"

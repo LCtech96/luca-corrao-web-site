@@ -35,6 +35,9 @@ export default function EsploraLeStrutturePage() {
               <div className="hidden md:block">
                 <LanguageSelector compact />
               </div>
+              <div className="md:hidden">
+                <LanguageSelector iconOnly />
+              </div>
               <ThemeToggle />
             </div>
           </div>

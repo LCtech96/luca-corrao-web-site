@@ -151,9 +151,12 @@ export function NavigationBar() {
                 <span className="hidden sm:inline">{t.nav.showcase}</span>
               </Button>
 
-              {/* Language selector: desktop/tablet only (mobile uses footer) */}
+              {/* Language: always visible — compact on desktop, icon+code on mobile */}
               <div className="hidden md:block">
                 <LanguageSelector compact />
+              </div>
+              <div className="md:hidden">
+                <LanguageSelector iconOnly />
               </div>
 
               {/* Theme Toggle */}

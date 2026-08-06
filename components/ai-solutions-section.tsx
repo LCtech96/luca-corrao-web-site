@@ -37,6 +37,9 @@ export function AISolutionsSection({ onClose }: AISolutionsSectionProps) {
               <div className="hidden md:block">
                 <LanguageSelector compact />
               </div>
+              <div className="md:hidden">
+                <LanguageSelector iconOnly />
+              </div>
               <Button 
                 variant="ghost" 
                 size="icon" 
