@@ -21,6 +21,7 @@ import {
   Star,
 } from "lucide-react"
 import { PaymentForm } from "./payment-form"
+import { useTranslation } from "@/lib/i18n"
 
 interface VoiceAISectionProps {
   onClose?: () => void
@@ -109,30 +110,31 @@ const pricingPlans = [
   },
 ]
 
-const voiceFeatures = [
+const voiceFeaturesBase = [
   {
     icon: Globe,
-    title: "Multilingua",
-    description: "Oltre 29 lingue supportate con accenti nativi",
+    titleKey: "multilingual" as const,
+    descKey: "multilingualDesc" as const,
   },
   {
     icon: Users,
-    title: "Clonazione Vocale",
-    description: "Crea voci personalizzate identiche alla realtà",
+    titleKey: "voiceClone" as const,
+    descKey: "voiceCloneDesc" as const,
   },
   {
     icon: Clock,
-    title: "Tempo Reale",
-    description: "Generazione audio istantanea per conversazioni live",
+    titleKey: "realtime" as const,
+    descKey: "realtimeDesc" as const,
   },
   {
     icon: Star,
-    title: "Qualità Studio",
-    description: "Audio professionale indistinguibile dalla voce umana",
+    titleKey: "studioQuality" as const,
+    descKey: "studioQualityDesc" as const,
   },
 ]
 
 export function VoiceAISection({ onClose }: VoiceAISectionProps) {
+  const t = useTranslation()
   const [selectedPlan, setSelectedPlan] = useState<any>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentDemo, setCurrentDemo] = useState(0)
@@ -142,6 +144,12 @@ export function VoiceAISection({ onClose }: VoiceAISectionProps) {
     "Crea assistenti vocali che parlano come te, con la tua personalità e il tuo stile unico.",
     "Trasforma il tuo business con AI Agent che non dormono mai e parlano in modo naturale.",
   ]
+
+  const voiceFeatures = voiceFeaturesBase.map((feature) => ({
+    icon: feature.icon,
+    title: t.voiceAi[feature.titleKey],
+    description: t.voiceAi[feature.descKey],
+  }))
 
   const handlePlanSelect = (plan: any) => {
     setSelectedPlan(plan)
@@ -170,12 +178,11 @@ export function VoiceAISection({ onClose }: VoiceAISectionProps) {
                 <Mic className="w-8 h-8 text-white" />
               </div>
               <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                AI Agent Vocale
+                {t.voiceAi.sectionTitle}
               </h2>
             </div>
             <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
-              Crea il tuo assistente vocale personalizzato con intelligenza artificiale avanzata. Voci realistiche,
-              conversazioni naturali, risultati straordinari.
+              {t.voiceAi.sectionSubtitle}
             </p>
 
             {/* Demo Player */}
@@ -233,7 +240,7 @@ export function VoiceAISection({ onClose }: VoiceAISectionProps) {
                     <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                       <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-1">
                         <Star className="w-3 h-3 mr-1" />
-                        Più Popolare
+                        {t.voiceAi.popular}
                       </Badge>
                     </div>
                   )}

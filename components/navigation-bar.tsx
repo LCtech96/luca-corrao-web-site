@@ -14,11 +14,14 @@ import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
 import { Shield } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { LanguageSelector } from "@/components/language-selector"
+import { useTranslation } from "@/lib/i18n"
 
 export function NavigationBar() {
   const { user, loading } = useAuth()
   const { isAdmin } = useIsAdmin()
   const { toast } = useToast()
+  const t = useTranslation()
   const [activeModal, setActiveModal] = useState<"registration" | "work" | "showcase" | "login" | null>(null)
 
   const closeModal = () => {
@@ -29,14 +32,14 @@ export function NavigationBar() {
     try {
       await signOut()
       toast({
-        title: "Logout effettuato",
-        description: "Sei stato disconnesso con successo.",
+        title: t.nav.logoutSuccessTitle,
+        description: t.nav.logoutSuccessDesc,
       })
     } catch (error) {
       console.error('Errore logout:', error)
       toast({
-        title: "Errore",
-        description: "Impossibile disconnettersi. Riprova.",
+        title: t.nav.logoutErrorTitle,
+        description: t.nav.logoutErrorDesc,
         variant: "destructive",
       })
     }
@@ -77,7 +80,7 @@ export function NavigationBar() {
                     className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-cyan-500/10 transition-colors duration-200 font-semibold"
                   >
                     <LogIn className="w-4 h-4" />
-                    <span className="hidden sm:inline">Log in</span>
+                    <span className="hidden sm:inline">{t.nav.login}</span>
                   </Button>
 
                   <Button
@@ -87,7 +90,7 @@ export function NavigationBar() {
                     className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-500/10 transition-colors duration-200 font-semibold"
                   >
                     <UserPlus className="w-4 h-4" />
-                    <span className="hidden sm:inline">Registrati</span>
+                    <span className="hidden sm:inline">{t.nav.register}</span>
                   </Button>
                 </>
               ) : (
@@ -101,7 +104,7 @@ export function NavigationBar() {
                         className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-500/10 transition-colors duration-200 font-semibold"
                       >
                         <Shield className="w-4 h-4" />
-                        <span className="hidden sm:inline">Admin</span>
+                        <span className="hidden sm:inline">{t.nav.admin}</span>
                       </Button>
                     </Link>
                   )}
@@ -113,7 +116,7 @@ export function NavigationBar() {
                       className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-cyan-500/10 transition-colors duration-200 font-semibold"
                     >
                       <User className="w-4 h-4" />
-                      <span className="hidden sm:inline">Profilo</span>
+                      <span className="hidden sm:inline">{t.nav.profile}</span>
                     </Button>
                   </Link>
                   <Button
@@ -123,7 +126,7 @@ export function NavigationBar() {
                     className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-500/10 transition-colors duration-200 font-semibold"
                   >
                     <LogOut className="w-4 h-4" />
-                    <span className="hidden sm:inline">Logout</span>
+                    <span className="hidden sm:inline">{t.nav.logout}</span>
                   </Button>
                 </>
               )}
@@ -135,7 +138,7 @@ export function NavigationBar() {
                 className="flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-500/10 transition-colors duration-200 font-semibold"
               >
                 <Building2 className="w-4 h-4" />
-                <span className="hidden sm:inline">Lavora con noi</span>
+                <span className="hidden sm:inline">{t.nav.workWithUs}</span>
               </Button>
 
               <Button
@@ -145,8 +148,16 @@ export function NavigationBar() {
                 className="flex items-center gap-2 text-gray-300 hover:text-cyan-400 hover:bg-cyan-500/10 transition-colors duration-200 font-semibold"
               >
                 <Grid3X3 className="w-4 h-4" />
-                <span className="hidden sm:inline">Vetrina</span>
+                <span className="hidden sm:inline">{t.nav.showcase}</span>
               </Button>
+
+              {/* Language: always visible — compact on desktop, icon+code on mobile */}
+              <div className="hidden md:block">
+                <LanguageSelector compact />
+              </div>
+              <div className="md:hidden">
+                <LanguageSelector iconOnly />
+              </div>
 
               {/* Theme Toggle */}
               <ThemeToggle />

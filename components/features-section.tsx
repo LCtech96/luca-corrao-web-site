@@ -6,6 +6,7 @@ import { Brain, Code, Bot } from "lucide-react"
 import { useState } from "react"
 import { ConsultationForm } from "./consultation-form"
 import { AIAgentDemosInteractive } from "./ai-agent-demos-interactive"
+import { useTranslation } from "@/lib/i18n"
 
 type Feature = {
   id: string
@@ -20,42 +21,41 @@ type Feature = {
   hasDemos?: boolean
 }
 
-const features: Feature[] = [
-  {
-    id: "ai-vision",
-    icon: Brain,
-    title: "Visione AI & Sviluppo Software",
-    subtitle: "Il Futuro è Ora",
-    description:
-      "Scopri come l'Intelligenza Artificiale sta plasmando le soluzioni di domani e la nostra expertise nello sviluppo software.",
-    color: "text-blue-600 dark:text-blue-400",
-    bgColor: "bg-blue-50 dark:bg-blue-950",
-  },
-  {
-    id: "ai-agents",
-    icon: Bot,
-    title: "AI Agent Development",
-    subtitle: "Agenti Intelligenti al Tuo Servizio",
-    description:
-      "La creazione di sistemi autonomi per ottimizzare il tuo business attraverso l'automazione intelligente.",
-    color: "text-indigo-600 dark:text-indigo-400",
-    bgColor: "bg-indigo-50 dark:bg-indigo-950",
-    hasDemos: true,
-  },
-  {
-    id: "strategic-consulting",
-    icon: Code,
-    title: "Consulenza Strategica AI",
-    subtitle: "Trasformazione Digitale Avanzata",
-    description: "Assistenza tecnica specializzata e integrazione AI per rivoluzionare digitalmente la tua azienda.",
-    color: "text-green-600 dark:text-green-400",
-    bgColor: "bg-green-50 dark:bg-green-950",
-    hasForm: true,
-  },
-]
-
 export function FeaturesSection() {
+  const t = useTranslation()
   const [selectedFeature, setSelectedFeature] = useState<string | null>(null)
+
+  const features: Feature[] = [
+    {
+      id: "ai-vision",
+      icon: Brain,
+      title: t.features.visionTitle,
+      subtitle: t.features.visionSubtitle,
+      description: t.features.visionDesc,
+      color: "text-blue-600 dark:text-blue-400",
+      bgColor: "bg-blue-50 dark:bg-blue-950",
+    },
+    {
+      id: "ai-agents",
+      icon: Bot,
+      title: t.features.agentsTitle,
+      subtitle: t.features.agentsSubtitle,
+      description: t.features.agentsDesc,
+      color: "text-indigo-600 dark:text-indigo-400",
+      bgColor: "bg-indigo-50 dark:bg-indigo-950",
+      hasDemos: true,
+    },
+    {
+      id: "strategic-consulting",
+      icon: Code,
+      title: t.features.consultingTitle,
+      subtitle: t.features.consultingSubtitle,
+      description: t.features.consultingDesc,
+      color: "text-green-600 dark:text-green-400",
+      bgColor: "bg-green-50 dark:bg-green-950",
+      hasForm: true,
+    },
+  ]
 
   const handleFeatureClick = (feature: Feature) => {
     if (feature.url) {
@@ -73,9 +73,9 @@ export function FeaturesSection() {
     <section id="features" className="py-20 bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">Soluzioni AI Avanzate</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">{t.features.sectionTitle}</h2>
           <p className="text-xl text-gray-600 dark:text-gray-300">
-            Clicca su ogni sezione per approfondire e scoprire come l'AI può trasformare il tuo business
+            {t.features.sectionSubtitle}
           </p>
         </div>
 
@@ -101,12 +101,12 @@ export function FeaturesSection() {
                   className={`w-full border-current ${feature.color} hover:bg-current hover:text-white`}
                 >
                   {feature.url
-                    ? "Visita il Sito"
+                    ? t.features.visitSite
                     : feature.hasForm
-                      ? "Richiedi Consulenza"
+                      ? t.features.requestConsulting
                       : feature.hasDemos
-                        ? "Vedi Demo AI"
-                        : "Scopri di Più"}
+                        ? t.features.seeDemos
+                        : t.common.discoverMore}
                 </Button>
               </CardContent>
             </Card>

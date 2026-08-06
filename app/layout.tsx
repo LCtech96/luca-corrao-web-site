@@ -6,6 +6,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { SupabaseProvider } from "@/components/supabase-provider"
 import { ThemeProvider } from "@/components/theme-provider"
+import { LanguageProvider } from "@/lib/i18n"
 import { absoluteUrl, metadataBaseUrl } from "@/lib/seo"
 import { Analytics } from "@vercel/analytics/next"
 
@@ -137,9 +138,11 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange={false}
         >
-          <SupabaseProvider>
-                {children}
-          </SupabaseProvider>
+          <LanguageProvider>
+            <SupabaseProvider>
+              {children}
+            </SupabaseProvider>
+          </LanguageProvider>
         </ThemeProvider>
         <Analytics />
         </body>

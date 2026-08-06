@@ -10,9 +10,12 @@ import { NavigationBar } from "./navigation-bar"
 import { Snowfall3D } from "./snowfall-3d"
 import { SocialLinksCompact } from "./social-links-compact"
 import { ChatBubble } from "./chat-bubble"
+import { SiteFooter } from "./site-footer"
+import { useTranslation } from "@/lib/i18n"
 
 export function MinimalHero() {
   const [activeSection, setActiveSection] = useState<"ai" | null>(null)
+  const t = useTranslation()
 
   const closeSection = () => {
     setActiveSection(null)
@@ -84,8 +87,8 @@ export function MinimalHero() {
               <Link href="/esplora-le-strutture">
                 <Building2 className="w-14 h-14 mr-6" />
                 <div className="text-left">
-                  <div className="text-2xl font-black">Esplora le Strutture</div>
-                  <div className="text-sm opacity-95 font-semibold">Ospitalità di Eccellenza</div>
+                  <div className="text-2xl font-black">{t.hero.exploreTitle}</div>
+                  <div className="text-sm opacity-95 font-semibold">{t.hero.exploreSubtitle}</div>
                 </div>
               </Link>
             </Button>
@@ -97,13 +100,15 @@ export function MinimalHero() {
             >
               <Bot className="w-14 h-14 mr-6" />
               <div className="text-left">
-                <div className="text-2xl font-black">Scopri le Soluzioni AI</div>
-                <div className="text-sm opacity-95 font-semibold">Intelligenza Artificiale</div>
+                <div className="text-2xl font-black">{t.hero.aiTitle}</div>
+                <div className="text-sm opacity-95 font-semibold">{t.hero.aiSubtitle}</div>
               </div>
             </Button>
           </div>
         </div>
       </section>
+
+      <SiteFooter className="relative z-30 bg-black/70 backdrop-blur-md border-white/10" variant="default" />
 
       {/* Chat Bubble - Always visible */}
       <ChatBubble />

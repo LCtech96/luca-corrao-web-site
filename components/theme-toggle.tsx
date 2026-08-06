@@ -4,9 +4,11 @@ import { useTheme } from "next-themes"
 import { Moon, Sun } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
+import { useTranslation } from "@/lib/i18n"
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
+  const t = useTranslation()
   const [mounted, setMounted] = useState(false)
 
   // Evita hydration mismatch
@@ -34,7 +36,7 @@ export function ThemeToggle() {
       size="icon"
       onClick={() => setTheme(isDark ? "light" : "dark")}
       className="text-gray-300 dark:text-gray-300 hover:text-cyan-400 dark:hover:text-cyan-400 hover:bg-cyan-500/10 transition-colors duration-200"
-      title={isDark ? "Modalità Chiara" : "Modalità Scura"}
+      title={isDark ? t.theme.light : t.theme.dark}
     >
       {isDark ? (
         <Sun className="w-5 h-5" />
