@@ -121,7 +121,7 @@ export function ContactSection() {
                 className="text-pink-400 hover:text-pink-300 hover:bg-pink-400/10 flex items-center gap-2"
                 onClick={() =>
                   window.open(
-                    "https://www.instagram.com/lucacorrao_com?igsh=MXhuN3hiamh4bTNpaQ%3D%3D&utm_source=qr",
+                    "https://www.instagram.com/lucacorrao_com/",
                     "_blank",
                   )
                 }
