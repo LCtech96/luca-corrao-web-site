@@ -8,25 +8,25 @@ export function SocialLinksCompact() {
     {
       name: "LinkedIn",
       icon: Linkedin,
-      url: "https://www.linkedin.com/in/luca-corrao",
+      url: "https://www.linkedin.com/in/luca-corrao?utm_source=share_via&utm_content=profile&utm_medium=member_ios",
       color: "hover:text-blue-500"
     },
     {
       name: "Instagram", 
       icon: Instagram,
-      url: "https://www.instagram.com/luca.corrao.s?igsh=MXhuN3hiamh4bTNpaQ%3D%3D&utm_source=qr",
+      url: "https://www.instagram.com/lucacorrao_com?igsh=MXhuN3hiamh4bTNpaQ%3D%3D&utm_source=qr",
       color: "hover:text-pink-500"
     },
     {
       name: "Facebook",
       icon: Facebook,
-      url: "https://www.facebook.com/people/Luca-Corrao/pfbid021tDysnufGorRVgbBAkKyZkr94y3pRt2km9GuYixDE4b3SWS5P4faqUbbf5LQptsQl/",
+      url: "https://www.facebook.com/share/1JMaVG8bsh/?mibextid=wwXIfr",
       color: "hover:text-blue-600"
     },
     {
       name: "X",
       icon: XIcon,
-      url: "https://twitter.com/lucacorrao",
+      url: "https://x.com/luca_corrao?s=11",
       color: "hover:text-white"
     },
     {
