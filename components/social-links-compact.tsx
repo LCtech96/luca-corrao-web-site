@@ -14,7 +14,7 @@ export function SocialLinksCompact() {
     {
       name: "Instagram", 
       icon: Instagram,
-      url: "https://www.instagram.com/lucacorrao_com?igsh=MXhuN3hiamh4bTNpaQ%3D%3D&utm_source=qr",
+      url: "https://www.instagram.com/lucacorrao_com/",
       color: "hover:text-pink-500"
     },
     {
