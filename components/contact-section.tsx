@@ -121,7 +121,7 @@ export function ContactSection() {
                 className="text-pink-400 hover:text-pink-300 hover:bg-pink-400/10 flex items-center gap-2"
                 onClick={() =>
                   window.open(
-                    "https://www.instagram.com/luca.corrao.s?igsh=MXhuN3hiamh4bTNpaQ%3D%3D&utm_source=qr",
+                    "https://www.instagram.com/lucacorrao_com?igsh=MXhuN3hiamh4bTNpaQ%3D%3D&utm_source=qr",
                     "_blank",
                   )
                 }
@@ -134,7 +134,7 @@ export function ContactSection() {
                 variant="ghost"
                 size="lg"
                 className="text-blue-400 hover:text-blue-300 hover:bg-blue-400/10 flex items-center gap-2"
-                onClick={() => window.open("https://www.facebook.com/people/Luca-Corrao/pfbid021tDysnufGorRVgbBAkKyZkr94y3pRt2km9GuYixDE4b3SWS5P4faqUbbf5LQptsQl/", "_blank")}
+                onClick={() => window.open("https://www.facebook.com/share/1JMaVG8bsh/?mibextid=wwXIfr", "_blank")}
               >
                 <Facebook className="w-6 h-6" />
                 <span className="hidden sm:inline">Facebook</span>
@@ -146,7 +146,7 @@ export function ContactSection() {
                 className="text-blue-300 hover:text-blue-200 hover:bg-blue-300/10 flex items-center gap-2"
                 onClick={() =>
                   window.open(
-                    "https://www.linkedin.com/in/luca-corrao-b8194b35b?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app",
+                    "https://www.linkedin.com/in/luca-corrao?utm_source=share_via&utm_content=profile&utm_medium=member_ios",
                     "_blank",
                   )
                 }
@@ -159,7 +159,7 @@ export function ContactSection() {
                 variant="ghost"
                 size="lg"
                 className="text-gray-300 hover:text-white hover:bg-gray-300/10 flex items-center gap-2"
-                onClick={() => window.open("https://x.com/luca_corrao?s=21", "_blank")}
+                onClick={() => window.open("https://x.com/luca_corrao?s=11", "_blank")}
               >
                 <Twitter className="w-6 h-6" />
                 <span className="hidden sm:inline">X Twitter</span>
