@@ -278,7 +278,7 @@ export function AIPersistentChat({ onClose, onNewMessage }: AIPersistentChatProp
           title: "Apertura pagina...",
           description: `Ti sto portando alla struttura`,
         })
-        router.push(`/property/${slug}`)
+        router.push(`/${slug}`)
         onClose() // Chiudi la chat
       }, 1500)
     }
@@ -616,7 +616,7 @@ export function AIPersistentChat({ onClose, onNewMessage }: AIPersistentChatProp
                             if (img.isExternal && img.externalUrl) {
                               window.open(img.externalUrl, '_blank', 'noopener,noreferrer')
                             } else {
-                              router.push(`/property/${img.slug}`)
+                              router.push(`/${img.slug}`)
                               onClose()
                             }
                           }}

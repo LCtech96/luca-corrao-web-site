@@ -13,7 +13,7 @@ import Image from "next/image"
 
 interface BookingData {
   id: string
-  propertyId: string
+  propertySlug: string
   propertyName: string
   guestName: string
   guestSurname: string
@@ -28,9 +28,13 @@ interface BookingData {
 }
 
 interface BookingSystemProps {
-  propertyId: string
+  propertySlug: string
   propertyName: string
-  onClose: () => void
+  onClose?: () => void
+  mode?: "modal" | "page"
+  initialCheckIn?: string
+  initialCheckOut?: string
+  onDatesChange?: (checkIn: string, checkOut: string) => void
 }
 
 // Pre-existing bookings for 2025
@@ -38,7 +42,7 @@ const getDefaultBookings = (): BookingData[] => [
   // Lucas Suite bookings
   {
     id: "default-1",
-    propertyId: "lucas-suite",
+    propertySlug: "lucas-suite",
     propertyName: "Lucas Suite",
     guestName: "Prenotazione",
     guestSurname: "Esistente",
@@ -53,7 +57,7 @@ const getDefaultBookings = (): BookingData[] => [
   },
   {
     id: "default-2",
-    propertyId: "lucas-suite",
+    propertySlug: "lucas-suite",
     propertyName: "Lucas Suite",
     guestName: "Prenotazione",
     guestSurname: "Esistente",
@@ -69,7 +73,7 @@ const getDefaultBookings = (): BookingData[] => [
   // Lucas Rooftop bookings
   {
     id: "default-3",
-    propertyId: "lucas-rooftop",
+    propertySlug: "lucas-rooftop",
     propertyName: "Lucas Rooftop",
     guestName: "Prenotazione",
     guestSurname: "Esistente",
@@ -84,7 +88,7 @@ const getDefaultBookings = (): BookingData[] => [
   },
   {
     id: "default-4",
-    propertyId: "lucas-rooftop",
+    propertySlug: "lucas-rooftop",
     propertyName: "Lucas Rooftop",
     guestName: "Prenotazione",
     guestSurname: "Esistente",
@@ -99,7 +103,7 @@ const getDefaultBookings = (): BookingData[] => [
   },
   {
     id: "default-5",
-    propertyId: "lucas-rooftop",
+    propertySlug: "lucas-rooftop",
     propertyName: "Lucas Rooftop",
     guestName: "Prenotazione",
     guestSurname: "Esistente",
@@ -115,7 +119,7 @@ const getDefaultBookings = (): BookingData[] => [
   // Lucas Cottage bookings
   {
     id: "default-6",
-    propertyId: "lucas-cottage",
+    propertySlug: "lucas-cottage",
     propertyName: "Lucas Cottage",
     guestName: "Prenotazione",
     guestSurname: "Esistente",
@@ -130,7 +134,7 @@ const getDefaultBookings = (): BookingData[] => [
   },
   {
     id: "default-7",
-    propertyId: "lucas-cottage",
+    propertySlug: "lucas-cottage",
     propertyName: "Lucas Cottage",
     guestName: "Prenotazione",
     guestSurname: "Esistente",
@@ -157,7 +161,10 @@ const getStoredBookings = (): BookingData[] => {
     return defaultBookings
   }
 
-  const existingBookings = JSON.parse(stored)
+  const existingBookings = JSON.parse(stored).map((booking: BookingData & { propertyId?: string }) => ({
+    ...booking,
+    propertySlug: booking.propertySlug || booking.propertyId || "",
+  }))
 
   // Check if default bookings are already present
   const hasDefaultBookings = existingBookings.some((booking: BookingData) => booking.id.startsWith("default-"))
@@ -177,12 +184,20 @@ const saveBookings = (bookings: BookingData[]) => {
   localStorage.setItem("lucasBookings", JSON.stringify(bookings))
 }
 
-export function BookingSystem({ propertyId, propertyName, onClose }: BookingSystemProps) {
+export function BookingSystem({
+  propertySlug,
+  propertyName,
+  onClose,
+  mode = "modal",
+  initialCheckIn = "",
+  initialCheckOut = "",
+  onDatesChange,
+}: BookingSystemProps) {
   const [currentView, setCurrentView] = useState<"calendar" | "form" | "payment">("calendar")
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDates, setSelectedDates] = useState<{ checkIn: string; checkOut: string }>({
-    checkIn: "",
-    checkOut: "",
+    checkIn: initialCheckIn,
+    checkOut: initialCheckOut,
   })
   const [bookings, setBookings] = useState<BookingData[]>([])
   const [paymentMethod, setPaymentMethod] = useState<"qr-code">("qr-code")
@@ -221,7 +236,8 @@ export function BookingSystem({ propertyId, propertyName, onClose }: BookingSyst
 
     // Check if date is already booked
     return bookings.some((booking) => {
-      if (booking.propertyId !== propertyId || booking.status !== "confirmed") return false
+      const slug = booking.propertySlug || (booking as BookingData & { propertyId?: string }).propertyId
+      if (slug !== propertySlug || booking.status !== "confirmed") return false
       const bookedDates = generateDateRange(booking.checkIn, booking.checkOut)
       return bookedDates.includes(date)
     })
@@ -230,23 +246,29 @@ export function BookingSystem({ propertyId, propertyName, onClose }: BookingSyst
   const handleDateSelect = (date: string) => {
     if (isDateUnavailable(date)) return
 
+    let nextDates: { checkIn: string; checkOut: string }
+
     if (!selectedDates.checkIn || (selectedDates.checkIn && selectedDates.checkOut)) {
-      setSelectedDates({ checkIn: date, checkOut: "" })
+      nextDates = { checkIn: date, checkOut: "" }
     } else if (selectedDates.checkIn && !selectedDates.checkOut) {
       if (new Date(date) > new Date(selectedDates.checkIn)) {
-        // Check if any dates in between are unavailable
         const dateRange = generateDateRange(selectedDates.checkIn, date)
         const hasUnavailableDate = dateRange.some((d) => isDateUnavailable(d))
 
         if (hasUnavailableDate) {
-          setSelectedDates({ checkIn: date, checkOut: "" })
+          nextDates = { checkIn: date, checkOut: "" }
         } else {
-          setSelectedDates({ ...selectedDates, checkOut: date })
+          nextDates = { ...selectedDates, checkOut: date }
         }
       } else {
-        setSelectedDates({ checkIn: date, checkOut: "" })
+        nextDates = { checkIn: date, checkOut: "" }
       }
+    } else {
+      return
     }
+
+    setSelectedDates(nextDates)
+    onDatesChange?.(nextDates.checkIn, nextDates.checkOut)
   }
 
   const handleBookingSubmit = async (e: React.FormEvent) => {
@@ -255,7 +277,7 @@ export function BookingSystem({ propertyId, propertyName, onClose }: BookingSyst
     // Salva la prenotazione
     const newBooking: BookingData = {
       id: Date.now().toString(),
-      propertyId,
+      propertySlug,
       propertyName,
       ...bookingForm,
       checkIn: selectedDates.checkIn,
@@ -303,7 +325,7 @@ export function BookingSystem({ propertyId, propertyName, onClose }: BookingSyst
     setTimeout(() => window.open(whatsappUrl2, "_blank"), 1000)
 
     alert("Prenotazione confermata! Riceverai una conferma via WhatsApp.")
-    onClose()
+    onClose?.()
   }
 
   const goToPreviousMonth = () => {
@@ -358,14 +380,14 @@ export function BookingSystem({ propertyId, propertyName, onClose }: BookingSyst
           key={day}
           onClick={() => handleDateSelect(date)}
           disabled={isUnavailable}
-          className={`h-10 w-10 rounded-lg text-sm font-medium transition-colors ${
+          className={`h-10 w-10 rounded-lg text-sm font-semibold transition-colors ${
             isUnavailable
-              ? "bg-red-100 text-red-400 cursor-not-allowed"
+              ? "bg-red-100 text-red-600 cursor-not-allowed line-through"
               : isSelected
                 ? "bg-amber-600 text-white"
                 : isInRange
-                  ? "bg-amber-100 text-amber-800"
-                  : "hover:bg-gray-100 text-gray-700"
+                  ? "bg-amber-100 text-amber-900"
+                  : "hover:bg-gray-100 text-gray-900 bg-white border border-gray-200"
           }`}
         >
           {day}
@@ -379,7 +401,7 @@ export function BookingSystem({ propertyId, propertyName, onClose }: BookingSyst
           <Button variant="outline" size="sm" onClick={goToPreviousMonth}>
             <ChevronLeft className="w-4 h-4" />
           </Button>
-          <h3 className="text-lg font-semibold">
+          <h3 className="text-lg font-semibold text-gray-900">
             {monthNames[month]} {year}
           </h3>
           <Button variant="outline" size="sm" onClick={goToNextMonth}>
@@ -388,7 +410,7 @@ export function BookingSystem({ propertyId, propertyName, onClose }: BookingSyst
         </div>
         <div className="grid grid-cols-7 gap-1 mb-2">
           {["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"].map((day) => (
-            <div key={day} className="h-10 flex items-center justify-center text-sm font-medium text-gray-500">
+            <div key={day} className="h-10 flex items-center justify-center text-sm font-medium text-gray-600">
               {day}
             </div>
           ))}
@@ -398,22 +420,23 @@ export function BookingSystem({ propertyId, propertyName, onClose }: BookingSyst
     )
   }
 
-  return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-        <CardHeader className="bg-gradient-to-r from-amber-50 to-orange-50 border-b">
+  const content = (
+    <Card className="w-full max-w-4xl max-h-[90vh] overflow-y-auto bg-white text-gray-900 border-gray-200 shadow-xl">
+        <CardHeader className="bg-gradient-to-r from-amber-50 to-orange-50 border-b border-amber-100">
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-2xl text-gray-900">Prenota {propertyName}</CardTitle>
-              <p className="text-gray-600 mt-2">Seleziona le date per il tuo soggiorno</p>
+              <p className="text-gray-700 mt-2">Seleziona le date per il tuo soggiorno</p>
             </div>
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <X className="w-5 h-5" />
-            </Button>
+            {onClose && (
+              <Button variant="ghost" size="icon" onClick={onClose} className="text-gray-700">
+                <X className="w-5 h-5" />
+              </Button>
+            )}
           </div>
         </CardHeader>
 
-        <CardContent className="p-6">
+        <CardContent className="p-6 bg-white">
           {currentView === "calendar" && (
             <div className="grid md:grid-cols-2 gap-8">
               <div>
@@ -421,15 +444,15 @@ export function BookingSystem({ propertyId, propertyName, onClose }: BookingSyst
                 <div className="mt-4 space-y-2">
                   <div className="flex items-center gap-2">
                     <div className="w-4 h-4 bg-red-100 rounded"></div>
-                    <span className="text-sm text-gray-600">Non disponibile</span>
+                    <span className="text-sm text-gray-700">Non disponibile</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-4 h-4 bg-amber-600 rounded"></div>
-                    <span className="text-sm text-gray-600">Selezionato</span>
+                    <span className="text-sm text-gray-700">Selezionato</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 bg-amber-100 rounded"></div>
-                    <span className="text-sm text-gray-600">Periodo selezionato</span>
+                    <div className="w-4 h-4 bg-amber-100 rounded border border-amber-300"></div>
+                    <span className="text-sm text-gray-700">Periodo selezionato</span>
                   </div>
                 </div>
               </div>
@@ -440,11 +463,11 @@ export function BookingSystem({ propertyId, propertyName, onClose }: BookingSyst
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-amber-600" />
-                      <span className="text-sm">Check-in: {selectedDates.checkIn || "Seleziona data"}</span>
+                      <span className="text-sm text-gray-800">Check-in: {selectedDates.checkIn || "Seleziona data"}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-amber-600" />
-                      <span className="text-sm">Check-out: {selectedDates.checkOut || "Seleziona data"}</span>
+                      <span className="text-sm text-gray-800">Check-out: {selectedDates.checkOut || "Seleziona data"}</span>
                     </div>
                     {selectedDates.checkIn && selectedDates.checkOut && (
                       <div className="mt-3 p-3 bg-green-50 rounded-lg border border-green-200">
@@ -483,12 +506,12 @@ export function BookingSystem({ propertyId, propertyName, onClose }: BookingSyst
                 </div>
 
                 {/* Show existing bookings info for current property */}
-                {bookings.filter((b) => b.propertyId === propertyId && b.id.startsWith("default-")).length > 0 && (
+                {bookings.filter((b) => (b.propertySlug || (b as BookingData & { propertyId?: string }).propertyId) === propertySlug && b.id.startsWith("default-")).length > 0 && (
                   <div className="mt-4 p-4 bg-orange-50 rounded-lg border border-orange-200">
                     <h4 className="font-semibold text-orange-900 mb-2">📅 Periodi già Prenotati</h4>
-                    <div className="space-y-1 text-sm text-orange-800">
+                    <div className="space-y-1 text-sm text-orange-900">
                       {bookings
-                        .filter((b) => b.propertyId === propertyId && b.id.startsWith("default-"))
+                        .filter((b) => (b.propertySlug || (b as BookingData & { propertyId?: string }).propertyId) === propertySlug && b.id.startsWith("default-"))
                         .map((booking) => (
                           <div key={booking.id}>
                             • {new Date(booking.checkIn).toLocaleDateString("it-IT")} -{" "}
@@ -619,7 +642,7 @@ export function BookingSystem({ propertyId, propertyName, onClose }: BookingSyst
                     id="numberOfGuests"
                     type="number"
                     min="1"
-                    max={propertyId === "lucas-suite" ? "2" : "5"}
+                    max={propertySlug === "lucas-suite" ? "2" : "5"}
                     required
                     value={bookingForm.numberOfGuests}
                     onChange={(e) =>
@@ -628,7 +651,7 @@ export function BookingSystem({ propertyId, propertyName, onClose }: BookingSyst
                     className="mt-1"
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Massimo {propertyId === "lucas-suite" ? "2" : "5"} ospiti per questa struttura
+                    Massimo {propertySlug === "lucas-suite" ? "2" : "5"} ospiti per questa struttura
                   </p>
                 </div>
 
@@ -673,7 +696,7 @@ export function BookingSystem({ propertyId, propertyName, onClose }: BookingSyst
                   <CheckCircle2 className="w-8 h-8 text-green-600" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Prenotazione Confermata!</h3>
-                <p className="text-gray-600">Ora effettua il pagamento tramite QR Code</p>
+                <p className="text-gray-800">Ora effettua il pagamento tramite QR Code</p>
               </div>
 
               <div className="bg-white p-6 rounded-lg border-2 border-amber-200 shadow-lg mb-6">
@@ -747,6 +770,15 @@ export function BookingSystem({ propertyId, propertyName, onClose }: BookingSyst
           )}
         </CardContent>
       </Card>
+  )
+
+  if (mode === "page") {
+    return content
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      {content}
     </div>
   )
 }

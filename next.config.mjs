@@ -1,3 +1,5 @@
+const propertySlugs = ["lucas-rooftop", "lucas-suite", "lucas-cottage"]
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
@@ -20,7 +22,20 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons']
   },
-  // Reduce preload warnings by configuring resource hints
+  // Clean URLs for property pages and booking
+  async rewrites() {
+    return propertySlugs.flatMap((slug) => [
+      { source: `/${slug}`, destination: `/property/${slug}` },
+      { source: `/${slug}/prenota`, destination: `/property/${slug}/prenota` },
+    ])
+  },
+  async redirects() {
+    return propertySlugs.map((slug) => ({
+      source: `/property/${slug}`,
+      destination: `/${slug}`,
+      permanent: true,
+    }))
+  },
   async headers() {
     return [
       {
@@ -121,3 +136,5 @@ const nextConfig = {
     return config;
   },
 }
+
+export default nextConfig

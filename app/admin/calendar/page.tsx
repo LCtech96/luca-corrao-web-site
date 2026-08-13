@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button"
 import { useAuth } from "@/hooks/use-auth"
 import { useIsAdmin } from "@/hooks/use-is-admin"
 import { Calendar, ChevronLeft, RefreshCw } from "lucide-react"
+import { AdminPriceCalendar } from "@/components/admin-price-calendar"
+import { getPropertyBySlug } from "@/lib/property-utils"
 
 type PropertyOption = { slug: string; name: string }
 type PriceOverride = { id: string; date: string; price: number; notes?: string | null }
@@ -259,7 +261,26 @@ export default function AdminCalendarPage() {
         </div>
 
         <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Prezzi per data</h2>
+          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Calendario prezzi (clicca una data)</h2>
+          {selectedProperty && (
+            <AdminPriceCalendar
+              basePrice={getPropertyBySlug(selectedProperty)?.price ?? 80}
+              prices={prices}
+              saving={saving}
+              onSavePrice={async (date, price) => {
+                await postAction({
+                  action: "set_price",
+                  propertySlug: selectedProperty,
+                  date,
+                  price,
+                })
+              }}
+            />
+          )}
+        </div>
+
+        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
+          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">Prezzi per data (manuale)</h2>
           <div className="grid md:grid-cols-3 gap-3 mb-4">
             <input type="date" value={priceDate} onChange={(e) => setPriceDate(e.target.value)} className="border rounded-md px-3 py-2" />
             <input
