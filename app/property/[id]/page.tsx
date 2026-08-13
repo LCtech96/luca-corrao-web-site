@@ -24,8 +24,7 @@ import {
   X as XIcon,
 } from "lucide-react"
 import Link from "next/link"
-import { useState } from "react"
-import { BookingModalAdvanced } from "@/components/booking-modal-advanced"
+import { getPropertyBookingUrl } from "@/lib/property-utils"
 
 // Helper function to generate slug from name
 function generateSlug(name: string): string {
@@ -199,7 +198,6 @@ export default function PropertyPage() {
 
   const [selectedImage, setSelectedImage] = useState(0)
   const [showAllPhotos, setShowAllPhotos] = useState(false)
-  const [showBooking, setShowBooking] = useState(false)
 
   // Share functionality
   const handleShare = async () => {
@@ -433,13 +431,14 @@ export default function PropertyPage() {
                   <span className="text-gray-600">/ notte</span>
                 </div>
 
-                <Button
-                  size="lg"
-                  className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-lg py-6 mb-4"
-                  onClick={() => setShowBooking(true)}
-                >
-                  Prenota Ora
-                </Button>
+                <Link href={getPropertyBookingUrl(propertySlug)}>
+                  <Button
+                    size="lg"
+                    className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-lg py-6 mb-4"
+                  >
+                    Prenota Ora
+                  </Button>
+                </Link>
 
                 <p className="text-center text-sm text-gray-600 mb-6">Non ti verrà addebitato nulla ancora</p>
 
@@ -492,17 +491,6 @@ export default function PropertyPage() {
             </div>
           </div>
         </div>
-      )}
-
-      {/* Booking Modal */}
-      {showBooking && (
-        <BookingModalAdvanced
-          propertyName={property.name}
-          propertyPrice={property.price}
-          propertyId={property.id}
-          propertySlug={propertySlug}
-          onClose={() => setShowBooking(false)}
-        />
       )}
     </div>
   )

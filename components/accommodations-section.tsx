@@ -27,6 +27,8 @@ import Image from "next/image"
 import { BookingSystem } from "./booking-system"
 import { useLanguage, useTranslation } from "@/lib/i18n"
 import { localizeAccommodation } from "@/lib/i18n/accommodation-content"
+import { getPropertyBookingUrl, getPropertyPageUrl, nameToPropertySlug } from "@/lib/property-utils"
+import Link from "next/link"
 
 // Note: Accommodations are now loaded from Supabase database
 
@@ -45,7 +47,7 @@ export function AccommodationsSection() {
     currentImageIndex: number
   } | null>(null)
   const [selectedBooking, setSelectedBooking] = useState<{
-    propertyId: string
+    propertySlug: string
     propertyName: string
   } | null>(null)
   const [bookingForm, setBookingForm] = useState({
@@ -72,8 +74,8 @@ export function AccommodationsSection() {
     setSelectedGallery(null)
   }
 
-  const openBookingSystem = (propertyId: string, propertyName: string) => {
-    setSelectedBooking({ propertyId, propertyName })
+  const openBookingSystem = (propertySlug: string, propertyName: string) => {
+    setSelectedBooking({ propertySlug, propertyName })
   }
 
   const closeBookingSystem = () => {
@@ -110,8 +112,8 @@ export function AccommodationsSection() {
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
               {t.accommodations.sectionSubtitle}
             </p>
-            <div className="bg-blue-50 p-6 rounded-lg max-w-4xl mx-auto">
-              <p className="text-blue-800 font-medium">
+            <div className="bg-blue-50 dark:bg-blue-950/40 p-6 rounded-lg max-w-4xl mx-auto border border-blue-100 dark:border-blue-900">
+              <p className="text-blue-900 dark:text-blue-100 font-medium">
                 {t.accommodations.capacityNote}
               </p>
             </div>
@@ -149,8 +151,10 @@ export function AccommodationsSection() {
           {/* Accommodations Grid */}
           {!isLoading && !error && accommodations.length > 0 && (
             <div className="grid lg:grid-cols-2 gap-8 mb-16">
-              {accommodations.map((accommodation) => (
-                <Card key={accommodation.id} className="overflow-hidden hover:shadow-xl transition-shadow">
+              {accommodations.map((accommodation) => {
+                const propertySlug = nameToPropertySlug(accommodation.name)
+                return (
+                <Card key={accommodation.id} className="overflow-hidden hover:shadow-xl transition-shadow bg-white dark:bg-gray-800">
                 <div className="relative h-64 cursor-pointer" onClick={() => openGallery(accommodation.id, 0)}>
                   <Image
                     src={accommodation.images[0] || "/placeholder.svg"}
@@ -173,7 +177,15 @@ export function AccommodationsSection() {
                 </div>
 
                 <CardHeader>
-                  <CardTitle className="text-2xl text-gray-900 dark:text-white">{accommodation.name}</CardTitle>
+                  <CardTitle className="text-2xl text-gray-900 dark:text-white">
+                    {propertySlug ? (
+                      <Link href={getPropertyPageUrl(propertySlug)} className="hover:text-amber-600 transition-colors">
+                        {accommodation.name}
+                      </Link>
+                    ) : (
+                      accommodation.name
+                    )}
+                  </CardTitle>
                   <p className="text-amber-600 font-medium">{accommodation.subtitle}</p>
                 </CardHeader>
 
@@ -200,24 +212,41 @@ export function AccommodationsSection() {
                   </div>
 
                   <div className="flex gap-2">
+                    {propertySlug && (
+                      <Link href={getPropertyPageUrl(propertySlug)} className="flex-1">
+                        <Button variant="outline" className="w-full bg-transparent">
+                          Dettagli
+                        </Button>
+                      </Link>
+                    )}
                     <Button
                       variant="outline"
-                      className="flex-1 bg-transparent"
+                      className={propertySlug ? "flex-1 bg-transparent" : "flex-1 bg-transparent"}
                       onClick={() => openGallery(accommodation.id, 0)}
                     >
                       {t.accommodations.viewGalleryCount.replace("{count}", String(accommodation.images.length))}
                     </Button>
-                    <Button
-                      className="flex-1 bg-amber-600 hover:bg-amber-700"
-                      onClick={() => openBookingSystem(accommodation.id, accommodation.name)}
-                    >
-                      <Calendar className="w-4 h-4 mr-2" />
-                      {t.accommodations.bookNow}
-                    </Button>
+                    {propertySlug ? (
+                      <Link href={getPropertyBookingUrl(propertySlug)} className="flex-1">
+                        <Button className="w-full bg-amber-600 hover:bg-amber-700">
+                          <Calendar className="w-4 h-4 mr-2" />
+                          {t.accommodations.bookNow}
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Button
+                        className="flex-1 bg-amber-600 hover:bg-amber-700"
+                        onClick={() => openBookingSystem(accommodation.id, accommodation.name)}
+                      >
+                        <Calendar className="w-4 h-4 mr-2" />
+                        {t.accommodations.bookNow}
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
-            ))}
+                )
+              })}
             </div>
           )}
 
@@ -311,7 +340,7 @@ export function AccommodationsSection() {
           {/* Booking System Modal */}
           {selectedBooking && (
             <BookingSystem
-              propertyId={selectedBooking.propertyId}
+              propertySlug={selectedBooking.propertySlug}
               propertyName={selectedBooking.propertyName}
               onClose={closeBookingSystem}
             />

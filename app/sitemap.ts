@@ -14,12 +14,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: absoluteUrl("/host"), lastModified: now, changeFrequency: "monthly", priority: 0.3 },
   ]
 
-  const propertyRoutes: MetadataRoute.Sitemap = propertySlugs.map((slug) => ({
-    url: absoluteUrl(`/property/${slug}`),
-    lastModified: now,
-    changeFrequency: "weekly",
-    priority: 0.8,
-  }))
+  const propertyRoutes: MetadataRoute.Sitemap = propertySlugs.flatMap((slug) => [
+    {
+      url: absoluteUrl(`/${slug}`),
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
+      url: absoluteUrl(`/${slug}/prenota`),
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+  ])
 
   return [...staticRoutes, ...propertyRoutes]
 }
