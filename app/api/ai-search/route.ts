@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// Groq API configuration (GRATIS e velocissimo!)
-const GROQ_API_KEY = process.env.GROQ_API_KEY || ''
-const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
+// Google Gemini API configuration
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || ''
+const GEMINI_MODEL = 'gemini-flash-latest'
+const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`
 
 // Helper function per determinare la stagione
 function getSeason(month: number): string {
@@ -22,7 +23,7 @@ function checkUserRateLimit(ip: string): { allowed: boolean; message?: string } 
   const now = Date.now()
   const userLimit = requestCache.get(ip)
   
-  // Limiti: 10 richieste ogni 10 minuti per utente (più generoso con Groq gratis)
+  // Limiti: 10 richieste ogni 10 minuti per utente
   const MAX_REQUESTS = 10
   const WINDOW_MS = 10 * 60 * 1000 // 10 minuti
   
@@ -52,7 +53,7 @@ function checkDailyLimit(): { allowed: boolean; message?: string } {
     lastResetDate = today
   }
   
-  const MAX_DAILY_REQUESTS = 200 // 200 richieste/giorno (Groq è gratis!)
+  const MAX_DAILY_REQUESTS = 200 // 200 richieste/giorno
   
   if (dailyRequestCount >= MAX_DAILY_REQUESTS) {
     return { 
@@ -101,9 +102,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!GROQ_API_KEY) {
+    if (!GEMINI_API_KEY) {
       return NextResponse.json(
-        { error: 'Groq API key not configured' },
+        { error: 'Gemini API key not configured' },
         { status: 500 }
       )
     }
@@ -309,48 +310,59 @@ IMPORTANTE:
 3. Dopo che mostri immagine, suggerisci: "Clicca per prenotare!"
 4. Evidenzia disponibilità limitata se possibile`
 
-    // Prepara i messaggi per Groq
-    let groqMessages
+    // Prepara i messaggi per Gemini
+    let systemInstruction = systemPrompt
+    let conversationMessages: Array<{ role: string; content: string }> = []
+
     if (messages && Array.isArray(messages)) {
-      // Nuovo formato: conversazione completa
-      // Se il primo messaggio è già un system prompt, usalo invece del default
       const hasCustomSystemPrompt = messages.length > 0 && messages[0].role === 'system'
-      
+
       if (hasCustomSystemPrompt) {
-        // Usa il system prompt personalizzato fornito
-        groqMessages = [...messages]
+        systemInstruction = messages[0].content
+        conversationMessages = messages.slice(1)
       } else {
-        // Usa il system prompt default per strutture ricettive
-        groqMessages = [
-          { role: 'system', content: systemPrompt },
-          ...messages
-        ]
+        conversationMessages = messages
       }
     } else {
-      // Vecchio formato: singola query
-      groqMessages = [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: query }
-      ]
+      conversationMessages = [{ role: 'user', content: query }]
     }
 
-    // Chiamata a Groq API (compatibile OpenAI)
+    // Gemini usa "user" / "model" (non "assistant")
+    const geminiContents = conversationMessages
+      .filter((msg) => msg.role === 'user' || msg.role === 'assistant' || msg.role === 'model')
+      .map((msg) => ({
+        role: msg.role === 'assistant' ? 'model' : 'user',
+        parts: [{ text: msg.content }],
+      }))
+
+    // Gemini richiede che il primo messaggio sia "user"
+    if (geminiContents.length === 0 || geminiContents[0].role !== 'user') {
+      geminiContents.unshift({
+        role: 'user',
+        parts: [{ text: query || 'Ciao' }],
+      })
+    }
+
+    // Chiamata a Gemini API
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 15000) // 15 secondi timeout
 
-    const response = await fetch(GROQ_API_URL, {
+    const response = await fetch(GEMINI_API_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GROQ_API_KEY}`,
+        'X-goog-api-key': GEMINI_API_KEY,
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile', // Modello Groq velocissimo e gratis
-        messages: groqMessages,
-        temperature: 0.7,
-        max_tokens: 500,
-        top_p: 1,
-        stream: false,
+        systemInstruction: {
+          parts: [{ text: systemInstruction }],
+        },
+        contents: geminiContents,
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 500,
+          topP: 1,
+        },
       }),
       signal: controller.signal,
     })
@@ -359,7 +371,7 @@ IMPORTANTE:
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))
-      console.error('Groq API error:', errorData)
+      console.error('Gemini API error:', errorData)
       
       return NextResponse.json(
         { 
@@ -373,14 +385,17 @@ IMPORTANTE:
 
     const data = await response.json()
 
-    // Estrai la risposta (formato OpenAI-compatible)
-    const aiResponse = data.choices?.[0]?.message?.content || 'Nessuna risposta disponibile'
+    // Estrai la risposta dal formato Gemini
+    const aiResponse =
+      data.candidates?.[0]?.content?.parts
+        ?.map((part: { text?: string }) => part.text || '')
+        .join('') || 'Nessuna risposta disponibile'
 
     return NextResponse.json({
       success: true,
       response: aiResponse,
       query,
-      model: 'Groq Llama 3.3 70B',
+      model: 'Gemini Flash',
       remainingRequests: 200 - dailyRequestCount,
     })
 
