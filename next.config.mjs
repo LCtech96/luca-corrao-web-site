@@ -37,7 +37,13 @@ const nextConfig = {
     }))
   },
   async headers() {
+    // Let browsers keep static media for a week so repeat visits do not download it again
+    const mediaCache = [
+      { key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' },
+    ]
     return [
+      { source: '/videos/:path*', headers: mediaCache },
+      { source: '/images/:path*', headers: mediaCache },
       {
         source: '/admin/:path*',
         headers: [

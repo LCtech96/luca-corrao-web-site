@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Building2, Bot } from "lucide-react"
@@ -15,7 +15,17 @@ import { useTranslation } from "@/lib/i18n"
 
 export function MinimalHero() {
   const [activeSection, setActiveSection] = useState<"ai" | null>(null)
+  const [showVideo, setShowVideo] = useState(false)
   const t = useTranslation()
+
+  // Skip the background video for visitors who asked for less data or less motion:
+  // they keep the static poster and do not download the video at all.
+  useEffect(() => {
+    const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection
+    const saveData = connection?.saveData === true
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    setShowVideo(!saveData && !reducedMotion)
+  }, [])
 
   const closeSection = () => {
     setActiveSection(null)
@@ -32,17 +42,25 @@ export function MinimalHero() {
       
       {/* Main Hero Section */}
       <section className="flex-1 flex items-center justify-center px-4 relative overflow-hidden pt-16">
-        {/* 4K Video Background - Extreme Skiing Action Sports */}
-        <div className="absolute inset-0 z-0">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover"
-          >
-            <source src="/videos/ski-extreme-4k.mp4" type="video/mp4" />
-          </video>
+        {/* Video background: poster shows at once, the light video loads after hydration */}
+        <div
+          className="absolute inset-0 z-0 bg-cover bg-center"
+          style={{ backgroundImage: "url(/videos/hero-poster.jpg)" }}
+        >
+          {showVideo && (
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="auto"
+              poster="/videos/hero-poster.jpg"
+              className="absolute inset-0 w-full h-full object-cover"
+            >
+              <source src="/videos/hero-720.mp4" type="video/mp4" media="(min-width: 1024px)" />
+              <source src="/videos/hero-480.mp4" type="video/mp4" />
+            </video>
+          )}
           {/* Dark overlay for better text readability */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70"></div>
         </div>
